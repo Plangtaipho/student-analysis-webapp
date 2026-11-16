@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}วิเคราะห์ผู้เรียนรายบุคคล{% endblock %}</title>
+  <link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body {% block body_attrs %}{% endblock %}>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="{{ '/app' if user else '/' }}"><span class="brand-mark" aria-hidden="true">วผ</span>วิเคราะห์ผู้เรียน</a>
+      <nav class="nav" aria-label="เมนูหลัก">
+        {% block nav %}
+        {% if user %}
+          <a href="/app">ห้องเรียนของฉัน</a>
+          <a href="/app/profile">ข้อมูลครู</a>
+          <button type="button" data-logout>ออกจากระบบ</button>
+        {% else %}
+          <a href="/login">เข้าสู่ระบบ</a>
+          <a class="btn btn-primary btn-sm" href="/register">สมัครใช้งาน</a>
+        {% endif %}
+        {% endblock %}
+      </nav>
+    </div>
+  </header>
+  <main class="container {% block container_class %}{% endblock %}">
+    {% block content %}{% endblock %}
+  </main>
+  <script src="/static/js/api.js"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

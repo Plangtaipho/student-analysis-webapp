@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}ข้อมูลครู{% endblock %}
+{% block container_class %}form-container{% endblock %}
+{% block content %}
+<h1>ข้อมูลครู</h1>
+<p class="muted">ข้อมูลนี้จะพิมพ์ในหัวรายงานและบันทึกข้อความ · บัญชี <span id="email"></span></p>
+<form id="profile-form" class="card">
+  <div class="fields">
+    <div class="field half"><label for="full_name">ชื่อ-สกุล</label><input id="full_name" name="full_name" required maxlength="120" placeholder="นางพรธิดา โพธิ์สิงห์"></div>
+    <div class="field half"><label for="position">ตำแหน่ง</label><input id="position" name="position" required maxlength="80" placeholder="ครู"></div>
+    <div class="field"><label for="school_name">โรงเรียน</label><input id="school_name" name="school_name" required maxlength="160"></div>
+    <div class="field"><label for="area_office">สำนักงานเขตพื้นที่การศึกษา <span class="tag">ไม่บังคับ</span></label><input id="area_office" name="area_office" maxlength="200" placeholder="สำนักงานเขตพื้นที่การศึกษามัธยมศึกษา..."></div>
+  </div>
+  <div id="profile-error" class="alert alert-error hidden" role="alert"></div>
+  <button class="btn btn-primary mt-4" type="submit">บันทึก</button>
+</form>
+<form id="password-form" class="card">
+  <h2>เปลี่ยนรหัสผ่าน</h2>
+  <div class="fields">
+    <div class="field"><label for="current_password">รหัสผ่านปัจจุบัน</label><input id="current_password" name="current_password" type="password" required autocomplete="current-password"></div>
+    <div class="field half"><label for="password">รหัสผ่านใหม่</label><input id="password" name="password" type="password" required minlength="8" autocomplete="new-password"></div>
+    <div class="field half"><label for="password2">ยืนยันรหัสผ่านใหม่</label><input id="password2" name="password2" type="password" required minlength="8" autocomplete="new-password"></div>
+  </div>
+  <div id="password-error" class="alert alert-error hidden" role="alert"></div>
+  <button class="btn mt-4" type="submit">เปลี่ยนรหัสผ่าน</button>
+</form>
+{% endblock %}
+{% block scripts %}<script src="/static/js/profile.js"></script>{% endblock %}

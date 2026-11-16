@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}คำตอบของนักเรียน{% endblock %}
+{% block body_attrs %}data-classroom-id="{{ classroom_id }}" data-submission-id="{{ submission_id }}"{% endblock %}
+{% block container_class %}form-container{% endblock %}
+{% block content %}
+<p class="small"><a href="/app/classrooms/{{ classroom_id }}">← กลับไปหน้าห้องเรียน</a></p>
+<div class="row mb-4">
+  <div><h1 id="s-title">กำลังโหลด…</h1><div class="muted small" id="s-time"></div></div>
+  <span class="spacer"></span>
+  <a class="btn" id="pdf-one" target="_blank" rel="noopener">PDF</a>
+</div>
+{% for section in sections %}
+<section class="card">
+  <h2>{{ section.title }}</h2>
+  <dl class="kv">
+    {% for f in section.fields %}
+    <dt>{{ f.label }}</dt><dd data-p="{{ f.key }}">-</dd>
+    {% endfor %}
+  </dl>
+</section>
+{% endfor %}
+<section class="card">
+  <h2>1. แบบสอบถามนักเรียน</h2>
+  {% for q in questions %}
+  <div class="question"><div class="muted small">{{ q.label }}</div><div data-q="{{ q.key }}">-</div></div>
+  {% endfor %}
+</section>
+<section class="card">
+  <h2>2. วิธีการเรียนที่ต้องการ (เรียงจากชอบมากที่สุด)</h2>
+  <ol class="prefs" id="prefs"></ol>
+</section>
+{% endblock %}
+{% block scripts %}<script src="/static/js/submission.js"></script>{% endblock %}

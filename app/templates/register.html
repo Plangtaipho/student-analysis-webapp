@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}สมัครใช้งาน{% endblock %}
+{% block container_class %}narrow{% endblock %}
+{% block content %}
+<div class="card">
+  <h1>สมัครใช้งานสำหรับครู</h1>
+  <p class="muted">ทดลองใช้ฟรี 1 ห้องเรียน</p>
+  <form id="register-form">
+    <div class="fields">
+      <div class="field"><label for="full_name">ชื่อ-สกุล (ตามที่จะพิมพ์ในรายงาน)</label><input id="full_name" name="full_name" required minlength="2" maxlength="120" placeholder="นางสาวใจดี ตั้งใจสอน" autocomplete="name"></div>
+      <div class="field"><label for="school_name">โรงเรียน</label><input id="school_name" name="school_name" required minlength="2" maxlength="160" placeholder="โรงเรียน..."></div>
+      <div class="field"><label for="email">อีเมล</label><input id="email" name="email" type="email" required autocomplete="email"></div>
+      <div class="field half"><label for="password">รหัสผ่าน (อย่างน้อย 8 ตัว)</label><input id="password" name="password" type="password" required minlength="8" autocomplete="new-password"></div>
+      <div class="field half"><label for="password2">ยืนยันรหัสผ่าน</label><input id="password2" name="password2" type="password" required minlength="8" autocomplete="new-password"></div>
+      <div class="field"><label class="check"><input type="checkbox" name="accept_terms" required> <span>ฉันยอมรับเงื่อนไขการใช้งานและ<a href="/privacy" target="_blank">นโยบายความเป็นส่วนตัว</a> และจะแจ้งนักเรียนถึงการเก็บข้อมูลก่อนให้กรอก</span></label></div>
+    </div>
+    <div id="form-error" class="alert alert-error hidden" role="alert"></div>
+    <button class="btn btn-primary btn-block mt-4" type="submit">สมัครใช้งาน</button>
+  </form>
+  <p class="muted small mt-4">มีบัญชีแล้ว? <a href="/login">เข้าสู่ระบบ</a></p>
+</div>
+{% endblock %}
+{% block scripts %}<script src="/static/js/auth.js"></script>{% endblock %}

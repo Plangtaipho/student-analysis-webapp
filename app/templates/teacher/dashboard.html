@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}ห้องเรียนของฉัน{% endblock %}
+{% block content %}
+<div class="row mb-4">
+  <div>
+    <h1>ห้องเรียนของฉัน</h1>
+    <div class="muted">{{ user.full_name }} · {{ user.school_name }}</div>
+  </div>
+  <span class="spacer"></span>
+  <button class="btn btn-primary" id="new-room-toggle" type="button">+ สร้างห้องใหม่</button>
+</div>
+
+<form id="new-room-form" class="card hidden">
+  <h2>สร้างห้องรายวิชา</h2>
+  <div class="fields">
+    <div class="field half"><label for="subject_name">ชื่อวิชา</label><input id="subject_name" name="subject_name" required maxlength="120" placeholder="คณิตศาสตร์พื้นฐาน"></div>
+    <div class="field half"><label for="subject_code">รหัสวิชา <span class="tag">ไม่บังคับ</span></label><input id="subject_code" name="subject_code" maxlength="20" placeholder="ค33101"></div>
+    <div class="field half"><label for="grade_label">ชั้น / ห้อง</label><input id="grade_label" name="grade_label" required maxlength="40" placeholder="มัธยมศึกษาปีที่ 6/1"></div>
+    <div class="field third"><label for="academic_year">ปีการศึกษา</label><input id="academic_year" name="academic_year" type="number" min="2560" max="2700" required></div>
+    <div class="field third span-3"><label for="semester">ภาคเรียน</label>
+      <select id="semester" name="semester"><option value="1">1</option><option value="2">2</option></select></div>
+  </div>
+  <div id="new-room-error" class="alert alert-error hidden" role="alert"></div>
+  <div class="row mt-4"><button class="btn btn-primary" type="submit">สร้างห้อง</button></div>
+</form>
+
+<div id="rooms-empty" class="alert alert-info hidden">ยังไม่มีห้องเรียน เริ่มจากสร้างห้องแรก (ห้องแรกทดลองใช้ฟรี)</div>
+<div id="rooms" class="grid grid-2"></div>
+{% endblock %}
+{% block scripts %}<script src="/static/js/dashboard.js"></script>{% endblock %}

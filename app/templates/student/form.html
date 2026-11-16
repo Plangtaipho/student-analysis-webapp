@@ -1,0 +1,137 @@
+{% macro field_input(f) -%}
+<div class="field {{ f.width }}">
+  <label for="f-{{ f.key }}">{{ f.label }}{% if f.sensitive %} <span class="tag">ไม่บังคับ</span>{% endif %}</label>
+  {% if f.kind == "select" %}
+  <select id="f-{{ f.key }}" name="{{ f.key }}" data-personal>
+    <option value="">— เลือก —</option>
+    {% for o in f.options %}<option value="{{ o }}">{{ o }}</option>{% endfor %}
+  </select>
+  {% elif f.kind == "number" %}
+  <input id="f-{{ f.key }}" name="{{ f.key }}" type="number" inputmode="decimal" step="any"
+         {% if f.min_value is not none %}min="{{ f.min_value }}"{% endif %} {% if f.max_value is not none %}max="{{ f.max_value }}"{% endif %} data-personal>
+  {% elif f.kind == "date" %}
+  <input id="f-{{ f.key }}" name="{{ f.key }}" type="date" min="1990-01-01" max="2030-12-31" data-personal>
+  {% else %}
+  <input id="f-{{ f.key }}" name="{{ f.key }}" maxlength="{{ f.max_len }}"
+         {% if f.key in ("postcode", "phone", "house_no", "moo") %}inputmode="numeric"{% endif %} data-personal>
+  {% endif %}
+</div>
+{%- endmacro %}
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>แบบวิเคราะห์ผู้เรียน · {{ room.subject_name }}</title>
+  <link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body>
+<main class="container form-container" id="student-app" data-token="{{ token }}" data-min-ranked="{{ min_ranked }}">
+  <header class="form-hero">
+    <h1>แบบบันทึกการวิเคราะห์ผู้เรียนเป็นรายบุคคล</h1>
+    <p>วิชา {{ room.subject_name }}{% if room.subject_code %} ({{ room.subject_code }}){% endif %} · {{ room.grade_label }}</p>
+    <p>ภาคเรียนที่ {{ room.semester }}/{{ room.academic_year }} · {{ room.teacher_name }} · {{ room.school_name }}</p>
+  </header>
+
+  {% if not room.is_open %}
+  <div class="card"><h2>ปิดรับคำตอบแล้ว</h2><p class="muted">ครูปิดรับแบบฟอร์มของห้องนี้แล้ว หากยังไม่ได้ส่งหรือต้องการแก้ไข กรุณาติดต่อครูผู้สอน</p></div>
+  {% else %}
+
+  <div id="edit-entry" class="card">
+    <div class="row">
+      <span class="muted small">เคยส่งแล้วและต้องการแก้ไข?</span>
+      <button class="btn btn-sm" id="edit-open" type="button">แก้ไขคำตอบเดิม</button>
+    </div>
+    <form id="lookup-form" class="hidden mt-3">
+      <div class="fields">
+        <div class="field half"><label for="l-no">เลขที่</label><input id="l-no" name="student_no" type="number" inputmode="numeric" min="1" max="200" required></div>
+        <div class="field half"><label for="l-code">รหัสแก้ไข 6 หลัก</label><input id="l-code" name="edit_code" inputmode="numeric" pattern="\d{6}" maxlength="6" required autocomplete="off"></div>
+      </div>
+      <div id="lookup-error" class="alert alert-error hidden" role="alert"></div>
+      <button class="btn btn-primary mt-3" type="submit">เปิดคำตอบเดิม</button>
+    </form>
+  </div>
+
+  <div id="edit-banner" class="alert alert-info hidden">กำลังแก้ไขคำตอบเดิม เมื่อแก้เสร็จให้กดส่งอีกครั้งที่ขั้นตอนสุดท้าย</div>
+
+  <form id="sform" class="card" novalidate>
+    <div class="step-title" id="step-count"></div>
+    <div class="steps" id="steps" aria-hidden="true"></div>
+
+    <section class="step" data-kind="basic">
+      <h2>ข้อมูลนักเรียน</h2>
+      <p class="muted small">กรอกให้ตรงกับความเป็นจริงมากที่สุด ข้อมูลนี้ครูผู้สอนเท่านั้นที่เห็น{% if room.has_roster %} ชื่อในรายงานจะใช้ตามรายชื่อที่ครูใส่ไว้{% endif %}</p>
+      <div class="fields">
+        <div class="field third"><label for="f-no">เลขที่ <span class="req">*</span></label><input id="f-no" name="student_no" type="number" inputmode="numeric" min="1" max="200" required></div>
+        <div class="field span-6"><label for="f-name">ชื่อ – สกุล <span class="req">*</span></label><input id="f-name" name="full_name" required minlength="2" maxlength="120" placeholder="เด็กชาย / นาย / นางสาว ..." autocomplete="name"></div>
+        <div class="field half"><label for="f-nick">ชื่อเล่น</label><input id="f-nick" name="nickname" maxlength="40"></div>
+      </div>
+    </section>
+
+    <section class="step" data-kind="personal">
+      {% for section in sections[:2] %}
+      <h2 {% if not loop.first %}class="mt-5"{% endif %}>{{ section.title }}</h2>
+      <div class="fields">{% for f in section.fields %}{{ field_input(f) }}{% endfor %}</div>
+      {% endfor %}
+    </section>
+
+    <section class="step" data-kind="personal">
+      {% for section in sections[2:] %}
+      <h2 {% if not loop.first %}class="mt-5"{% endif %}>{{ section.title }} {% if section.note %}<span class="tag">{{ section.note }}</span>{% endif %}</h2>
+      <div class="fields">{% for f in section.fields %}{{ field_input(f) }}{% endfor %}</div>
+      {% endfor %}
+    </section>
+
+    <section class="step" data-kind="questions">
+      <h2>1. แบบสอบถามนักเรียน</h2>
+      {% for q in questions %}
+      <div class="field question"><label for="f-{{ q.key }}">{{ q.label }}</label>
+        <textarea id="f-{{ q.key }}" name="{{ q.key }}" maxlength="{{ q.max_len }}" rows="2" data-question></textarea></div>
+      {% endfor %}
+    </section>
+
+    <section class="step" data-kind="methods">
+      <h2>2. นักเรียนต้องการให้ครูจัดการเรียนรู้แบบใด</h2>
+      <p class="muted small">แตะเรียงตามลำดับที่ชอบ แตะอันแรก = อันดับ 1 แตะซ้ำเพื่อเอาออก เลือกอย่างน้อย {{ min_ranked }} อันดับ (เลือกแล้ว <b id="rank-count">0</b>)</p>
+      <div class="methods">
+        {% for key, label in methods %}
+        <button type="button" class="method" data-key="{{ key }}" aria-pressed="false"><span class="rank"></span><span>{{ label }}</span></button>
+        {% endfor %}
+      </div>
+      <button type="button" class="btn btn-sm mt-3" id="rank-reset">เริ่มเรียงใหม่</button>
+    </section>
+
+    <section class="step" data-kind="confirm">
+      <h2>ยืนยันการส่ง</h2>
+      <div class="alert alert-info small">
+        ข้อมูลในแบบฟอร์มนี้ใช้เพื่อให้ครูผู้สอนวิเคราะห์ผู้เรียนและวางแผนการสอน และจัดทำรายงานส่งโรงเรียนเท่านั้น
+        ครูผู้สอนวิชานี้เป็นผู้เห็นข้อมูล ข้อมูลที่อยู่และสุขภาพไม่บังคับกรอก
+        อ่านเพิ่มเติมที่ <a href="/privacy" target="_blank">นโยบายความเป็นส่วนตัว</a>
+      </div>
+      <label class="check"><input type="checkbox" name="consent" required> <span>ข้าพเจ้ายินยอมให้เก็บและใช้ข้อมูลตามที่แจ้งไว้ข้างต้น</span></label>
+    </section>
+
+    <div id="form-error" class="alert alert-error hidden" role="alert"></div>
+    <div class="step-nav">
+      <button class="btn" type="button" id="prev">ย้อนกลับ</button>
+      <button class="btn btn-primary" type="button" id="next">ถัดไป</button>
+      <button class="btn btn-primary hidden" type="submit" id="submit">ส่งแบบฟอร์ม</button>
+    </div>
+  </form>
+
+  <section id="done" class="card hidden" aria-live="polite">
+    <h2>ส่งเรียบร้อยแล้ว ✓</h2>
+    <p id="done-name"></p>
+    <div id="done-new">
+      <p>เก็บ <b>รหัสแก้ไข</b> นี้ไว้ (ถ่ายภาพหน้าจอได้) ถ้าต้องการกลับมาแก้คำตอบ ให้ใช้เลขที่คู่กับรหัสนี้</p>
+      <div class="code-box" id="done-code"></div>
+      <p class="muted small">ถ้าลืมรหัส ให้แจ้งครูเพื่อขอรหัสใหม่</p>
+    </div>
+    <p id="done-updated" class="hidden">บันทึกการแก้ไขแล้ว</p>
+  </section>
+  {% endif %}
+</main>
+<script src="/static/js/api.js"></script>
+<script src="/static/js/student_form.js"></script>
+</body>
+</html>

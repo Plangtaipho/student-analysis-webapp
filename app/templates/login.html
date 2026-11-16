@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}เข้าสู่ระบบ{% endblock %}
+{% block container_class %}narrow{% endblock %}
+{% block content %}
+<div class="card">
+  <h1>เข้าสู่ระบบ</h1>
+  <form id="login-form" novalidate>
+    <div class="fields">
+      <div class="field"><label for="email">อีเมล</label><input id="email" name="email" type="email" autocomplete="email" required></div>
+      <div class="field"><label for="password">รหัสผ่าน</label><input id="password" name="password" type="password" autocomplete="current-password" required></div>
+    </div>
+    <div id="form-error" class="alert alert-error hidden" role="alert"></div>
+    <button class="btn btn-primary btn-block mt-4" type="submit">เข้าสู่ระบบ</button>
+  </form>
+  <p class="muted small mt-4">ยังไม่มีบัญชี? <a href="/register">สมัครใช้งาน</a></p>
+</div>
+{% endblock %}
+{% block scripts %}<script src="/static/js/auth.js"></script>{% endblock %}

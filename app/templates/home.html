@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="card hero-card">
+  <h1>วิเคราะห์ผู้เรียนรายบุคคล เสร็จในเว็บเดียว</h1>
+  <p class="muted measure">นักเรียนกรอกแบบวิเคราะห์ตนเองผ่านมือถือ ครูประเมินรายคนได้เร็ว แล้วระบบสรุปจำนวนและร้อยละ พร้อมส่งออก PDF ตามแบบฟอร์มที่ฝ่ายวิชาการใช้</p>
+  <div class="row mt-4">
+    <a class="btn btn-primary" href="/register">เริ่มใช้งาน (ทดลองฟรี 1 ห้อง)</a>
+    <a class="btn" href="/login">เข้าสู่ระบบ</a>
+  </div>
+</section>
+<div class="grid grid-2">
+  <div class="card"><h3>1. สร้างห้องรายวิชา</h3><p class="muted">ได้ลิงก์และ QR Code ส่งให้นักเรียนในกลุ่มไลน์ห้อง</p></div>
+  <div class="card"><h3>2. นักเรียนกรอกเอง</h3><p class="muted">ไม่ต้องสมัคร กรอกบนมือถือได้ แก้ไขได้ด้วยรหัสของตัวเอง</p></div>
+  <div class="card"><h3>3. ครูประเมินรายคน</h3><p class="muted">เห็นคำตอบนักเรียนข้างแบบประเมิน 5 ด้าน กดเลือกได้ทันที</p></div>
+  <div class="card"><h3>4. ได้รายงาน PDF</h3><p class="muted">สรุปจำนวน ร้อยละ กลุ่มผู้เรียน และบันทึกข้อความ พร้อมส่ง</p></div>
+</div>
+<p class="small muted"><a href="/privacy">นโยบายความเป็นส่วนตัว</a></p>
+{% endblock %}

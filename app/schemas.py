@@ -1,0 +1,238 @@
+"""Pydantic request/response models."""
+import re
+from datetime import date
+
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
+
+from app.security import MAX_PASSWORD_BYTES
+from app.services.form_definition import (
+    LEARNING_METHOD_LABELS,
+    MIN_RANKED_METHODS,
+    OPEN_QUESTION_KEYS,
+    PERSONAL_FIELDS,
+)
+
+
+def _clean(s: str) -> str:
+    # Collapse runs of whitespace; strip control characters.
+    s = re.sub(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]", "", s)
+    return re.sub(r"[ \t]+", " ", s).strip()
+
+
+# --- Teacher accounts --------------------------------------------------------------
+
+
+class Password(BaseModel):
+    password: str = Field(min_length=8, max_length=128)
+
+    @field_validator("password")
+    @classmethod
+    def _len_bytes(cls, v: str) -> str:
+        if len(v.encode("utf-8")) > MAX_PASSWORD_BYTES:
+            raise ValueError("รหัสผ่านยาวเกินไป")
+        return v
+
+
+class RegisterIn(Password):
+    email: EmailStr
+    full_name: str = Field(min_length=2, max_length=120)
+    school_name: str = Field(min_length=2, max_length=160)
+    accept_terms: bool
+
+    @field_validator("full_name", "school_name")
+    @classmethod
+    def _strip(cls, v: str) -> str:
+        return _clean(v)
+
+    @field_validator("accept_terms")
+    @classmethod
+    def _must_accept(cls, v: bool) -> bool:
+        if not v:
+            raise ValueError("กรุณายอมรับเงื่อนไขการใช้งานและนโยบายความเป็นส่วนตัว")
+        return v
+
+
+class LoginIn(BaseModel):
+    email: str = Field(max_length=254)
+    password: str = Field(max_length=128)
+
+
+class ProfileIn(BaseModel):
+    full_name: str = Field(min_length=2, max_length=120)
+    position: str = Field(min_length=1, max_length=80)
+    school_name: str = Field(min_length=2, max_length=160)
+    area_office: str = Field(default="", max_length=200)
+
+    @field_validator("full_name", "position", "school_name", "area_office")
+    @classmethod
+    def _strip(cls, v: str) -> str:
+        return _clean(v)
+
+
+class ChangePasswordIn(Password):
+    current_password: str = Field(max_length=128)
+
+
+class UserOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: int
+    email: str
+    full_name: str
+    position: str
+    school_name: str
+    area_office: str
+    role: str
+
+
+# --- Classrooms ----------------------------------------------------------------------
+
+
+class ClassroomIn(BaseModel):
+    subject_name: str = Field(min_length=1, max_length=120)
+    subject_code: str = Field(default="", max_length=20)
+    grade_label: str = Field(min_length=1, max_length=40)
+    academic_year: int = Field(ge=2560, le=2700)
+    semester: int = Field(ge=1, le=2)
+
+    @field_validator("subject_name", "subject_code", "grade_label")
+    @classmethod
+    def _strip(cls, v: str) -> str:
+        return _clean(v)
+
+
+class ClassroomPatch(BaseModel):
+    is_open: bool | None = None
+    subject_name: str | None = Field(default=None, min_length=1, max_length=120)
+    subject_code: str | None = Field(default=None, max_length=20)
+    grade_label: str | None = Field(default=None, min_length=1, max_length=40)
+
+
+class ClassroomOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: int
+    subject_name: str
+    subject_code: str
+    grade_label: str
+    academic_year: int
+    semester: int
+    is_open: bool
+    is_trial: bool
+    student_link: str = ""
+    submitted_count: int = 0
+    roster_count: int = 0
+    evaluated_count: int = 0
+
+
+class RosterIn(BaseModel):
+    # Text pasted from Excel: one student per line, "number<TAB>name" or just "name".
+    text: str = Field(max_length=20_000)
+
+
+class RosterEntryOut(BaseModel):
+    student_no: int
+    full_name: str
+
+
+# --- Student form --------------------------------------------------------------------
+
+
+def clean_personal_info(raw: dict) -> dict:
+    """Keep only known fields, trimmed and range-checked. Raises ValueError in Thai."""
+    out: dict = {}
+    for key, value in (raw or {}).items():
+        f = PERSONAL_FIELDS.get(key)
+        if f is None or value is None or value == "":
+            continue
+        if f.kind == "number":
+            try:
+                num = float(value)
+            except (TypeError, ValueError):
+                raise ValueError(f"{f.label}: กรุณากรอกเป็นตัวเลข") from None
+            if (f.min_value is not None and num < f.min_value) or (f.max_value is not None and num > f.max_value):
+                raise ValueError(f"{f.label}: ตัวเลขไม่อยู่ในช่วงที่เป็นไปได้")
+            out[key] = int(num) if num.is_integer() and key != "prev_gpa" else round(num, 2)
+        elif f.kind == "date":
+            try:
+                d = date.fromisoformat(str(value))
+            except ValueError:
+                raise ValueError(f"{f.label}: รูปแบบวันที่ไม่ถูกต้อง") from None
+            if not (1990 <= d.year <= 2030):
+                raise ValueError(f"{f.label}: กรุณาเลือกวันเกิดเป็นปี ค.ศ. ในปฏิทิน")
+            out[key] = d.isoformat()
+        elif f.kind == "select":
+            if value not in f.options:
+                raise ValueError(f"{f.label}: ตัวเลือกไม่ถูกต้อง")
+            out[key] = value
+        else:
+            text = _clean(str(value))
+            if len(text) > f.max_len:
+                raise ValueError(f"{f.label}: ยาวเกิน {f.max_len} ตัวอักษร")
+            if text:
+                out[key] = text
+    if out.get("parent_status") != "อื่นๆ":
+        out.pop("parent_status_other", None)
+    return out
+
+
+class SubmissionIn(BaseModel):
+    student_no: int = Field(ge=1, le=200)
+    full_name: str = Field(min_length=2, max_length=120)
+    nickname: str = Field(default="", max_length=40)
+    personal_info: dict = Field(default_factory=dict)
+    open_answers: dict[str, str] = Field(default_factory=dict)
+    learning_prefs: list[str] = Field(default_factory=list)
+    consent: bool
+    # Present when a student edits answers they sent before.
+    edit_code: str | None = Field(default=None, max_length=6)
+
+    @field_validator("full_name", "nickname")
+    @classmethod
+    def _strip(cls, v: str) -> str:
+        return _clean(v)
+
+    @field_validator("consent")
+    @classmethod
+    def _must_consent(cls, v: bool) -> bool:
+        if not v:
+            raise ValueError("กรุณากดยินยอมก่อนส่งแบบฟอร์ม")
+        return v
+
+    @field_validator("personal_info")
+    @classmethod
+    def _personal(cls, v: dict) -> dict:
+        return clean_personal_info(v)
+
+    @field_validator("open_answers")
+    @classmethod
+    def _answers(cls, v: dict[str, str]) -> dict[str, str]:
+        out = {}
+        for key in OPEN_QUESTION_KEYS:
+            text = _clean(v.get(key, "") or "")
+            if len(text) > 300:
+                raise ValueError("คำตอบแต่ละข้อยาวได้ไม่เกิน 300 ตัวอักษร")
+            if text:
+                out[key] = text
+        return out
+
+    @field_validator("learning_prefs")
+    @classmethod
+    def _prefs(cls, v: list[str]) -> list[str]:
+        if len(set(v)) != len(v) or any(k not in LEARNING_METHOD_LABELS for k in v):
+            raise ValueError("การเรียงลำดับวิธีการเรียนไม่ถูกต้อง")
+        if len(v) < MIN_RANKED_METHODS:
+            raise ValueError(f"กรุณาเลือกวิธีการเรียนที่ชอบอย่างน้อย {MIN_RANKED_METHODS} อันดับ")
+        return v
+
+
+class LookupIn(BaseModel):
+    student_no: int = Field(ge=1, le=200)
+    edit_code: str = Field(min_length=6, max_length=6, pattern=r"^\d{6}$")
+
+
+class SubmissionSummary(BaseModel):
+    id: int
+    student_no: int
+    full_name: str
+    nickname: str
+    submitted_at: str
+    status: str  # submitted | evaluated
