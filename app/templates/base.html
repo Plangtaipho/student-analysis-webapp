@@ -3,13 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}วิเคราะห์ผู้เรียนรายบุคคล{% endblock %}</title>
+  <title>{% block title %}วิเคราะห์ผู้เรียนรายบุคคล{% endblock %} | KruFlow</title>
+  <link rel="icon" href="/static/img/kruflow-mark.svg" type="image/svg+xml">
+  <link rel="icon" href="/static/img/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="/static/img/apple-touch-icon.png">
   <link rel="stylesheet" href="/static/css/app.css">
 </head>
 <body {% block body_attrs %}{% endblock %}>
   <header class="topbar">
     <div class="topbar-inner">
-      <a class="brand" href="{{ '/app' if user else '/' }}"><span class="brand-mark" aria-hidden="true">วผ</span><span class="brand-text">วิเคราะห์ผู้เรียน</span></a>
+      <a class="brand" href="{{ '/app' if user else '/' }}"><img class="brand-logo" src="/static/img/kruflow-mark-on-dark.svg" alt="" width="34" height="29"><span class="brand-word" aria-label="KruFlow"><span>KRU</span><b>FLOW</b></span><span class="brand-text">วิเคราะห์ผู้เรียน</span></a>
       <nav class="nav" aria-label="เมนูหลัก">
         {% block nav %}
         {% if user %}
