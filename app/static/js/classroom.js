@@ -7,7 +7,7 @@
 
   function renderRoom() {
     $("room-title").textContent = room.subject_name;
-    $("room-sub").textContent = `${room.grade_label} · ภาคเรียนที่ ${room.semester}/${room.academic_year}${room.subject_code ? " · " + room.subject_code : ""}`;
+    $("room-sub").textContent = `${room.grade_label}  ภาคเรียนที่ ${room.semester}/${room.academic_year}${room.subject_code ? "  รหัสวิชา " + room.subject_code : ""}`;
     $("room-link").value = room.student_link;
     $("room-open-link").href = room.student_link;
     const st = $("room-status");
@@ -18,6 +18,8 @@
     $("stat-submitted").textContent = room.submitted_count;
     $("stat-roster").textContent = room.roster_count || "-";
     $("stat-evaluated").textContent = room.evaluated_count;
+    const base = room.roster_count || room.submitted_count;
+    $("eval-progress").value = base ? Math.round((room.evaluated_count / base) * 100) : 0;
     $("pdf-all").classList.toggle("hidden", room.submitted_count === 0);
     $("summary-link").href = `/app/classrooms/${id}/summary`;
   }
@@ -44,16 +46,17 @@
         : "";
       const actions = r.id
         ? `${evalBtn}
-           ${r.by_teacher ? "" : `<a class="btn btn-sm" href="/app/classrooms/${id}/submissions/${r.id}">ดูคำตอบ</a>
-           <button class="btn btn-sm" data-code="${r.id}" data-no="${r.student_no}">รหัสแก้ไขใหม่</button>`}
-           <button class="btn btn-sm btn-danger" data-del="${r.id}" data-no="${r.student_no}">ลบ</button>`
+           ${r.by_teacher ? "" : `<a class="btn btn-sm" href="/app/classrooms/${id}/submissions/${r.id}">ดูคำตอบ</a>`}
+           <details class="row-menu"><summary class="btn btn-sm" aria-label="ตัวเลือกเพิ่มเติมของเลขที่ ${r.student_no}">อื่นๆ</summary><div class="menu-pop">
+             ${r.by_teacher ? "" : `<button class="btn btn-sm" data-code="${r.id}" data-no="${r.student_no}">ออกรหัสแก้ไขใหม่</button>`}
+             <button class="btn btn-sm btn-danger" data-del="${r.id}" data-no="${r.student_no}">ลบคำตอบนี้</button>
+           </div></details>`
         : `<button class="btn btn-sm" data-manual="${r.student_no}" data-name="${API.esc(r.full_name)}">ครูประเมินเอง</button>`;
       const byTeacher = r.by_teacher ? ' <span class="badge badge-missing">ครูเพิ่มเอง</span>' : "";
       return `<tr>
         <td class="num">${r.student_no}</td>
-        <td>${name}${warn}${byTeacher}</td>
+        <td class="who">${name}${warn}${byTeacher}${r.submitted_at ? `<span class="when">ส่งเมื่อ ${API.thaiDateTime(r.submitted_at)}</span>` : ""}</td>
         <td><span class="badge ${cls}">${label}</span></td>
-        <td class="small muted">${r.submitted_at ? API.thaiDateTime(r.submitted_at) : ""}</td>
         <td><div class="row">${actions}</div></td>
       </tr>`;
     }).join("");

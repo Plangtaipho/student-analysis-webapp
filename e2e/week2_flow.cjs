@@ -1,5 +1,6 @@
 // End-to-end check of the week-2 flow (teacher evaluation, class summary, full PDF).
-// Prepare data first:  DATABASE_URL=... python -m scripts.seed_demo   (19 students, 17 assessed)
+// Prepare data first on an empty database (the demo room must be room 1):
+//   DATABASE_URL=... python -m scripts.seed_demo   (19 students, 17 assessed)
 // Usage: BASE_URL=http://localhost:8077 node e2e/week2_flow.cjs
 const { chromium, devices } = require("playwright");
 const fs = require("fs");

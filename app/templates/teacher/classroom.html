@@ -2,77 +2,84 @@
 {% block title %}ห้องเรียน{% endblock %}
 {% block body_attrs %}data-classroom-id="{{ classroom_id }}"{% endblock %}
 {% block content %}
-<p class="small"><a href="/app">← ห้องเรียนของฉัน</a></p>
-<div class="row mb-4">
+<a class="back" href="/app">← ห้องเรียนของฉัน</a>
+<div class="page-head">
   <div>
     <h1 id="room-title">กำลังโหลด…</h1>
-    <div class="muted" id="room-sub"></div>
+    <div class="sub" id="room-sub"></div>
   </div>
-  <span class="spacer"></span>
-  <span id="trial-badge" class="badge badge-trial hidden">ห้องทดลองใช้</span>
-  <span id="room-status" class="badge"></span>
+  <div class="tools">
+    <span id="trial-badge" class="badge badge-trial hidden">ห้องทดลองใช้</span>
+    <span id="room-status" class="badge"></span>
+  </div>
 </div>
 
-<div class="grid grid-2">
-  <section class="card">
-    <h2>ลิงก์สำหรับนักเรียน</h2>
-    <p class="muted small">ส่งลิงก์หรือให้นักเรียนสแกน QR นี้ นักเรียนไม่ต้องสมัคร</p>
-    <div class="link-box"><input id="room-link" readonly aria-label="ลิงก์แบบฟอร์ม"><button class="btn" id="copy-link" type="button">คัดลอก</button></div>
-    <div class="row mt-3 align-start">
-      <img id="qr-img" class="qr" alt="QR Code ลิงก์แบบฟอร์ม">
-      <div class="grid gap-2">
-        <a class="btn btn-sm" id="room-open-link" target="_blank" rel="noopener">ดูหน้าที่นักเรียนเห็น</a>
-        <button class="btn btn-sm" id="toggle-open" type="button"></button>
+<div class="split">
+  <div>
+    <section class="card">
+      <div class="card-head"><h2>นักเรียน</h2></div>
+      <div id="subs-empty" class="empty-state hidden">ยังไม่มีนักเรียนส่ง ส่งลิงก์หรือ QR ทางขวาให้นักเรียน แล้วรายชื่อจะขึ้นที่นี่</div>
+      <div class="list-wrap">
+        <table class="list">
+          <thead><tr><th>เลขที่</th><th>ชื่อ-สกุล</th><th>สถานะ</th><th></th></tr></thead>
+          <tbody id="subs-body"></tbody>
+        </table>
       </div>
-    </div>
-  </section>
-  <section class="card">
-    <h2>ความคืบหน้า</h2>
-    <div class="stat">
-      <div><b id="stat-submitted">0</b><span class="muted small">ส่งแล้ว</span></div>
-      <div><b id="stat-roster">-</b><span class="muted small">ในรายชื่อ</span></div>
-      <div><b id="stat-evaluated">0</b><span class="muted small">ประเมินแล้ว</span></div>
-    </div>
-    <div class="row mt-3 gap-2">
-      <a class="btn btn-primary btn-sm hidden" id="eval-start">เริ่มประเมิน</a>
-      <a class="btn btn-sm" id="summary-link">ดูสรุปผล + ออกรายงาน</a>
-      <a class="btn btn-sm hidden" id="pdf-all" target="_blank" rel="noopener">PDF รายบุคคล (ทุกคนที่ส่ง)</a>
-    </div>
-  </section>
-</div>
+      <details class="more">
+        <summary>เพิ่มนักเรียนที่ไม่ได้กรอกแบบฟอร์ม เพื่อให้ครูประเมินเอง</summary>
+        <form id="manual-form" class="row mt-3 align-start">
+          <input name="student_no" type="number" min="1" max="200" required placeholder="เลขที่" aria-label="เลขที่" class="w-num">
+          <input name="full_name" required minlength="2" maxlength="120" placeholder="ชื่อ-สกุล" aria-label="ชื่อ-สกุล" class="w-name">
+          <button class="btn" type="submit">เพิ่ม</button>
+        </form>
+        <div id="manual-error" class="alert alert-error hidden" role="alert"></div>
+      </details>
+    </section>
 
-<section class="card">
-  <div class="card-head"><h2>นักเรียน</h2></div>
-  <div id="subs-empty" class="alert alert-info hidden">ยังไม่มีนักเรียนส่ง เมื่อนักเรียนส่งแบบฟอร์มจะขึ้นที่นี่</div>
-  <div class="table-wrap">
-    <table class="list">
-      <thead><tr><th>เลขที่</th><th>ชื่อ-สกุล</th><th>สถานะ</th><th>ส่งเมื่อ</th><th></th></tr></thead>
-      <tbody id="subs-body"></tbody>
-    </table>
-  </div>
-  <details class="mt-4">
-    <summary>เพิ่มนักเรียนที่ไม่ได้กรอกแบบฟอร์ม (เช่น ไม่มีโทรศัพท์) เพื่อให้ครูประเมินได้</summary>
-    <form id="manual-form" class="row mt-3 align-start">
-      <input name="student_no" type="number" min="1" max="200" required placeholder="เลขที่" aria-label="เลขที่" class="w-num">
-      <input name="full_name" required minlength="2" maxlength="120" placeholder="ชื่อ-สกุล" aria-label="ชื่อ-สกุล" class="w-name">
-      <button class="btn" type="submit">เพิ่ม</button>
+    <form class="card" id="roster-form">
+      <h2>รายชื่อนักเรียน <span class="tag">ไม่บังคับ</span></h2>
+      <p class="muted small">ใส่รายชื่อแล้วระบบจะบอกได้ว่าใครยังไม่ส่ง และกันการกรอกเลขที่ผิด คัดลอกคอลัมน์เลขที่และชื่อจาก Excel มาวางได้เลย บรรทัดละ 1 คน</p>
+      <textarea id="roster-text" rows="8" aria-label="รายชื่อนักเรียน" placeholder="1	นายนนทพัทธ์ ภูแซมโชติ&#10;2	นางสาวสุดธิดา ทองคำแสน"></textarea>
+      <div id="roster-error" class="alert alert-error hidden" role="alert"></div>
+      <button class="btn mt-3" type="submit">บันทึกรายชื่อ</button>
     </form>
-    <div id="manual-error" class="alert alert-error hidden" role="alert"></div>
-  </details>
-</section>
 
-<form class="card" id="roster-form">
-  <h2>รายชื่อนักเรียน <span class="tag">ไม่บังคับ</span></h2>
-  <p class="muted small">ใส่รายชื่อแล้วระบบจะบอกได้ว่าใครยังไม่ส่ง และกันการกรอกเลขที่ผิด คัดลอกคอลัมน์เลขที่และชื่อจาก Excel มาวางได้เลย บรรทัดละ 1 คน</p>
-  <textarea id="roster-text" rows="8" aria-label="รายชื่อนักเรียน" placeholder="1	นายนนทพัทธ์ ภูแซมโชติ&#10;2	นางสาวสุดธิดา ทองคำแสน"></textarea>
-  <div id="roster-error" class="alert alert-error hidden" role="alert"></div>
-  <button class="btn mt-3" type="submit">บันทึกรายชื่อ</button>
-</form>
+    <section class="card danger-zone">
+      <h2>ลบห้องเรียน</h2>
+      <p class="muted small">ลบห้องและคำตอบของนักเรียนทั้งหมดในห้องนี้ กู้คืนไม่ได้</p>
+      <button class="btn btn-danger" id="delete-room" type="button">ลบห้องนี้</button>
+    </section>
+  </div>
 
-<section class="card">
-  <h2>ลบห้องเรียน</h2>
-  <p class="muted small">ลบห้องและคำตอบของนักเรียนทั้งหมดในห้องนี้ กู้คืนไม่ได้</p>
-  <button class="btn btn-danger" id="delete-room" type="button">ลบห้องนี้</button>
-</section>
+  <aside class="split-side">
+    <section class="card next-step">
+      <h2>ความคืบหน้า</h2>
+      <div class="stat">
+        <div><b id="stat-submitted">0</b><span class="muted small">ส่งแล้ว</span></div>
+        <div><b id="stat-roster">-</b><span class="muted small">ในรายชื่อ</span></div>
+        <div><b id="stat-evaluated">0</b><span class="muted small">ประเมินแล้ว</span></div>
+      </div>
+      <progress class="progress mt-3" id="eval-progress" max="100" value="0" aria-label="ประเมินแล้ว"></progress>
+      <div class="side-actions mt-4">
+        <a class="btn btn-primary hidden" id="eval-start">ประเมินคนถัดไป</a>
+        <a class="btn" id="summary-link">ดูสรุปผลและออกรายงาน</a>
+        <a class="btn hidden" id="pdf-all" target="_blank" rel="noopener">PDF รายบุคคลทุกคน</a>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>ลิงก์สำหรับนักเรียน</h2>
+      <p class="muted small">ส่งลิงก์เข้ากลุ่มไลน์ หรือให้นักเรียนสแกน QR นักเรียนไม่ต้องสมัคร</p>
+      <div class="link-box"><input id="room-link" readonly aria-label="ลิงก์แบบฟอร์ม"><button class="btn btn-sm" id="copy-link" type="button">คัดลอก</button></div>
+      <div class="qr-wrap">
+        <img id="qr-img" class="qr" alt="QR Code ลิงก์แบบฟอร์ม">
+        <div class="side-actions">
+          <a class="btn btn-sm" id="room-open-link" target="_blank" rel="noopener">ดูหน้าที่นักเรียนเห็น</a>
+          <button class="btn btn-sm" id="toggle-open" type="button"></button>
+        </div>
+      </div>
+    </section>
+  </aside>
+</div>
 {% endblock %}
 {% block scripts %}<script src="/static/js/classroom.js"></script>{% endblock %}

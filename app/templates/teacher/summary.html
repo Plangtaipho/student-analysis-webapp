@@ -2,9 +2,10 @@
 {% block title %}สรุปผลการวิเคราะห์{% endblock %}
 {% block body_attrs %}data-classroom-id="{{ classroom_id }}"{% endblock %}
 {% block content %}
-<p class="small"><a href="/app/classrooms/{{ classroom_id }}">← กลับไปหน้าห้องเรียน</a></p>
-<div class="row mb-4">
-  <div><h1>สรุปผลการวิเคราะห์ผู้เรียน</h1><div class="muted" id="sum-sub"></div></div>
+<a class="back" href="/app/classrooms/{{ classroom_id }}">← กลับไปหน้าห้องเรียน</a>
+<div class="page-head">
+  <div><h1>สรุปผลการวิเคราะห์ผู้เรียน</h1><div class="sub" id="sum-sub"></div></div>
+  <div class="tools"><a class="btn btn-primary" href="#memo-form">ออกรายงาน PDF</a></div>
 </div>
 
 <div id="sum-warn" class="alert alert-warn hidden"></div>
@@ -32,13 +33,13 @@
 
 <section class="card">
   <h2>กลุ่มผู้เรียน</h2>
-  <p class="muted small">ใช้เกณฑ์ตั้งต้นชั่วคราว: ค่าเฉลี่ย (ดี=3 ปานกลาง=2 ปรับปรุง=1) ตั้งแต่ 2.5 = พร้อมสูง, ต่ำกว่า 1.5 = ไม่มีความพร้อม, นอกนั้น = ปานกลาง · "บกพร่องทางการเรียนรู้" ครูเลือกเองในหน้าประเมิน และเปลี่ยนกลุ่มของแต่ละคนเองได้</p>
+  <p class="muted small">จัดกลุ่มด้วยเกณฑ์ตั้งต้นชั่วคราว: ค่าเฉลี่ย (ดี=3 ปานกลาง=2 ปรับปรุง=1) ตั้งแต่ 2.5 คือพร้อมสูง ต่ำกว่า 1.5 คือไม่มีความพร้อม นอกนั้นคือปานกลาง กลุ่มบกพร่องทางการเรียนรู้ครูเลือกเองในหน้าประเมิน และเปลี่ยนกลุ่มของแต่ละคนได้</p>
   <div class="group-cols" id="groups"></div>
 </section>
 
 <form class="card" id="memo-form">
   <h2>ออกรายงานฉบับเต็ม (PDF)</h2>
-  <p class="muted small">ไฟล์เดียวมีครบ: บันทึกข้อความ, แบบสรุปผล, กลุ่มผู้เรียน และแบบบันทึกรายบุคคลของนักเรียนที่ประเมินแล้ว · ช่องที่เว้นว่างจะใช้ค่าตั้งต้น</p>
+  <p class="muted small">ไฟล์เดียวมีครบ: บันทึกข้อความ แบบสรุปผล กลุ่มผู้เรียน และแบบบันทึกรายบุคคลของนักเรียนที่ประเมินแล้ว ช่องที่เว้นว่างจะใช้ค่าตั้งต้น</p>
   <div class="fields">
     <div class="field half"><label for="doc_no">ที่ (เลขที่หนังสือ)</label><input id="doc_no" name="doc_no" maxlength="60" placeholder="เช่น ๔๑๗/๒๕๖๙"></div>
     <div class="field half"><label for="doc_date">วันที่</label><input id="doc_date" name="doc_date" type="date"></div>

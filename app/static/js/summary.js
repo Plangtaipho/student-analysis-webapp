@@ -7,7 +7,7 @@
   try {
     await API.loadMe();
     const [room, s] = await Promise.all([API.get(`/api/classrooms/${id}`), API.get(`/api/classrooms/${id}/summary`)]);
-    $("sum-sub").textContent = `${room.subject_name} · ${room.grade_label} · ภาคเรียนที่ ${room.semester}/${room.academic_year}`;
+    $("sum-sub").textContent = `${room.subject_name}  ${room.grade_label}  ภาคเรียนที่ ${room.semester}/${room.academic_year}`;
     $("st-size").textContent = s.class_size;
     $("st-submitted").textContent = s.submitted;
     $("st-evaluated").textContent = s.evaluated;
@@ -27,7 +27,7 @@
         return `<tr><td>${API.esc(it.label)}</td>${cells.map((c) => `<td class="n">${c}</td>`).join("")}</tr>`;
       }).join("")}`).join("");
     $("groups").innerHTML = s.groups.map((g) => `
-      <div><h3>${API.esc(g.label)} <span class="badge badge-submitted">${g.students.length}</span></h3>
+      <div><h3>${API.esc(g.label)}</h3><div class="group-count">${g.students.length} คน</div>
       ${g.students.length ? `<ol>${g.students.map((st) => `<li>${API.esc(st.full_name)} <span class="muted small">(เลขที่ ${st.student_no})</span></li>`).join("")}</ol>` : '<p class="muted small">-</p>'}
       </div>`).join("");
   } catch (e) { API.toast(e.message); }

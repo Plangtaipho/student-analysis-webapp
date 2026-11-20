@@ -2,8 +2,9 @@
 {% block title %}ข้อมูลครู{% endblock %}
 {% block container_class %}form-container{% endblock %}
 {% block content %}
-<h1>ข้อมูลครู</h1>
-<p class="muted">ข้อมูลนี้จะพิมพ์ในหัวรายงานและบันทึกข้อความ · บัญชี <span id="email"></span></p>
+<div class="page-head">
+  <div><h1>ข้อมูลครู</h1><div class="sub">ชื่อ ตำแหน่ง และโรงเรียนจะพิมพ์ในหัวรายงานและบันทึกข้อความ บัญชี <span id="email"></span></div></div>
+</div>
 <form id="profile-form" class="card">
   <div class="fields">
     <div class="field half"><label for="full_name">ชื่อ-สกุล</label><input id="full_name" name="full_name" required maxlength="120" placeholder="นางพรธิดา โพธิ์สิงห์"></div>

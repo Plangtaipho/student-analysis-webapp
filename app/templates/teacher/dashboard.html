@@ -1,13 +1,12 @@
 {% extends "base.html" %}
 {% block title %}ห้องเรียนของฉัน{% endblock %}
 {% block content %}
-<div class="row mb-4">
+<div class="page-head">
   <div>
     <h1>ห้องเรียนของฉัน</h1>
-    <div class="muted">{{ user.full_name }} · {{ user.school_name }}</div>
+    <div class="sub">{{ user.full_name }}, {{ user.school_name }}</div>
   </div>
-  <span class="spacer"></span>
-  <button class="btn btn-primary" id="new-room-toggle" type="button">+ สร้างห้องใหม่</button>
+  <div class="tools"><button class="btn btn-primary" id="new-room-toggle" type="button">สร้างห้องใหม่</button></div>
 </div>
 
 <form id="new-room-form" class="card hidden">
@@ -24,7 +23,7 @@
   <div class="row mt-4"><button class="btn btn-primary" type="submit">สร้างห้อง</button></div>
 </form>
 
-<div id="rooms-empty" class="alert alert-info hidden">ยังไม่มีห้องเรียน เริ่มจากสร้างห้องแรก (ห้องแรกทดลองใช้ฟรี)</div>
-<div id="rooms" class="grid grid-2"></div>
+<div id="rooms-empty" class="empty-state hidden">ยังไม่มีห้องเรียน กรอกข้อมูลด้านบนเพื่อสร้างห้องแรก ห้องแรกใช้ฟรี</div>
+<div id="rooms" class="rooms"></div>
 {% endblock %}
 {% block scripts %}<script src="/static/js/dashboard.js"></script>{% endblock %}

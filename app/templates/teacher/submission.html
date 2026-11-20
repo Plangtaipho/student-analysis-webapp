@@ -3,11 +3,10 @@
 {% block body_attrs %}data-classroom-id="{{ classroom_id }}" data-submission-id="{{ submission_id }}"{% endblock %}
 {% block container_class %}form-container{% endblock %}
 {% block content %}
-<p class="small"><a href="/app/classrooms/{{ classroom_id }}">← กลับไปหน้าห้องเรียน</a></p>
-<div class="row mb-4">
-  <div><h1 id="s-title">กำลังโหลด…</h1><div class="muted small" id="s-time"></div></div>
-  <span class="spacer"></span>
-  <a class="btn btn-primary" id="eval-link">ประเมิน</a> <a class="btn" id="pdf-one" target="_blank" rel="noopener">PDF</a>
+<a class="back" href="/app/classrooms/{{ classroom_id }}">← กลับไปหน้าห้องเรียน</a>
+<div class="page-head">
+  <div><h1 id="s-title">กำลังโหลด…</h1><div class="sub small" id="s-time"></div></div>
+  <div class="tools"><a class="btn" id="pdf-one" target="_blank" rel="noopener">PDF รายบุคคล</a><a class="btn btn-primary" id="eval-link">ประเมิน</a></div>
 </div>
 {% for section in sections %}
 <section class="card">

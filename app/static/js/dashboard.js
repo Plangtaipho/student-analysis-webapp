@@ -10,18 +10,19 @@
     const pct = r.submitted_count && r.roster_count ? Math.min(100, Math.round((r.submitted_count / r.roster_count) * 100)) : 0;
     return `
       <a class="card room-card" href="/app/classrooms/${r.id}">
-        <div class="row">
-          <h3>${API.esc(r.subject_name)}</h3>
-          <span class="spacer"></span>
-          ${r.is_trial ? '<span class="badge badge-trial">ห้องทดลองใช้</span>' : ""}
-          <span class="badge ${r.is_open ? "badge-open" : "badge-closed"}">${r.is_open ? "เปิดรับคำตอบ" : "ปิดรับแล้ว"}</span>
+        <span class="folder-tab">${API.esc(r.grade_label)}</span>
+
+        <h3>${API.esc(r.subject_name)}</h3>
+        <div class="muted small">${r.subject_code ? API.esc(r.subject_code) + ", " : ""}ภาคเรียนที่ ${r.semester}/${r.academic_year}</div>
+        <div class="stamps">
+          ${r.is_trial ? '<span class="badge badge-trial">ทดลองใช้</span>' : ""}
+          <span class="badge ${r.is_open ? "badge-open" : "badge-closed"}">${r.is_open ? "เปิดรับ" : "ปิดรับแล้ว"}</span>
         </div>
-        <div class="muted">${API.esc(r.grade_label)} · ภาคเรียนที่ ${r.semester}/${r.academic_year}</div>
-        <div class="stat mt-2">
-          <div><b>${r.submitted_count}${r.roster_count ? `<span class="muted small"> / ${r.roster_count}</span>` : ""}</b><span class="muted small">ส่งแล้ว</span></div>
-          <div><b>${r.evaluated_count}</b><span class="muted small">ประเมินแล้ว</span></div>
+        <div class="counts">
+          <div><b>${r.submitted_count}${r.roster_count ? `<small class="muted"> / ${r.roster_count}</small>` : ""}</b><span>ส่งแบบฟอร์มแล้ว</span></div>
+          <div><b>${r.evaluated_count}</b><span>ครูประเมินแล้ว</span></div>
         </div>
-        ${r.roster_count ? `<progress class="progress mt-2" max="100" value="${pct}" aria-label="ส่งแล้ว ${pct}%"></progress>` : ""}
+        ${r.roster_count ? `<progress class="progress" max="100" value="${pct}" aria-label="ส่งแล้ว ${pct}%"></progress>` : ""}
       </a>`;
   }
 

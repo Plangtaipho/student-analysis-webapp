@@ -9,7 +9,7 @@
 <body {% block body_attrs %}{% endblock %}>
   <header class="topbar">
     <div class="topbar-inner">
-      <a class="brand" href="{{ '/app' if user else '/' }}"><span class="brand-mark" aria-hidden="true">วผ</span>วิเคราะห์ผู้เรียน</a>
+      <a class="brand" href="{{ '/app' if user else '/' }}"><span class="brand-mark" aria-hidden="true">วผ</span><span class="brand-text">วิเคราะห์ผู้เรียน</span></a>
       <nav class="nav" aria-label="เมนูหลัก">
         {% block nav %}
         {% if user %}

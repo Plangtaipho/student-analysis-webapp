@@ -13,6 +13,7 @@
 | Frontend | HTML + CSS + JavaScript (ไม่มี build step) ผ่าน Jinja2 templates |
 | Database | MySQL 8 (production บน Railway), SQLite (เครื่อง dev / เทสต์) |
 | PDF | WeasyPrint + ฟอนต์ Sarabun (OFL, อยู่ใน `app/static/fonts`) |
+| ฟอนต์หน้าเว็บ | IBM Plex Sans Thai Looped (OFL, เก็บในเครื่อง ไม่โหลดจากภายนอก) |
 | QR Code | segno |
 | Hosting | Railway (Dockerfile) |
 
@@ -66,6 +67,7 @@ python -m pytest -q                                   # unit + API tests
 BASE_URL=http://localhost:8000 node e2e/week1_flow.cjs # เบราว์เซอร์จริง (ต้องติดตั้ง playwright)
 python -m scripts.seed_demo                           # ข้อมูลตัวอย่าง: demo@example.com / demo12345
 BASE_URL=http://localhost:8000 node e2e/week2_flow.cjs # ประเมิน → สรุป → PDF ฉบับเต็ม
+BASE_URL=http://localhost:8000 node e2e/screens.cjs     # ถ่ายภาพทุกหน้า (จอคอม + มือถือ) ไว้ตรวจหน้าตา
 ```
 
 ## Environment variables

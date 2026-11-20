@@ -25,23 +25,24 @@
   <title>แบบวิเคราะห์ผู้เรียน · {{ room.subject_name }}</title>
   <link rel="stylesheet" href="/static/css/app.css">
 </head>
-<body>
-<main class="container form-container" id="student-app" data-token="{{ token }}" data-min-ranked="{{ min_ranked }}">
-  <header class="form-hero">
+<body class="student-body">
+<header class="form-hero">
+  <div class="form-hero-inner">
+    <p class="kicker">{{ room.school_name }}</p>
     <h1>แบบบันทึกการวิเคราะห์ผู้เรียนเป็นรายบุคคล</h1>
-    <p>วิชา {{ room.subject_name }}{% if room.subject_code %} ({{ room.subject_code }}){% endif %} · {{ room.grade_label }}</p>
-    <p>ภาคเรียนที่ {{ room.semester }}/{{ room.academic_year }} · {{ room.teacher_name }} · {{ room.school_name }}</p>
-  </header>
+    <p>วิชา{{ room.subject_name }}{% if room.subject_code %} ({{ room.subject_code }}){% endif %} {{ room.grade_label }} ภาคเรียนที่ {{ room.semester }}/{{ room.academic_year }}</p>
+    <p>{{ room.teacher_name }}</p>
+  </div>
+</header>
+<main class="container form-container student-main" id="student-app" data-token="{{ token }}" data-min-ranked="{{ min_ranked }}">
 
   {% if not room.is_open %}
   <div class="card"><h2>ปิดรับคำตอบแล้ว</h2><p class="muted">ครูปิดรับแบบฟอร์มของห้องนี้แล้ว หากยังไม่ได้ส่งหรือต้องการแก้ไข กรุณาติดต่อครูผู้สอน</p></div>
   {% else %}
 
-  <div id="edit-entry" class="card">
-    <div class="row">
-      <span class="muted small">เคยส่งแล้วและต้องการแก้ไข?</span>
-      <button class="btn btn-sm" id="edit-open" type="button">แก้ไขคำตอบเดิม</button>
-    </div>
+  <div id="edit-entry" class="card edit-entry">
+    <span class="muted small">เคยส่งแล้ว อยากแก้คำตอบ?</span>
+    <button class="btn btn-sm" id="edit-open" type="button">แก้ไขคำตอบเดิม</button>
     <form id="lookup-form" class="hidden mt-3">
       <div class="fields">
         <div class="field half"><label for="l-no">เลขที่</label><input id="l-no" name="student_no" type="number" inputmode="numeric" min="1" max="200" required></div>
@@ -54,7 +55,7 @@
 
   <div id="edit-banner" class="alert alert-info hidden">กำลังแก้ไขคำตอบเดิม เมื่อแก้เสร็จให้กดส่งอีกครั้งที่ขั้นตอนสุดท้าย</div>
 
-  <form id="sform" class="card" novalidate>
+  <form id="sform" class="card ruled" novalidate>
     <div class="step-title" id="step-count"></div>
     <div class="steps" id="steps" aria-hidden="true"></div>
 
@@ -119,7 +120,7 @@
     </div>
   </form>
 
-  <section id="done" class="card hidden" aria-live="polite">
+  <section id="done" class="card ruled hidden" aria-live="polite">
     <h2>ส่งเรียบร้อยแล้ว ✓</h2>
     <p id="done-name"></p>
     <div id="done-new">

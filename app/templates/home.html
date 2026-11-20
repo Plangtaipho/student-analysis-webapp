@@ -1,18 +1,37 @@
 {% extends "base.html" %}
 {% block content %}
-<section class="card hero-card">
-  <h1>วิเคราะห์ผู้เรียนรายบุคคล เสร็จในเว็บเดียว</h1>
-  <p class="muted measure">นักเรียนกรอกแบบวิเคราะห์ตนเองผ่านมือถือ ครูประเมินรายคนได้เร็ว แล้วระบบสรุปจำนวนและร้อยละ พร้อมส่งออก PDF ตามแบบฟอร์มที่ฝ่ายวิชาการใช้</p>
-  <div class="row mt-4">
-    <a class="btn btn-primary" href="/register">เริ่มใช้งาน (ทดลองฟรี 1 ห้อง)</a>
-    <a class="btn" href="/login">เข้าสู่ระบบ</a>
+<section class="hero">
+  <div>
+    <h1><span class="nobr">งานวิเคราะห์ผู้เรียน</span> <span class="nobr">รายบุคคล</span> <span class="nobr">จบได้ในเย็นเดียว</span></h1>
+    <p class="lead">ส่งลิงก์ให้นักเรียนกรอกแบบบันทึกเองบนมือถือ ครูกดประเมิน 16 ข้อต่อคน แล้วดาวน์โหลดรายงานฉบับเต็ม ทั้งบันทึกข้อความ ตารางสรุปร้อยละ และกลุ่มผู้เรียน พร้อมส่งฝ่ายวิชาการ</p>
+    <div class="row mt-4">
+      <a class="btn btn-primary" href="/register">สมัครแล้วลองห้องแรกฟรี</a>
+      <a class="btn" href="/login">เข้าสู่ระบบ</a>
+    </div>
+    <p class="price">ใช้ได้ทุกห้องที่สอน <b>149 บาท</b> ต่อภาคเรียน</p>
+  </div>
+  <div class="doc-mock" aria-hidden="true">
+    <h3>แบบสรุปผลการวิเคราะห์ผู้เรียน</h3>
+    <div class="doc-sub">ม.6/1 วิชาคณิตศาสตร์พื้นฐาน จำนวน 38 คน</div>
+    <table>
+      <tr><th>รายการวิเคราะห์</th><th>ดี</th><th>ปานกลาง</th><th>ปรับปรุง</th></tr>
+      <tr class="dom"><td colspan="4">1. ด้านความรู้ความสามารถ</td></tr>
+      <tr><td>ความรู้พื้นฐาน</td><td class="n">36.84</td><td class="n">57.89</td><td class="n">5.26</td></tr>
+      <tr><td>การแก้ปัญหา</td><td class="n">31.58</td><td class="n">60.53</td><td class="n">7.89</td></tr>
+      <tr class="dom"><td colspan="4">3. ความพร้อมด้านพฤติกรรม</td></tr>
+      <tr><td>ความรับผิดชอบ</td><td class="n">44.74</td><td class="n">47.37</td><td class="n">7.89</td></tr>
+      <tr><td>การควบคุมอารมณ์</td><td class="n">39.47</td><td class="n">55.26</td><td class="n">5.26</td></tr>
+    </table>
+    <div class="doc-sign">ลงชื่อ ........................ ครูผู้สอน</div>
+    <div class="stamp-big">พร้อมส่ง<small>ฝ่ายวิชาการ</small></div>
   </div>
 </section>
-<div class="grid grid-2">
-  <div class="card"><h3>1. สร้างห้องรายวิชา</h3><p class="muted">ได้ลิงก์และ QR Code ส่งให้นักเรียนในกลุ่มไลน์ห้อง</p></div>
-  <div class="card"><h3>2. นักเรียนกรอกเอง</h3><p class="muted">ไม่ต้องสมัคร กรอกบนมือถือได้ แก้ไขได้ด้วยรหัสของตัวเอง</p></div>
-  <div class="card"><h3>3. ครูประเมินรายคน</h3><p class="muted">เห็นคำตอบนักเรียนข้างแบบประเมิน 5 ด้าน กดเลือกได้ทันที</p></div>
-  <div class="card"><h3>4. ได้รายงาน PDF</h3><p class="muted">สรุปจำนวน ร้อยละ กลุ่มผู้เรียน และบันทึกข้อความ พร้อมส่ง</p></div>
-</div>
-<p class="small muted"><a href="/privacy">นโยบายความเป็นส่วนตัว</a></p>
+
+<ol class="steps-line">
+  <li><h3>สร้างห้องรายวิชา</h3><p>ได้ลิงก์และ QR Code ส่งเข้ากลุ่มไลน์ห้องได้ทันที</p></li>
+  <li><h3>นักเรียนกรอกเอง</h3><p>ไม่ต้องสมัคร กรอกบนมือถือ แก้ไขภายหลังได้ด้วยรหัสของตัวเอง</p></li>
+  <li><h3>ครูประเมินรายคน</h3><p>เห็นคำตอบนักเรียนข้างแบบประเมิน 5 ด้าน กดเลือกทีละข้อหรือทั้งหมดได้</p></li>
+  <li><h3>ดาวน์โหลดรายงาน</h3><p>PDF ไฟล์เดียว ตรงตามแบบที่ฝ่ายวิชาการใช้ พิมพ์ส่งได้เลย</p></li>
+</ol>
+<p class="foot"><a href="/privacy">นโยบายความเป็นส่วนตัว</a></p>
 {% endblock %}

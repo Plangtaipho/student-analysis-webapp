@@ -1,4 +1,12 @@
 // Assess one student on the 16 items, with their answers alongside.
+// Student answers: open beside the form on wide screens, folded above it on phones.
+{
+  const side = document.getElementById("eval-side");
+  const wide = window.matchMedia("(min-width: 960px)");
+  const sync = () => { if (wide.matches) side.open = true; };
+  sync();
+  wide.addEventListener("change", sync);
+}
 (async function () {
   const { classroomId, submissionId } = document.body.dataset;
   const base = `/api/classrooms/${classroomId}/submissions/${submissionId}`;

@@ -2,17 +2,15 @@
 {% block title %}ประเมินผู้เรียน{% endblock %}
 {% block body_attrs %}data-classroom-id="{{ classroom_id }}" data-submission-id="{{ submission_id }}"{% endblock %}
 {% block content %}
-<p class="small"><a href="/app/classrooms/{{ classroom_id }}">← กลับไปหน้าห้องเรียน</a></p>
-<div class="row mb-4">
-  <div><h1 id="e-title">กำลังโหลด…</h1><div class="muted small" id="e-status"></div></div>
-  <span class="spacer"></span>
-  <a class="btn btn-sm" id="e-prev">← คนก่อน</a>
-  <a class="btn btn-sm" id="e-next">คนถัดไป →</a>
+<a class="back" href="/app/classrooms/{{ classroom_id }}">← กลับไปหน้าห้องเรียน</a>
+<div class="page-head">
+  <div><h1 id="e-title">กำลังโหลด…</h1><div class="sub small" id="e-status"></div></div>
+  <div class="tools"><a class="btn btn-sm" id="e-prev">คนก่อน</a><a class="btn btn-sm" id="e-next">คนถัดไป</a></div>
 </div>
 
 <div class="eval-layout">
-  <aside class="card eval-side">
-    <h2>คำตอบของนักเรียน</h2>
+  <details class="card eval-side" id="eval-side">
+    <summary><h2>คำตอบของนักเรียน</h2></summary>
     <div id="no-form" class="alert alert-info hidden">ครูเพิ่มรายชื่อนี้เอง นักเรียนไม่ได้กรอกแบบฟอร์ม</div>
     <div id="answers">
       <div class="qa"><div class="muted">อายุ / GPA ปีที่ผ่านมา</div><div id="a-basic">-</div></div>
@@ -24,12 +22,12 @@
       <div class="qa"><div class="muted">วิธีเรียนที่ชอบ (3 อันดับแรก)</div><div id="a-prefs">-</div></div>
       <a class="small" id="a-full" target="_blank" rel="noopener">ดูคำตอบทั้งหมด</a>
     </div>
-  </aside>
+  </details>
 
   <form class="card" id="eval-form" novalidate>
     <div class="card-head">
       <h2>3. การวิเคราะห์ผู้เรียนเป็นรายบุคคล</h2>
-      <div class="row gap-2">
+      <div class="fill-row">
         <span class="muted small">ตั้งทุกข้อเป็น</span>
         <button class="btn btn-sm" type="button" data-fill="good">ดี</button>
         <button class="btn btn-sm" type="button" data-fill="fair">ปานกลาง</button>
@@ -51,7 +49,7 @@
           <option value="disability">บกพร่องทางการเรียนรู้</option>
         </select>
       </div>
-      <div class="field half"><label>กลุ่มที่ระบบจัดให้</label><div id="auto-group" class="muted">ประเมินครบทุกข้อแล้วจะแสดง</div></div>
+      <div class="field half"><label>กลุ่มที่ระบบจัดให้</label><div id="auto-group" class="auto-group">ประเมินครบทุกข้อแล้วจะแสดง</div></div>
     </div>
     <div id="eval-error" class="alert alert-error hidden" role="alert"></div>
     <div class="save-bar">
