@@ -1,37 +1,169 @@
 {% extends "base.html" %}
+{% block container_class %}home{% endblock %}
+{% block nav %}
+{% if user %}
+  <a href="/app">ห้องเรียนของฉัน</a>
+{% else %}
+  <span class="nav-anchors">
+    <a href="#how">วิธีใช้</a>
+    <a href="#report">ในรายงานมีอะไร</a>
+    <a href="#price">ราคา</a>
+    <a href="#faq">คำถามที่พบบ่อย</a>
+  </span>
+  <a href="/login">เข้าสู่ระบบ</a>
+  <a class="btn btn-primary btn-sm" href="/register">สมัครใช้งาน</a>
+{% endif %}
+{% endblock %}
 {% block content %}
-<section class="hero">
-  <div>
-    <h1><span class="nobr">งานวิเคราะห์ผู้เรียน</span> <span class="nobr">รายบุคคล</span> <span class="nobr">จบได้ในเย็นเดียว</span></h1>
-    <p class="lead">ส่งลิงก์ให้นักเรียนกรอกแบบบันทึกเองบนมือถือ ครูกดประเมิน 16 ข้อต่อคน แล้วดาวน์โหลดรายงานฉบับเต็ม ทั้งบันทึกข้อความ ตารางสรุปร้อยละ และกลุ่มผู้เรียน พร้อมส่งฝ่ายวิชาการ</p>
-    <div class="row mt-4">
-      <a class="btn btn-primary" href="/register">สมัครแล้วลองห้องแรกฟรี</a>
-      <a class="btn" href="/login">เข้าสู่ระบบ</a>
+<section class="lp-hero">
+  <div class="wrap lp-hero-grid">
+    <div class="lp-hero-copy">
+      <h1><span class="nobr">งานวิเคราะห์ผู้เรียน</span><wbr><span class="nobr">รายบุคคล</span><br> <span class="nobr">ส่งฝ่ายวิชาการได้</span><wbr><br> <span class="nobr">ในเย็นเดียว</span></h1>
+      <p class="lead">ส่งลิงก์ให้นักเรียนกรอกแบบบันทึกเองบนมือถือ ครูกดประเมิน 16 ข้อต่อคน แล้วดาวน์โหลดรายงานฉบับเต็ม ทั้งบันทึกข้อความ ตารางสรุปร้อยละ และกลุ่มผู้เรียน ตรงตามแบบที่โรงเรียนใช้</p>
+      <div class="lp-ctas">
+        <a class="btn btn-mark btn-lg" href="/register">สมัครแล้วลองห้องแรกฟรี</a>
+        <a class="btn btn-ghost btn-lg" href="#report">ดูว่าในรายงานมีอะไร</a>
+      </div>
+      <p class="lp-note">ห้องแรกใช้ฟรี จากนั้น 149 บาทต่อภาคเรียน ใช้ได้ทุกห้องที่สอน</p>
     </div>
-    <p class="price">ใช้ได้ทุกห้องที่สอน <b>149 บาท</b> ต่อภาคเรียน</p>
-  </div>
-  <div class="doc-mock" aria-hidden="true">
-    <h3>แบบสรุปผลการวิเคราะห์ผู้เรียน</h3>
-    <div class="doc-sub">ม.6/1 วิชาคณิตศาสตร์พื้นฐาน จำนวน 38 คน</div>
-    <table>
-      <tr><th>รายการวิเคราะห์</th><th>ดี</th><th>ปานกลาง</th><th>ปรับปรุง</th></tr>
-      <tr class="dom"><td colspan="4">1. ด้านความรู้ความสามารถ</td></tr>
-      <tr><td>ความรู้พื้นฐาน</td><td class="n">36.84</td><td class="n">57.89</td><td class="n">5.26</td></tr>
-      <tr><td>การแก้ปัญหา</td><td class="n">31.58</td><td class="n">60.53</td><td class="n">7.89</td></tr>
-      <tr class="dom"><td colspan="4">3. ความพร้อมด้านพฤติกรรม</td></tr>
-      <tr><td>ความรับผิดชอบ</td><td class="n">44.74</td><td class="n">47.37</td><td class="n">7.89</td></tr>
-      <tr><td>การควบคุมอารมณ์</td><td class="n">39.47</td><td class="n">55.26</td><td class="n">5.26</td></tr>
-    </table>
-    <div class="doc-sign">ลงชื่อ ........................ ครูผู้สอน</div>
-    <div class="stamp-big">พร้อมส่ง<small>ฝ่ายวิชาการ</small></div>
+
+    <div class="lp-visual" aria-hidden="true">
+      <div class="lp-sheet">
+        <div class="lp-sheet-title">แบบสรุปผลการวิเคราะห์ผู้เรียน</div>
+        <div class="lp-sheet-sub">ม.6/1 วิชาคณิตศาสตร์พื้นฐาน จำนวน 38 คน</div>
+        <table>
+          <tr class="th"><td>รายการวิเคราะห์</td><td>ดี</td><td>ปานกลาง</td><td>ปรับปรุง</td></tr>
+          <tr class="dom"><td colspan="4">1. ด้านความรู้ความสามารถ</td></tr>
+          <tr><td>ความรู้พื้นฐาน</td><td>36.84</td><td>57.89</td><td>5.26</td></tr>
+          <tr><td>การแก้ปัญหา</td><td>31.58</td><td>60.53</td><td>7.89</td></tr>
+          <tr class="dom"><td colspan="4">2. ความพร้อมด้านสติปัญญา</td></tr>
+          <tr><td>ความคิดริเริ่มสร้างสรรค์</td><td>28.95</td><td>63.16</td><td>7.89</td></tr>
+          <tr class="dom"><td colspan="4">3. ความพร้อมด้านพฤติกรรม</td></tr>
+          <tr><td>ความรับผิดชอบ</td><td>44.74</td><td>47.37</td><td>7.89</td></tr>
+          <tr><td>การควบคุมอารมณ์</td><td>39.47</td><td>55.26</td><td>5.26</td></tr>
+        </table>
+        <div class="lp-sheet-sign">ลงชื่อ .............................. ครูผู้สอน</div>
+        <div class="lp-stamp">พร้อมส่ง<small>ฝ่ายวิชาการ</small></div>
+      </div>
+      <div class="lp-phone">
+        <div class="lp-screen">
+          <div class="lp-screen-head"><b>แบบบันทึกการวิเคราะห์ผู้เรียน</b><span>คณิตศาสตร์ ม.6/1</span></div>
+          <div class="lp-screen-body">
+            <div class="lp-mini-step">ขั้นตอนที่ 5 จาก 6</div>
+            <div class="lp-mini-bars"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div>
+            <div class="lp-mini-q">อยากให้ครูสอนแบบไหน</div>
+            <div class="lp-mini-opt on"><i>1</i>ทำการทดลอง</div>
+            <div class="lp-mini-opt on"><i>2</i>ทำงานกลุ่ม</div>
+            <div class="lp-mini-opt on"><i>3</i>ทำแผนผังความคิด</div>
+            <div class="lp-mini-opt"><i></i>บรรยาย</div>
+            <div class="lp-mini-opt"><i></i>แสดงบทบาทสมมุติ</div>
+            <div class="lp-mini-next">ถัดไป</div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
-<ol class="steps-line">
-  <li><h3>สร้างห้องรายวิชา</h3><p>ได้ลิงก์และ QR Code ส่งเข้ากลุ่มไลน์ห้องได้ทันที</p></li>
-  <li><h3>นักเรียนกรอกเอง</h3><p>ไม่ต้องสมัคร กรอกบนมือถือ แก้ไขภายหลังได้ด้วยรหัสของตัวเอง</p></li>
-  <li><h3>ครูประเมินรายคน</h3><p>เห็นคำตอบนักเรียนข้างแบบประเมิน 5 ด้าน กดเลือกทีละข้อหรือทั้งหมดได้</p></li>
-  <li><h3>ดาวน์โหลดรายงาน</h3><p>PDF ไฟล์เดียว ตรงตามแบบที่ฝ่ายวิชาการใช้ พิมพ์ส่งได้เลย</p></li>
-</ol>
-<p class="foot"><a href="/privacy">นโยบายความเป็นส่วนตัว</a></p>
+<section class="lp-section">
+  <div class="wrap">
+    <div class="lp-head">
+      <h2>เลิกนับมือ เลิกพิมพ์ตารางเอง</h2>
+      <p>งานที่เคยกินเวลาทั้งสัปดาห์ เหลือแค่ส่วนที่ต้องใช้วิจารณญาณของครูจริง ๆ</p>
+    </div>
+    <div class="lp-compare">
+      <div class="lp-old">
+        <h3>แบบเดิม</h3>
+        <ul>
+          <li>แจกกระดาษให้นักเรียนกรอก แล้วตามเก็บทีละคน</li>
+          <li>นับดี ปานกลาง ปรับปรุง 16 ข้อ ทีละคนจนครบห้อง</li>
+          <li>คิดร้อยละเอง แล้วพิมพ์ตารางใน Word</li>
+          <li>แยกนักเรียนเป็น 4 กลุ่มด้วยมือ</li>
+        </ul>
+      </div>
+      <div class="lp-new">
+        <h3>ตอนนี้ <span class="badge badge-evaluated">ระบบทำให้</span></h3>
+        <ul>
+          <li>นักเรียนกรอกเองบนมือถือผ่านลิงก์หรือ QR</li>
+          <li>ครูกดเลือกผลประเมิน ระบบนับให้ทันที</li>
+          <li>ร้อยละและตารางสรุปออกมาเองครบทุกข้อ</li>
+          <li>จัด 4 กลุ่มผู้เรียนให้ ครูเปลี่ยนเองได้</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="lp-section lp-white" id="how">
+  <div class="wrap">
+    <div class="lp-head"><h2>ใช้ 4 ขั้นตอน ตั้งแต่ส่งลิงก์จนได้ไฟล์ส่งงาน</h2></div>
+    <ol class="lp-steps">
+      <li><h3>สร้างห้องรายวิชา</h3><p>กรอกชื่อวิชาและชั้น ได้ลิงก์กับ QR Code ส่งเข้ากลุ่มไลน์ห้องได้ทันที</p></li>
+      <li><h3>นักเรียนกรอกเอง</h3><p>ไม่ต้องสมัคร กรอกบนมือถือประมาณ 10 นาที ได้รหัสไว้แก้คำตอบภายหลัง</p></li>
+      <li><h3>ครูประเมินรายคน</h3><p>เห็นคำตอบนักเรียนข้างแบบประเมิน 16 ข้อ กดเลือกทีละข้อ หรือตั้งทุกข้อพร้อมกัน</p></li>
+      <li><h3>ดาวน์โหลดรายงาน</h3><p>ได้ PDF ไฟล์เดียวครบทุกส่วน พิมพ์เซ็นแล้วส่งฝ่ายวิชาการได้เลย</p></li>
+    </ol>
+  </div>
+</section>
+
+<section class="lp-section" id="report">
+  <div class="wrap lp-report">
+    <div class="lp-pages" aria-hidden="true">
+      <div class="lp-page p1"><b>แบบบันทึกรายบุคคล</b><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="lp-page p2"><b>กลุ่มผู้เรียน 4 กลุ่ม</b><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="lp-page p3"><b>แบบสรุปผล</b><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="lp-page p4"><b>บันทึกข้อความ</b><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="lp-stamp lp-stamp-sm">ไฟล์เดียวครบ</div>
+    </div>
+    <div>
+      <div class="lp-head">
+        <h2>รายงานฉบับเต็มที่ดาวน์โหลดได้</h2>
+        <p>เรียงตามแบบที่ฝ่ายวิชาการใช้ ชื่อครู โรงเรียน และเขตพื้นที่ใส่ให้อัตโนมัติจากข้อมูลครู</p>
+      </div>
+      <ul class="lp-parts">
+        <li><h3>บันทึกข้อความ</h3><p>กรอกเลขที่หนังสือ วันที่ และเรียนใครได้ก่อนดาวน์โหลด ตัวเลขเป็นเลขไทย</p></li>
+        <li><h3>แบบสรุปผลการวิเคราะห์ผู้เรียน</h3><p>จำนวนและร้อยละของ ดี ปานกลาง ปรับปรุง ครบ 16 ข้อใน 5 ด้าน</p></li>
+        <li><h3>การวิเคราะห์สารสนเทศกลุ่มผู้เรียน</h3><p>รายชื่อนักเรียนแยก 4 กลุ่ม ตั้งแต่พร้อมสูงจนถึงบกพร่องทางการเรียนรู้</p></li>
+        <li><h3>แบบบันทึกรายบุคคล</h3><p>คำตอบของนักเรียนแต่ละคน พร้อมผลประเมินและความเห็นของครู</p></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="lp-section lp-dark" id="price">
+  <div class="wrap lp-price">
+    <div>
+      <h2>จ่ายครั้งเดียวต่อภาคเรียน</h2>
+      <p>ห้องแรกทดลองใช้ฟรีจนออกรายงานได้จริง ถ้าใช้ต่อ ชำระผ่านพร้อมเพย์แล้วแนบสลิป</p>
+    </div>
+    <div class="lp-price-box">
+      <div class="lp-amount"><b>149</b> บาท / ภาคเรียน</div>
+      <ul>
+        <li>สร้างห้องได้ทุกวิชาและทุกชั้นที่สอน</li>
+        <li>นักเรียนกรอกได้ไม่จำกัดจำนวน</li>
+        <li>ดาวน์โหลดรายงาน PDF กี่ครั้งก็ได้</li>
+      </ul>
+      <a class="btn btn-primary btn-lg btn-block" href="/register">สมัครแล้วลองห้องแรกฟรี</a>
+    </div>
+  </div>
+</section>
+
+<section class="lp-section" id="faq">
+  <div class="wrap">
+    <div class="lp-head"><h2>คำถามที่พบบ่อย</h2></div>
+    <div class="lp-faq">
+      <div><h3>นักเรียนต้องสมัครหรือโหลดแอปไหม</h3><p>ไม่ต้อง เปิดลิงก์หรือสแกน QR แล้วกรอกได้เลย ใช้มือถือเครื่องไหนก็ได้</p></div>
+      <div><h3>ใช้กับแบบฟอร์มของโรงเรียนได้ไหม</h3><p>หัวข้อทำตามแบบบันทึกการวิเคราะห์ผู้เรียนรายบุคคลที่โรงเรียนส่วนใหญ่ใช้ ถ้าโรงเรียนใช้แบบต่างออกไป แจ้งเราได้</p></div>
+      <div><h3>นักเรียนที่ไม่มีมือถือทำอย่างไร</h3><p>ครูเพิ่มชื่อนักเรียนและประเมินเองได้ ข้อมูลจะอยู่ในรายงานเหมือนคนอื่น</p></div>
+      <div><h3>ข้อมูลนักเรียนปลอดภัยไหม</h3><p>ครูเห็นเฉพาะห้องของตัวเอง ข้อมูลที่อยู่และสุขภาพไม่บังคับกรอก และลบห้องพร้อมข้อมูลได้ทุกเมื่อ</p></div>
+    </div>
+  </div>
+</section>
+
+<footer class="lp-footer">
+  <div class="wrap">
+    <span>วิเคราะห์ผู้เรียน เครื่องมือสำหรับครูไทย</span>
+    <a href="/privacy">นโยบายความเป็นส่วนตัว</a>
+  </div>
+</footer>
 {% endblock %}
