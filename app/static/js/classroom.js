@@ -19,6 +19,7 @@
     $("stat-roster").textContent = room.roster_count || "-";
     $("stat-evaluated").textContent = room.evaluated_count;
     $("pdf-all").classList.toggle("hidden", room.submitted_count === 0);
+    $("summary-link").href = `/app/classrooms/${id}/summary`;
   }
 
   const STATUS = {
@@ -29,20 +30,28 @@
 
   async function loadSubmissions() {
     const rows = await API.get(`${base}/submissions`);
+    const firstPending = rows.find((r) => r.id && r.status === "submitted");
+    $("eval-start").classList.toggle("hidden", !firstPending);
+    if (firstPending) $("eval-start").href = `/app/classrooms/${id}/submissions/${firstPending.id}/evaluate`;
     const body = $("subs-body");
     $("subs-empty").classList.toggle("hidden", rows.length > 0);
     body.innerHTML = rows.map((r) => {
       const [cls, label] = STATUS[r.status];
       const name = API.esc(r.full_name) + (r.nickname ? ` <span class="muted">(${API.esc(r.nickname)})</span>` : "");
       const warn = r.in_roster === false ? ' <span class="badge badge-trial" title="เลขที่นี้ไม่อยู่ในรายชื่อที่ใส่ไว้">ไม่อยู่ในรายชื่อ</span>' : "";
-      const actions = r.id
-        ? `<a class="btn btn-sm" href="/app/classrooms/${id}/submissions/${r.id}">ดูคำตอบ</a>
-           <button class="btn btn-sm" data-code="${r.id}" data-no="${r.student_no}">รหัสแก้ไขใหม่</button>
-           <button class="btn btn-sm btn-danger" data-del="${r.id}" data-no="${r.student_no}">ลบ</button>`
+      const evalBtn = r.id
+        ? `<a class="btn btn-sm ${r.status === "evaluated" ? "" : "btn-primary"}" href="/app/classrooms/${id}/submissions/${r.id}/evaluate">${r.status === "evaluated" ? "แก้ผลประเมิน" : "ประเมิน"}</a>`
         : "";
+      const actions = r.id
+        ? `${evalBtn}
+           ${r.by_teacher ? "" : `<a class="btn btn-sm" href="/app/classrooms/${id}/submissions/${r.id}">ดูคำตอบ</a>
+           <button class="btn btn-sm" data-code="${r.id}" data-no="${r.student_no}">รหัสแก้ไขใหม่</button>`}
+           <button class="btn btn-sm btn-danger" data-del="${r.id}" data-no="${r.student_no}">ลบ</button>`
+        : `<button class="btn btn-sm" data-manual="${r.student_no}" data-name="${API.esc(r.full_name)}">ครูประเมินเอง</button>`;
+      const byTeacher = r.by_teacher ? ' <span class="badge badge-missing">ครูเพิ่มเอง</span>' : "";
       return `<tr>
         <td class="num">${r.student_no}</td>
-        <td>${name}${warn}</td>
+        <td>${name}${warn}${byTeacher}</td>
         <td><span class="badge ${cls}">${label}</span></td>
         <td class="small muted">${r.submitted_at ? API.thaiDateTime(r.submitted_at) : ""}</td>
         <td><div class="row">${actions}</div></td>
@@ -91,6 +100,14 @@
   });
 
   $("subs-body").addEventListener("click", async (ev) => {
+    const manual = ev.target.closest("[data-manual]");
+    if (manual) {
+      try {
+        const r = await API.post(`${base}/submissions/manual`, { student_no: Number(manual.dataset.manual), full_name: manual.dataset.name });
+        location.href = `/app/classrooms/${id}/submissions/${r.id}/evaluate`;
+      } catch (e) { API.toast(e.message); }
+      return;
+    }
     const del = ev.target.closest("[data-del]");
     const code = ev.target.closest("[data-code]");
     try {
@@ -105,6 +122,17 @@
         alert(`รหัสแก้ไขใหม่ของเลขที่ ${code.dataset.no}: ${r.edit_code}\nแจ้งนักเรียนให้ใช้รหัสนี้ที่ปุ่ม "แก้ไขคำตอบเดิม"`);
       }
     } catch (e) { API.toast(e.message); }
+  });
+
+  $("manual-form").addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    const err = $("manual-error");
+    API.hide(err);
+    const f = new FormData(ev.target);
+    try {
+      const r = await API.post(`${base}/submissions/manual`, { student_no: Number(f.get("student_no")), full_name: f.get("full_name") });
+      location.href = `/app/classrooms/${id}/submissions/${r.id}/evaluate`;
+    } catch (e) { API.showError(err, e.message); }
   });
 
   try {

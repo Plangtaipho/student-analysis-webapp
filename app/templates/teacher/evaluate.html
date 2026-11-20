@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}ประเมินผู้เรียน{% endblock %}
+{% block body_attrs %}data-classroom-id="{{ classroom_id }}" data-submission-id="{{ submission_id }}"{% endblock %}
+{% block content %}
+<p class="small"><a href="/app/classrooms/{{ classroom_id }}">← กลับไปหน้าห้องเรียน</a></p>
+<div class="row mb-4">
+  <div><h1 id="e-title">กำลังโหลด…</h1><div class="muted small" id="e-status"></div></div>
+  <span class="spacer"></span>
+  <a class="btn btn-sm" id="e-prev">← คนก่อน</a>
+  <a class="btn btn-sm" id="e-next">คนถัดไป →</a>
+</div>
+
+<div class="eval-layout">
+  <aside class="card eval-side">
+    <h2>คำตอบของนักเรียน</h2>
+    <div id="no-form" class="alert alert-info hidden">ครูเพิ่มรายชื่อนี้เอง นักเรียนไม่ได้กรอกแบบฟอร์ม</div>
+    <div id="answers">
+      <div class="qa"><div class="muted">อายุ / GPA ปีที่ผ่านมา</div><div id="a-basic">-</div></div>
+      <div class="qa"><div class="muted">พักอาศัยอยู่กับ / สถานภาพบิดา-มารดา</div><div id="a-family">-</div></div>
+      <div class="qa"><div class="muted">ข้อมูลสุขภาพ</div><div id="a-health">-</div></div>
+      {% for q in questions %}
+      <div class="qa"><div class="muted">{{ q.label }}</div><div data-q="{{ q.key }}">-</div></div>
+      {% endfor %}
+      <div class="qa"><div class="muted">วิธีเรียนที่ชอบ (3 อันดับแรก)</div><div id="a-prefs">-</div></div>
+      <a class="small" id="a-full" target="_blank" rel="noopener">ดูคำตอบทั้งหมด</a>
+    </div>
+  </aside>
+
+  <form class="card" id="eval-form" novalidate>
+    <div class="card-head">
+      <h2>3. การวิเคราะห์ผู้เรียนเป็นรายบุคคล</h2>
+      <div class="row gap-2">
+        <span class="muted small">ตั้งทุกข้อเป็น</span>
+        <button class="btn btn-sm" type="button" data-fill="good">ดี</button>
+        <button class="btn btn-sm" type="button" data-fill="fair">ปานกลาง</button>
+        <button class="btn btn-sm" type="button" data-fill="improve">ปรับปรุง</button>
+      </div>
+    </div>
+    <div class="fields">
+      <div class="field third"><label for="last_grade">เกรดวิชานี้ภาคเรียนที่ผ่านมา</label><input id="last_grade" name="last_grade" maxlength="10" placeholder="เช่น 3.5"></div>
+    </div>
+    <div id="items"></div>
+    <div class="fields mt-4">
+      <div class="field"><label for="teacher_comment">ความคิดเห็นและข้อเสนอแนะของครู</label><textarea id="teacher_comment" name="teacher_comment" maxlength="2000" rows="3"></textarea></div>
+      <div class="field half"><label for="group_override">กลุ่มผู้เรียน</label>
+        <select id="group_override" name="group_override">
+          <option value="">อัตโนมัติจากผลประเมิน</option>
+          <option value="high">มีความพร้อมสูงทุกด้าน</option>
+          <option value="medium">มีความพร้อมปานกลาง</option>
+          <option value="low">ไม่มีความพร้อม</option>
+          <option value="disability">บกพร่องทางการเรียนรู้</option>
+        </select>
+      </div>
+      <div class="field half"><label>กลุ่มที่ระบบจัดให้</label><div id="auto-group" class="muted">ประเมินครบทุกข้อแล้วจะแสดง</div></div>
+    </div>
+    <div id="eval-error" class="alert alert-error hidden" role="alert"></div>
+    <div class="save-bar">
+      <span class="muted small" id="progress-text"></span>
+      <span class="spacer"></span>
+      <button class="btn" type="submit" data-then="stay">บันทึก</button>
+      <button class="btn btn-primary" type="submit" data-then="next">บันทึกแล้วไปคนถัดไป</button>
+    </div>
+  </form>
+</div>
+{% endblock %}
+{% block scripts %}<script src="/static/js/evaluate.js"></script>{% endblock %}

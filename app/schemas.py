@@ -236,3 +236,46 @@ class SubmissionSummary(BaseModel):
     nickname: str
     submitted_at: str
     status: str  # submitted | evaluated
+
+
+# --- Teacher evaluation ---------------------------------------------------------------
+
+
+class ScoreIn(BaseModel):
+    rating: str = Field(pattern=r"^(good|fair|improve)$")
+    note: str = Field(default="", max_length=200)
+
+    @field_validator("note")
+    @classmethod
+    def _strip(cls, v: str) -> str:
+        return _clean(v)
+
+
+class EvaluationIn(BaseModel):
+    scores: dict[str, ScoreIn]
+    last_grade: str = Field(default="", max_length=10)
+    teacher_comment: str = Field(default="", max_length=2000)
+    # null = use the automatic group; or high | medium | low | disability
+    group_override: str | None = Field(default=None, pattern=r"^(high|medium|low|disability)$")
+
+    @field_validator("last_grade")
+    @classmethod
+    def _grade(cls, v: str) -> str:
+        return _clean(v)
+
+    @field_validator("teacher_comment")
+    @classmethod
+    def _comment(cls, v: str) -> str:
+        return re.sub(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]", "", v).strip()
+
+
+class ManualSubmissionIn(BaseModel):
+    """A record the teacher creates for a student who cannot fill in the form."""
+
+    student_no: int = Field(ge=1, le=200)
+    full_name: str = Field(min_length=2, max_length=120)
+
+    @field_validator("full_name")
+    @classmethod
+    def _strip(cls, v: str) -> str:
+        return _clean(v)

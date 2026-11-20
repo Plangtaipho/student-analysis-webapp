@@ -170,3 +170,36 @@ progress.progress { -webkit-appearance: none; appearance: none; width: 100%; hei
 progress.progress::-webkit-progress-bar { background: var(--line); border-radius: 999px; }
 progress.progress::-webkit-progress-value { background: var(--primary); border-radius: 999px; }
 progress.progress::-moz-progress-bar { background: var(--primary); border-radius: 999px; }
+
+/* Assessment page ------------------------------------------------------------------- */
+.eval-layout { display: grid; gap: 1rem; }
+@media (min-width: 960px) { .eval-layout { grid-template-columns: 340px 1fr; align-items: start; } .eval-side { position: sticky; top: 76px; max-height: calc(100vh - 92px); overflow: auto; } }
+.domain-head { font-weight: 700; margin: 1rem 0 .4rem; padding-bottom: .25rem; border-bottom: 2px solid var(--primary-soft); }
+.item-row { display: grid; grid-template-columns: 1fr; gap: .4rem; padding: .5rem 0; border-bottom: 1px solid var(--line); }
+@media (min-width: 640px) { .item-row { grid-template-columns: 1fr auto; align-items: center; } }
+.item-row .note { grid-column: 1 / -1; }
+.seg { display: inline-flex; border: 1px solid #d1d5db; border-radius: 10px; overflow: hidden; }
+.seg label { margin: 0; font-weight: 700; font-size: .92rem; cursor: pointer; }
+.seg input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.seg span { display: block; padding: .45rem .8rem; min-width: 76px; text-align: center; border-left: 1px solid #d1d5db; color: var(--muted); }
+.seg label:first-child span { border-left: 0; }
+.seg input:focus-visible + span { outline: 3px solid var(--primary-soft); outline-offset: -3px; }
+.seg input[value=good]:checked + span { background: var(--good); color: #fff; }
+.seg input[value=fair]:checked + span { background: var(--primary); color: #fff; }
+.seg input[value=improve]:checked + span { background: var(--bad); color: #fff; }
+.item-row.missing .seg { border-color: var(--bad); }
+.save-bar { position: sticky; bottom: 0; background: var(--surface); border-top: 1px solid var(--line); padding: .75rem 0; margin-top: 1rem; display: flex; gap: .5rem; flex-wrap: wrap; align-items: center; }
+.qa { margin-bottom: .6rem; }
+.qa .muted { font-size: .85rem; }
+
+/* Summary page --------------------------------------------------------------------- */
+table.sum { width: 100%; border-collapse: collapse; font-size: .95rem; }
+table.sum th, table.sum td { border: 1px solid var(--line); padding: .35rem .5rem; }
+table.sum th { background: var(--bg); font-size: .85rem; }
+table.sum td.n { text-align: center; white-space: nowrap; }
+table.sum tr.domain td { background: var(--primary-soft); font-weight: 700; }
+.group-cols { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+.group-cols ol { margin: .25rem 0 0; padding-left: 1.3rem; }
+.w-num { width: 110px; flex: none; }
+.w-name { flex: 1; min-width: 200px; width: auto; }
+details summary { cursor: pointer; color: var(--primary); font-weight: 700; }

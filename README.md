@@ -31,11 +31,13 @@ app/
     auth.py            # /api/auth/*        สมัคร ล็อกอิน โปรไฟล์ครู
     classrooms.py      # /api/classrooms/*  ห้อง รายชื่อ QR คำตอบ
     student.py         # /api/f/{token}/*   ฟอร์มนักเรียน (ไม่ต้องล็อกอิน)
-    reports.py         # PDF
+    evaluations.py     # ครูประเมินรายคน, สรุปห้อง
+    reports.py         # PDF รายบุคคล / ฉบับเต็ม
     pages.py           # หน้า HTML
   services/
     form_definition.py # หัวข้อแบบฟอร์มทั้งหมด (แก้ที่นี่ที่เดียว)
     roster.py          # อ่านรายชื่อที่วางจาก Excel
+    summary.py         # นับจำนวน/ร้อยละ + เกณฑ์แบ่งกลุ่ม (auto_group)
     records.py, pdf.py # ข้อมูลและการสร้าง PDF
   templates/, static/
 alembic/               # migration ฐานข้อมูล
@@ -62,6 +64,8 @@ API docs (Swagger): http://localhost:8000/docs (ปิดใน production)
 ```bash
 python -m pytest -q                                   # unit + API tests
 BASE_URL=http://localhost:8000 node e2e/week1_flow.cjs # เบราว์เซอร์จริง (ต้องติดตั้ง playwright)
+python -m scripts.seed_demo                           # ข้อมูลตัวอย่าง: demo@example.com / demo12345
+BASE_URL=http://localhost:8000 node e2e/week2_flow.cjs # ประเมิน → สรุป → PDF ฉบับเต็ม
 ```
 
 ## Environment variables

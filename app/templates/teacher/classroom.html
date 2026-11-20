@@ -33,8 +33,11 @@
       <div><b id="stat-roster">-</b><span class="muted small">ในรายชื่อ</span></div>
       <div><b id="stat-evaluated">0</b><span class="muted small">ประเมินแล้ว</span></div>
     </div>
-    <p class="muted small mt-3">การประเมินรายคน หน้าสรุป และรายงานครบชุด จะเปิดให้ใช้ในรอบถัดไป</p>
-    <a class="btn btn-sm hidden" id="pdf-all" target="_blank" rel="noopener">PDF แบบบันทึกรายบุคคล (ทุกคน)</a>
+    <div class="row mt-3 gap-2">
+      <a class="btn btn-primary btn-sm hidden" id="eval-start">เริ่มประเมิน</a>
+      <a class="btn btn-sm" id="summary-link">ดูสรุปผล + ออกรายงาน</a>
+      <a class="btn btn-sm hidden" id="pdf-all" target="_blank" rel="noopener">PDF รายบุคคล (ทุกคนที่ส่ง)</a>
+    </div>
   </section>
 </div>
 
@@ -47,6 +50,15 @@
       <tbody id="subs-body"></tbody>
     </table>
   </div>
+  <details class="mt-4">
+    <summary>เพิ่มนักเรียนที่ไม่ได้กรอกแบบฟอร์ม (เช่น ไม่มีโทรศัพท์) เพื่อให้ครูประเมินได้</summary>
+    <form id="manual-form" class="row mt-3 align-start">
+      <input name="student_no" type="number" min="1" max="200" required placeholder="เลขที่" aria-label="เลขที่" class="w-num">
+      <input name="full_name" required minlength="2" maxlength="120" placeholder="ชื่อ-สกุล" aria-label="ชื่อ-สกุล" class="w-name">
+      <button class="btn" type="submit">เพิ่ม</button>
+    </form>
+    <div id="manual-error" class="alert alert-error hidden" role="alert"></div>
+  </details>
 </section>
 
 <form class="card" id="roster-form">

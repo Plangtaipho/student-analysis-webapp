@@ -17,6 +17,7 @@
     });
     document.getElementById("prefs").innerHTML = s.learning_prefs.map((p) => `<li>${API.esc(p.label)}</li>`).join("");
     document.getElementById("pdf-one").href = `${url}/pdf`;
+    document.getElementById("eval-link").href = `/app/classrooms/${classroomId}/submissions/${submissionId}/evaluate`;
   } catch (e) {
     API.toast(e.message);
   }

@@ -99,3 +99,22 @@ def student_form(token: str, request: Request, db: Session = Depends(get_db)):
             "min_ranked": MIN_RANKED_METHODS,
         },
     )
+
+
+@router.get("/app/classrooms/{classroom_id}/submissions/{submission_id}/evaluate", response_class=HTMLResponse)
+def evaluate_page(
+    classroom_id: int, submission_id: int, request: Request, user: User | None = Depends(get_optional_user)
+):
+    return _teacher_page(
+        request,
+        user,
+        "teacher/evaluate.html",
+        classroom_id=classroom_id,
+        submission_id=submission_id,
+        questions=OPEN_QUESTIONS,
+    )
+
+
+@router.get("/app/classrooms/{classroom_id}/summary", response_class=HTMLResponse)
+def summary_page(classroom_id: int, request: Request, user: User | None = Depends(get_optional_user)):
+    return _teacher_page(request, user, "teacher/summary.html", classroom_id=classroom_id)
