@@ -87,6 +87,7 @@ def update_profile(body: ProfileIn, user: User = Depends(get_current_user), db: 
     user.full_name = body.full_name
     user.position = body.position
     user.department = body.department
+    user.school_location = body.school_location
     user.school_name = body.school_name
     user.area_office = body.area_office
     db.commit()

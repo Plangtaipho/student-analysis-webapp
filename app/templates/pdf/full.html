@@ -2,50 +2,58 @@
 {% block title %}รายงานการวิเคราะห์ผู้เรียนรายบุคคล{% endblock %}
 {% block style %}
   {% include "_individual_style.css.j2" %}
-  .memo-title { font-size: 22pt; font-weight: bold; text-align: center; margin: 0 0 10pt; }
-  .memo .line { padding-bottom: 2pt; margin-bottom: 6pt; }
-  .memo .indent { text-indent: 2.5cm; text-align: justify; }
-  .memo .sign { margin-top: 30pt; }
-  .sum th, .sum td { font-size: 11.5pt; padding: 1pt 3pt; }
+  .memo { font-size: 12pt; }
+  .memo-head { position: relative; height: 1.75cm; margin-bottom: 6pt; }
+  .memo-head img { position: absolute; left: 0; top: 0; width: 1.5cm; }
+  .memo-title { position: absolute; left: 0; right: 0; bottom: 0; text-align: center; font-size: 20pt; font-weight: bold; line-height: 1; }
+  .memo .line { margin-bottom: 5pt; }
+  .memo .dept { font-size: 11.5pt; }
+  .memo .half { display: inline-block; width: 48%; }
+  .memo .rule { border-bottom: 1px dotted #000; margin: 6pt 0 10pt; }
+  .memo .indent { text-indent: 1.9cm; text-align: justify; margin: 0; }
+  .memo .sign { margin: 40pt 0 0 52%; }
+  .memo .sign .name { padding-left: 1.1cm; }
+  .memo .sign .pos { padding-left: 1.7cm; }
+  .sum th, .sum td { font-size: 11pt; padding: 2pt 3pt; }
   .sum td.n { text-align: center; width: 7.5%; }
-  .sum td.item { padding-left: 12pt; }
-  .groups th, .groups td { font-size: 11.5pt; width: 25%; padding: 1pt 4pt; }
-  .head { text-align: center; margin-bottom: 6pt; }
-  .head div { margin: 0; }
+  .groups th { font-size: 11.5pt; width: 25%; padding: 2pt 4pt; line-height: 1.3; }
+  .groups td { font-size: 10.5pt; width: 25%; padding: 1pt 4pt; white-space: nowrap; overflow: hidden; height: 13pt; }
+  .head-left { margin: 4pt 0 12pt; }
+  .head-left div { margin: 0; }
+  .gap { display: inline-block; width: 1.2cm; }
 {% endblock %}
 {% block body %}
+{% macro tri() %}<span class="tri">▶</span>{% endmacro %}
 
 {# ---------- 1. บันทึกข้อความ ---------- #}
 <section class="page memo">
-  <div class="memo-title">บันทึกข้อความ</div>
-  <div class="line"><b>ส่วนราชการ</b> {{ memo.dept }}</div>
-  <div class="line"><b>ที่</b> {{ memo.doc_no }} <span style="float:right"><b>วันที่</b> {{ memo.date_text }}</span></div>
-  <div class="line"><b>เรื่อง</b> รายงานการวิเคราะห์ผู้เรียนรายบุคคล ภาคเรียนที่ {{ room.semester | thai }} ประจำปีการศึกษา {{ room.academic_year | thai }}</div>
-  <p><b>เรียน</b> {{ memo.to }}</p>
+  <div class="memo-head"><img src="static/img/garuda.png" alt=""><div class="memo-title">บันทึกข้อความ</div></div>
+  <div class="line dept"><b>ส่วนราชการ</b> {{ memo.dept }}</div>
+  <div class="line"><span class="half"><b>ที่</b>&nbsp;&nbsp;&nbsp;&nbsp;{{ memo.doc_no }}</span><b>วันที่</b>&nbsp;&nbsp;{{ memo.date_text }}</div>
+  <div class="line"><b>เรื่อง</b>&nbsp;&nbsp;รายงานการวิเคราะห์ผู้เรียนรายบุคคล ภาคเรียนที่ {{ room.semester | thai }} ประจำปีการศึกษา {{ room.academic_year | thai }}</div>
+  <div class="rule"></div>
+  <div class="line"><b>เรียน</b>&nbsp;&nbsp;{{ memo.to }}</div>
   <p class="indent">ด้วยข้าพเจ้า {{ teacher.full_name }} ตำแหน่ง {{ teacher.position }} {{ school }} ได้จัดทำรายงานการวิเคราะห์ผู้เรียนรายบุคคล
-    ของนักเรียน{{ grade_text }} รายวิชา{{ room.subject_name }}{% if room.subject_code %} ({{ room.subject_code }}){% endif %}
-    จำนวน {{ summary.evaluated | thai }} คน เพื่อใช้เป็นข้อมูลการแก้ไขปัญหาและ/หรือพัฒนาคุณภาพผู้เรียน
+    ของนักเรียน{{ grade_text | thai }} เพื่อใช้เป็นข้อมูลการแก้ไขปัญหาและ/หรือพัฒนาคุณภาพผู้เรียน
     ภาคเรียนที่ {{ room.semester | thai }} ปีการศึกษา {{ room.academic_year | thai }} รายละเอียดตามเอกสารแนบ</p>
-  <p class="indent">จึงเรียนมาเพื่อโปรดทราบ</p>
-  <div class="sign">ลงชื่อ.........................................................<br>({{ teacher.full_name }})<br>ตำแหน่ง {{ teacher.position }}</div>
+  <p class="indent" style="margin-top:12pt">จึงเรียนมาเพื่อโปรดทราบ</p>
+  <div class="sign">ลงชื่อ<br><span class="name">({{ teacher.full_name }})</span><br><span class="pos">ตำแหน่ง {{ teacher.position }}</span></div>
 </section>
 
 {# ---------- 2. แบบสรุปผล ---------- #}
 <section class="page">
-  <div class="head">
-    <h1>แบบสรุปผลการวิเคราะห์ผู้เรียน</h1>
-    <div>รายวิชา{{ room.subject_name }} {{ grade_text }} จำนวนนักเรียน {{ summary.evaluated }} คน</div>
-    <div>{{ school }}{% if teacher.area_office %} {{ teacher.area_office }}{% endif %}</div>
-    <div>ภาคเรียนที่ {{ room.semester }} ปีการศึกษา {{ room.academic_year }}</div>
+  <div class="teacher-tag">ครูผู้สอน</div>
+  <h1 style="margin-top:4pt">แบบสรุปผลการวิเคราะห์ผู้เรียน</h1>
+  <div class="head-left">
+    <div>{{ grade_text }} จำนวนนักเรียน {{ summary.evaluated }} คน</div>
+    <div>{{ school }}{% if teacher.area_office %}<span class="gap"></span>{{ teacher.area_office }}{% endif %}</div>
   </div>
   <table class="sum">
-    <tr><th rowspan="2">รายการวิเคราะห์ผู้เรียนเป็นรายบุคคล</th><th colspan="2">ดี</th><th colspan="2">ปานกลาง</th><th colspan="2">ปรับปรุง</th><th rowspan="2" style="width:9%">หมายเหตุ</th></tr>
+    <tr><th rowspan="2" style="width:40%">รายการวิเคราะห์ผู้เรียนเป็นรายบุคคล</th><th colspan="2">ดี</th><th colspan="2">ปานกลาง</th><th colspan="2">ปรับปรุง</th><th rowspan="2" style="width:8%">หมาย<br>เหตุ</th></tr>
     <tr><th>จำนวน</th><th>ร้อยละ</th><th>จำนวน</th><th>ร้อยละ</th><th>จำนวน</th><th>ร้อยละ</th></tr>
-    {% for d in summary.domains %}
-    <tr class="domain"><td colspan="8">{{ d.domain_no }}. {{ d.domain_name }}</td></tr>
-    {% for it in d["items"] %}
+    {% for d in summary.domains %}{% for it in d["items"] %}
     <tr>
-      <td class="item">{{ it.label }}</td>
+      <td>{% if loop.first %}<b>{{ d.domain_no }}. {{ d.domain_name }}</b><br>{% endif %}{{ tri() }}{{ it.label }}</td>
       {% for k in ("good", "fair", "improve") %}
       <td class="n">{{ it[k] if it[k] else "-" }}</td><td class="n">{{ "%.2f" | format(it[k ~ "_pct"]) if it[k] else "-" }}</td>
       {% endfor %}
@@ -53,24 +61,22 @@
     </tr>
     {% endfor %}{% endfor %}
   </table>
-  <div class="sign">ลงชื่อ.........................................................<br>({{ teacher.full_name }})<br>{{ teacher.position }}ผู้สอน</div>
 </section>
 
 {# ---------- 3. กลุ่มผู้เรียน ---------- #}
 <section class="page">
-  <div class="head">
-    <h1>การวิเคราะห์สารสนเทศกลุ่มผู้เรียน</h1>
-    <div><b>เพื่อการพัฒนาแผนการจัดการเรียนรู้ที่เน้นผู้เรียนเป็นสำคัญ</b></div>
-    <div>{{ grade_text }} จำนวนนักเรียน {{ summary.evaluated }} คน รายวิชา{{ room.subject_name }}</div>
-    <div>{{ school }}{% if teacher.area_office %} {{ teacher.area_office }}{% endif %} ปีการศึกษา {{ room.academic_year }}</div>
+  <h1 style="margin-bottom:0">การวิเคราะห์สารสนเทศกลุ่มผู้เรียน</h1>
+  <h1>เพื่อการพัฒนาแผนการจัดการเรียนรู้ที่เน้นผู้เรียนเป็นสำคัญ</h1>
+  <div class="head-left" style="padding-left:1cm">
+    <div>ชั้น&nbsp; {{ room.grade_label }}<span class="gap"></span>จำนวนนักเรียน {{ summary.evaluated }} คน</div>
+    <div>{{ school }}{% if teacher.area_office %}<span class="gap"></span>{{ teacher.area_office }}{% endif %}&nbsp; ปีการศึกษา {{ room.academic_year }}</div>
   </div>
   <table class="groups">
-    <tr>{% for g in summary.groups %}<th>{{ g.label }}</th>{% endfor %}</tr>
+    <tr>{% for g in summary.groups %}<th>กลุ่มผู้เรียนที่<br>{{ g.label | replace("กลุ่มผู้เรียนที่", "") }}</th>{% endfor %}</tr>
     {% for i in range(group_rows) %}
     <tr>{% for g in summary.groups %}<td>{{ i + 1 }}. {{ g.students[i].full_name if i < g.students | length else "" }}</td>{% endfor %}</tr>
     {% endfor %}
   </table>
-  <div class="sign">ลงชื่อ.........................................................<br>({{ teacher.full_name }})<br>{{ teacher.position }}ผู้สอน</div>
 </section>
 
 {# ---------- 4. แบบบันทึกรายบุคคล ---------- #}

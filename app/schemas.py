@@ -65,9 +65,10 @@ class ProfileIn(BaseModel):
     position: Literal["ครู", "พนักงานราชการ", "อัตราจ้าง"]
     department: str = Field(min_length=2, max_length=120)
     school_name: str = Field(min_length=2, max_length=160)
+    school_location: str = Field(default="", max_length=160)
     area_office: str = Field(default="", max_length=200)
 
-    @field_validator("full_name", "department", "school_name", "area_office")
+    @field_validator("full_name", "department", "school_name", "school_location", "area_office")
     @classmethod
     def _strip(cls, v: str) -> str:
         return _clean(v)
@@ -85,6 +86,7 @@ class UserOut(BaseModel):
     position: str
     department: str
     school_name: str
+    school_location: str
     area_office: str
     role: str
 

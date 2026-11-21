@@ -3,7 +3,7 @@
   const pf = document.getElementById("profile-form");
   const pw = document.getElementById("password-form");
   const me = (await API.loadMe()).user;
-  for (const k of ["full_name", "position", "department", "school_name", "area_office"]) pf[k].value = me[k] || "";
+  for (const k of ["full_name", "position", "department", "school_name", "school_location", "area_office"]) pf[k].value = me[k] || "";
   document.getElementById("email").textContent = me.email;
 
   pf.addEventListener("submit", async (ev) => {

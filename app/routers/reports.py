@@ -92,7 +92,7 @@ def full_report_pdf(
     school = school_text(user.school_name)
     d = today()  # the memo is dated the day it is exported
     memo = {
-        "dept": f"{user.department.strip()} {school}",
+        "dept": " ".join(x for x in (user.department.strip(), school, user.school_location.strip()) if x),
         "doc_no": thai_number(doc_no.strip()),
         "date_text": thai_number(f"{d.day} {THAI_MONTHS[d.month - 1]} {d.year + 543}"),
         "to": to.strip() or f"ผู้อำนวยการ{school}",
@@ -106,7 +106,7 @@ def full_report_pdf(
         grade_text=grade_text(room.grade_label),
         memo=memo,
         summary=summary,
-        group_rows=max(10, max(len(g["students"]) for g in summary["groups"])),
+        group_rows=max(25, max(len(g["students"]) for g in summary["groups"])),
         records=[individual_record(s) for s in evaluated],
         questions=OPEN_QUESTIONS,
         methods=LEARNING_METHODS,

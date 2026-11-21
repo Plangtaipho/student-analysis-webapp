@@ -1,66 +1,63 @@
+{% macro tri() %}<span class="tri">▶</span>{% endmacro %}
 {% for r in records %}
 {% set s = r.sub %}{% set p = s.personal_info %}
 <section class="page">
-  <h1>แบบบันทึกการวิเคราะห์ผู้เรียนเป็นรายบุคคล</h1>
+  <div class="form-title">แบบบันทึกการวิเคราะห์ผู้เรียนเป็นรายบุคคล</div>
   <h2>ข้อมูลส่วนตัว</h2>
-  <div class="row">ชื่อ – สกุล <span class="fill" style="min-width:200pt">{{ s.full_name }}</span>
-    ชื่อเล่น <span class="fill">{{ s.nickname }}</span> เลขที่ <span class="fill">{{ s.student_no }}</span></div>
-  <div class="row">วันเกิด <span class="fill">{{ r.birth_text }}</span>
-    อายุ <span class="fill">{{ p.age }}</span> ปี หมู่โลหิต <span class="fill">{{ p.blood_type }}</span></div>
-  <div class="row">ชื่อบิดา <span class="fill" style="min-width:150pt">{{ p.father_name }}</span>
-    อาชีพ <span class="fill" style="min-width:110pt">{{ p.father_job }}</span></div>
-  <div class="row">ชื่อมารดา <span class="fill" style="min-width:150pt">{{ p.mother_name }}</span>
-    อาชีพ <span class="fill" style="min-width:110pt">{{ p.mother_job }}</span></div>
-  <div class="row">สถานภาพของบิดา-มารดา <span class="fill">{{ p.parent_status }}{% if p.parent_status_other %} ({{ p.parent_status_other }}){% endif %}</span></div>
-  <div class="row">ผลการเรียนในปีการศึกษาที่ผ่านมา ระดับชั้น <span class="fill">{{ p.prev_grade_level }}</span>
-    ได้ผลการเรียนเฉลี่ย <span class="fill">{{ p.prev_gpa }}</span></div>
-  <div class="row">ที่อยู่ปัจจุบัน บ้านเลขที่ <span class="fill">{{ p.house_no }}</span> หมู่ที่ <span class="fill">{{ p.moo }}</span>
-    บ้าน <span class="fill">{{ p.village }}</span> ตำบล <span class="fill">{{ p.subdistrict }}</span>
-    อำเภอ <span class="fill">{{ p.district }}</span> จังหวัด <span class="fill">{{ p.province }}</span>
-    รหัสไปรษณีย์ <span class="fill">{{ p.postcode }}</span> โทรศัพท์ <span class="fill">{{ p.phone }}</span></div>
-  <div class="row">ปัจจุบันพักอาศัยอยู่กับ <span class="fill">{{ p.lives_with }}</span> เกี่ยวข้องเป็น <span class="fill">{{ p.lives_with_relation }}</span></div>
-  <div class="row">ข้อมูลด้านสุขภาพ น้ำหนัก <span class="fill">{{ p.weight_kg }}</span> กิโลกรัม ส่วนสูง <span class="fill">{{ p.height_cm }}</span> เซนติเมตร
-    โรคประจำตัว <span class="fill">{{ p.chronic_disease }}</span></div>
+  <table class="ln indent1"><tr><td class="l">{{ tri() }}<b>ชื่อ – สกุล</b></td><td class="f">{{ s.full_name }}</td><td class="l">ชื่อเล่น</td><td class="f" style="width:28%">{{ s.nickname }}</td></tr></table>
+  <table class="ln"><tr><td class="l">เกิดวันที่</td><td class="f c" style="width:8%">{{ r.birth[0] }}</td><td class="l">เดือน</td><td class="f c" style="width:17%">{{ r.birth[1] }}</td><td class="l">พ.ศ.</td><td class="f c" style="width:11%">{{ r.birth[2] }}</td><td class="l">อายุ</td><td class="f c" style="width:9%">{{ p.age }}</td><td class="l">ปีหมู่โลหิต</td><td class="f">{{ p.blood_type }}</td></tr></table>
+  <table class="ln"><tr><td class="l">ชื่อบิดา</td><td class="f">{{ p.father_name }}</td><td class="l">อาชีพ</td><td class="f">{{ p.father_job }}</td></tr></table>
+  <table class="ln"><tr><td class="l">ชื่อมารดา</td><td class="f">{{ p.mother_name }}</td><td class="l">อาชีพ</td><td class="f">{{ p.mother_job }}</td></tr></table>
+  <table class="ln"><tr><td class="l">สถานภาพของบิดา-มารดา
+    {%- for opt in ("สมรส", "อยู่ด้วยกัน", "แยกกันอยู่", "หย่า", "อื่นๆ") %}<span class="chk">{{ "☑" if p.parent_status == opt else "☐" }}</span>{{ opt }}{% endfor %}</td>
+    <td class="f">{{ p.parent_status_other }}</td></tr></table>
+  <table class="ln"><tr><td class="l">ผลการเรียนในปีการศึกษาที่ผ่านมาระดับชั้น</td><td class="f c" style="width:22%">{{ p.prev_grade_level }}</td><td class="l">ได้ผลการเรียนเฉลี่ย</td><td class="f">{{ p.prev_gpa }}</td></tr></table>
+  <table class="ln"><tr><td class="l">ที่อยู่ปัจจุบันบ้านเลขที่</td><td class="f">{{ p.house_no }}</td><td class="l">หมู่ที่</td><td class="f">{{ p.moo }}</td><td class="l">บ้าน</td><td class="f">{{ p.village }}</td><td class="l">ตำบล</td><td class="f">{{ p.subdistrict }}</td><td class="l">อำเภอ</td><td class="f">{{ p.district }}</td></tr></table>
+  <table class="ln"><tr><td class="l">จังหวัด</td><td class="f" style="width:30%">{{ p.province }}</td><td class="l">รหัสไปรษณีย์</td><td class="f c" style="width:18%">{{ p.postcode }}</td><td class="l">โทรศัพท์</td><td class="f">{{ p.phone }}</td></tr></table>
+  <table class="ln"><tr><td class="l">ปัจจุบันพักอาศัยอยู่กับ</td><td class="f" style="width:42%">{{ p.lives_with }}</td><td class="l">เกี่ยวข้องเป็น</td><td class="f">{{ p.lives_with_relation }}</td></tr></table>
+  <table class="ln"><tr><td class="l">ข้อมูลด้านสุขภาพ น้ำหนัก</td><td class="f c" style="width:12%">{{ p.weight_kg }}</td><td class="l">กิโลกรัม ส่วนสูง</td><td class="f c" style="width:12%">{{ p.height_cm }}</td><td class="l">เซนติเมตร โรคประจำตัว</td><td class="f">{{ p.chronic_disease }}</td></tr></table>
 
-  <h2>1. แบบสอบถามนักเรียน</h2>
+  <h2 style="margin-top:14pt">1. ให้นักเรียนกรอกแบบสอบถามให้ตรงกับความเป็นจริงมากที่สุด</h2>
   {% for q in questions %}
-  <div class="q">{{ q.label }} <span class="fill" style="min-width:120pt">{{ s.open_answers.get(q.key, "") }}</span></div>
+  <table class="ln q"><tr><td class="l">{{ q.label }}</td><td class="f">{{ s.open_answers.get(q.key, "") }}</td></tr></table>
   {% endfor %}
 
-  <h2>2. วิธีการจัดการเรียนรู้ที่นักเรียนต้องการ (เรียงตามลำดับ)</h2>
+  <h2 style="margin-top:14pt">2. นักเรียนต้องการให้ครูจัดการเรียนรู้โดยวิธีใดมากที่สุดเรียงตามลำดับ(ใส่ตัวเลข)</h2>
   <table class="methods">
     {% for row in methods | batch(3) %}
-    <tr>{% for key, label in row %}<td><span class="rank">{{ r.ranks.get(key, "") }}</span> {{ label }}</td>{% endfor %}</tr>
+    <tr>{% for key, label in row %}<td><span class="rank">{{ r.ranks.get(key, "") }}</span>{{ label }}</td>{% endfor %}</tr>
     {% endfor %}
   </table>
 </section>
 
 <section class="page">
-  <div class="right">ครูผู้สอน</div>
-  <h2>3. การวิเคราะห์ผู้เรียนเป็นรายบุคคล</h2>
-  <div class="row">ชื่อ – สกุล <span class="fill" style="min-width:200pt">{{ s.full_name }}</span>
-    ชื่อเล่น <span class="fill">{{ s.nickname }}</span> อายุ <span class="fill">{{ p.age }}</span> ปี</div>
-  <div class="row">ผลการวิเคราะห์ผู้เรียนรายบุคคลวิชา <span class="fill">{{ room.subject_name }}</span>
-    ชั้น <span class="fill">{{ room.grade_label }}</span> ปีการศึกษา <span class="fill">{{ room.semester }}/{{ room.academic_year }}</span></div>
-  <div class="row">ผลการเรียนในรายวิชานี้ ในภาคเรียนที่ผ่านมา เกรด <span class="fill">{{ r.last_grade }}</span></div>
-  <table class="eval" style="margin-top:6pt">
-    <tr><th rowspan="2" style="width:44%">รายการวิเคราะห์ผู้เรียนเป็นรายบุคคล</th><th colspan="3">ผลการประเมินวิเคราะห์ผู้เรียน</th><th rowspan="2" style="width:27%">สิ่งที่ควรปรับปรุง / แก้ไข</th></tr>
-    <tr><th style="width:8%">ดี</th><th style="width:10.5%">ปานกลาง</th><th style="width:10.5%">ปรับปรุง</th></tr>
+  <div class="right teacher-tag">ครูผู้สอน</div>
+  <h2 style="margin-top:2pt">3. การวิเคราะห์ผู้เรียนเป็นรายบุคคล</h2>
+  <table class="ln indent1"><tr><td class="l">{{ tri() }} ชื่อ – สกุล</td><td class="f">{{ s.full_name }}</td><td class="l">ชื่อเล่น</td><td class="f" style="width:18%">{{ s.nickname }}</td><td class="l">อายุ</td><td class="f c" style="width:10%">{{ p.age }}</td><td class="l">ปี</td></tr></table>
+  <table class="ln indent1"><tr><td class="l">{{ tri() }} ผลการวิเคราะห์ผู้เรียนรายบุคคลวิชา</td><td class="f nw">{{ room.subject_name }}</td><td class="l">ชั้น</td><td class="f nw">{{ room.grade_label | replace("มัธยมศึกษาปีที่ ", "ม.") | replace("ประถมศึกษาปีที่ ", "ป.") }}</td><td class="l">ปีการศึกษา</td><td class="f nw">{{ room.semester }}/{{ room.academic_year }}</td></tr></table>
+  <table class="ln indent1"><tr><td class="l">{{ tri() }} ผลการเรียนในรายวิชานี้ ในภาคเรียนที่ผ่านมา เกรด</td><td class="f" style="width:25%">{{ r.last_grade }}</td><td style="width:25%"></td></tr></table>
+  <table class="eval" style="margin-top:4pt">
+    <tr><th rowspan="2" style="width:40%">รายการวิเคราะห์ผู้เรียนเป็นรายบุคคล</th><th colspan="3" style="white-space:nowrap">ผลการประเมินวิเคราะห์ผู้เรียน</th><th rowspan="2" style="width:24%">สิ่งที่ควร<br>ปรับปรุง /แก้ไข</th></tr>
+    <tr><th style="width:10%">ดี</th><th style="width:13%">ปานกลาง</th><th style="width:13%">ปรับปรุง</th></tr>
     {% for domain_no, domain_name, items in domains %}
-    <tr class="domain"><td colspan="5">{{ domain_no }}. {{ domain_name }}</td></tr>
+    {% set notes = [] %}{% for code, label in items %}{% set sc = r.scores.get(code) %}{% if sc and sc.improvement_note %}{% set _ = notes.append(sc.improvement_note) %}{% endif %}{% endfor %}
     {% for code, label in items %}{% set sc = r.scores.get(code) %}
     <tr>
-      <td class="item">{{ label }}</td>
+      <td class="item">{% if loop.first %}<b>{{ domain_no }}. {{ domain_name }}</b><br>{% endif %}{{ tri() }}{{ label }}</td>
       <td class="c">{% if sc and sc.rating == "good" %}✓{% endif %}</td>
       <td class="c">{% if sc and sc.rating == "fair" %}✓{% endif %}</td>
       <td class="c">{% if sc and sc.rating == "improve" %}✓{% endif %}</td>
-      <td>{{ sc.improvement_note if sc else "" }}</td>
+      {% if loop.first %}<td class="note" rowspan="{{ items | length }}">
+        {% for n in notes %}<div class="note-line">{{ n }}</div>{% endfor %}
+        {% for _ in range(items | length - notes | length) %}<div class="note-line"></div>{% endfor %}
+      </td>{% endif %}
     </tr>
     {% endfor %}{% endfor %}
-    <tr><td class="c"><b>รวม</b></td><td class="c">{{ r.totals.good or "" }}</td><td class="c">{{ r.totals.fair or "" }}</td><td class="c">{{ r.totals.improve or "" }}</td><td></td></tr>
+    <tr><td class="c">รวม</td><td class="c">{{ r.totals.good or "" }}</td><td class="c">{{ r.totals.fair or "" }}</td><td class="c">{{ r.totals.improve or "" }}</td><td></td></tr>
   </table>
-  <h2>ความคิดเห็นและข้อเสนอแนะของครู</h2>
-  <div style="min-height:40pt; border-bottom:1px dotted #444; white-space:pre-wrap">{{ r.comment }}</div>
-  <div class="sign">ลงชื่อ.........................................................<br>({{ teacher.full_name }})<br>{{ teacher.position }}ผู้สอน</div>
+  <h2 style="margin-top:12pt" class="indent1">{{ tri() }}ความคิดเห็นและข้อเสนอแนะของครู</h2>
+  {% if r.comment %}<div class="comment-line">{{ r.comment }}</div>{% endif %}
+  {% for _ in range(2 if r.comment else 3) %}<div class="comment-line"></div>{% endfor %}
+  <div class="sign-left">ลงชื่อ.........................................................<br><span class="name">({{ teacher.full_name }})</span></div>
 </section>
 {% endfor %}

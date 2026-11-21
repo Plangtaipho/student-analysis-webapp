@@ -16,7 +16,9 @@ depends_on = None
 
 def upgrade() -> None:
     op.add_column('users', sa.Column('department', sa.String(length=120), nullable=False, server_default=''))
+    op.add_column('users', sa.Column('school_location', sa.String(length=160), nullable=False, server_default=''))
 
 
 def downgrade() -> None:
+    op.drop_column('users', 'school_location')
     op.drop_column('users', 'department')

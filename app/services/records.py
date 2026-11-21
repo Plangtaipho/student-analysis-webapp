@@ -19,6 +19,15 @@ def thai_date(iso: str | None) -> str:
     return f"{d.day} {THAI_MONTHS[d.month - 1]} {d.year + 543}"
 
 
+def birth_parts(iso: str | None) -> tuple[str, str, str]:
+    """(day, Thai month name, Buddhist year) for the form's "เกิดวันที่...เดือน...พ.ศ..." line."""
+    try:
+        d = date.fromisoformat(iso or "")
+    except ValueError:
+        return "", "", ""
+    return str(d.day), THAI_MONTHS[d.month - 1], str(d.year + 543)
+
+
 def individual_record(sub: Submission) -> dict:
     ev = sub.evaluation
     scores = {s.item_code: s for s in ev.scores} if ev else {}
@@ -28,6 +37,7 @@ def individual_record(sub: Submission) -> dict:
     return {
         "sub": sub,
         "birth_text": thai_date(sub.personal_info.get("birth_date")),
+        "birth": birth_parts(sub.personal_info.get("birth_date")),
         "ranks": {key: i for i, key in enumerate(sub.learning_prefs, start=1)},
         "scores": {k: {"rating": v.rating.value, "improvement_note": v.improvement_note} for k, v in scores.items()},
         "totals": totals,

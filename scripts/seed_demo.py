@@ -29,7 +29,7 @@ def main(email="demo@example.com", password="demo12345", assess=17):
         r = c.post("/api/auth/login", json={"email": email, "password": password})
     h = {"X-CSRF-Token": r.json()["csrf"]}
     c.put("/api/auth/profile", headers=h, json={"full_name": "นางพรธิดา โพธิ์สิงห์", "position": "ครู", "department": "กลุ่มบริหารวิชาการ",
-          "school_name": "โรงเรียนหนองสวรรค์วิทยาคาร", "area_office": "สำนักงานเขตพื้นที่การศึกษามัธยมศึกษาเลย หนองบัวลำภู"})
+          "school_name": "โรงเรียนหนองสวรรค์วิทยาคาร", "school_location": "อำเภอเมือง จังหวัดหนองบัวลำภู", "area_office": "สำนักงานเขตพื้นที่การศึกษามัธยมศึกษาเลย หนองบัวลำภู"})
     room = c.post("/api/classrooms", headers=h, json={"subject_name": "คณิตศาสตร์พื้นฐาน", "subject_code": "ค33101",
                   "grade_label": "มัธยมศึกษาปีที่ 6/1", "academic_year": current_academic_term()[0], "semester": current_academic_term()[1]}).json()
     c.put(f"/api/classrooms/{room['id']}/roster", headers=h, json={"text": "\n".join(f"{i}\t{n}" for i, n in enumerate(NAMES, 1))})

@@ -4,25 +4,27 @@
 <meta charset="utf-8">
 <title>{% block title %}รายงาน{% endblock %}</title>
 <style>
+  /* Layout follows the school's sample "แบบบันทึกการวิเคราะห์ผู้เรียนเป็นรายบุคคล" (TH Sarabun, A4). */
   @font-face { font-family: "Sarabun"; src: url("{{ font_dir }}/Sarabun-Regular.ttf"); font-weight: normal; }
   @font-face { font-family: "Sarabun"; src: url("{{ font_dir }}/Sarabun-Bold.ttf"); font-weight: bold; }
-  @page { size: A4; margin: 1.3cm 1.5cm 1.2cm 2cm; }
-  body { font-family: "Sarabun"; font-size: 12.5pt; line-height: 1.32; color: #000; }
-  h1 { font-size: 16pt; text-align: center; margin: 0 0 8pt; }
-  h2 { font-size: 14pt; margin: 10pt 0 4pt; }
+  @page { size: A4; margin: 1.6cm 1.8cm 1.4cm 2.6cm; }
+  body { font-family: "Sarabun"; font-size: 12.5pt; line-height: 1.4; color: #000; }
+  h1 { font-size: 14pt; text-align: center; margin: 0 0 6pt; }
+  h2 { font-size: 12.5pt; margin: 10pt 0 3pt; }
   .page { page-break-after: always; }
   .page:last-child { page-break-after: auto; }
-  .fill { border-bottom: 1px dotted #444; padding: 0 4pt; min-width: 40pt; display: inline-block; }
-  .row { margin: 1pt 0; }
-  .muted { color: #444; }
+  /* A form line: label cells hug their text, dotted blanks share the rest of the width. */
+  table.ln { width: 100%; border-collapse: collapse; margin: 0; }
+  table.ln td { border: none; padding: 1pt 2pt 0; vertical-align: bottom; }
+  table.ln td.l { white-space: nowrap; width: 1%; }
+  table.ln td.f { border-bottom: 1px dotted #000; }
+  .tri { font-family: "DejaVu Sans"; font-size: 8pt; padding-right: 2pt; }
   table { width: 100%; border-collapse: collapse; }
-  td, th { border: 1px solid #000; padding: 1pt 4pt; vertical-align: top; }
-  th { font-weight: bold; text-align: center; }
+  td, th { border: 1px solid #000; padding: 2pt 4pt; vertical-align: top; }
+  th { font-weight: bold; text-align: center; vertical-align: middle; }
   .c { text-align: center; }
-  .domain td { font-weight: bold; }
-  .noborder td { border: none; padding: 1pt 4pt; }
   .right { text-align: right; }
-  .sign { margin-top: 10pt; margin-left: 50%; text-align: center; }
+  .teacher-tag { font-weight: bold; }
   {% block style %}{% endblock %}
 </style>
 </head>
