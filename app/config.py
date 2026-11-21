@@ -1,6 +1,7 @@
 """Application settings, read from environment variables (or a local .env file)."""
 from functools import lru_cache
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -45,6 +46,20 @@ class Settings(BaseSettings):
 
     # Delete classrooms 45 days after their semester ends (see app/services/retention.py).
     retention_enabled: bool = True
+
+    @field_validator("public_base_url", "env", "promptpay_id", "promptpay_name", "initial_admin_email", mode="before")
+    @classmethod
+    def _trim(cls, v):
+        return v.strip() if isinstance(v, str) else v
+
+    @field_validator("public_base_url")
+    @classmethod
+    def _with_scheme(cls, v: str) -> str:
+        # "example.up.railway.app" (no https://) would make student links relative and broken.
+        v = v.rstrip("/")
+        if v and not v.startswith(("http://", "https://")):
+            v = "https://" + v
+        return v
 
     @property
     def google_enabled(self) -> bool:

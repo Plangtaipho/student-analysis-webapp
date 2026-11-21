@@ -90,3 +90,11 @@ def test_bad_initial_admin_password_does_not_crash(monkeypatch):
     main.bootstrap_admin()  # no exception, no admin
     with TestClient(main.app) as c:
         assert c.get("/healthz").status_code == 200
+
+
+def test_public_base_url_gets_scheme():
+    from app.config import Settings
+
+    assert Settings(public_base_url=" kruflow.up.railway.app/ ").public_base_url == "https://kruflow.up.railway.app"
+    assert Settings(public_base_url="http://localhost:8000").public_base_url == "http://localhost:8000"
+    assert Settings(env=" Production ").is_production
