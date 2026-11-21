@@ -29,6 +29,8 @@
       email: f.get("email"),
       password: f.get("password"),
       full_name: f.get("full_name"),
+      position: f.get("position"),
+      department: f.get("department"),
       school_name: f.get("school_name"),
       accept_terms: f.get("accept_terms") === "on",
     };

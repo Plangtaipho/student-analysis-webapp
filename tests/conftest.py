@@ -45,6 +45,8 @@ class Teacher:
                 "email": email,
                 "password": PASSWORD,
                 "full_name": name,
+                "position": "ครู",
+                "department": "กลุ่มบริหารวิชาการ",
                 "school_name": "โรงเรียนทดสอบวิทยา",
                 "accept_terms": True,
             },

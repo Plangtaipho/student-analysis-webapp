@@ -23,12 +23,12 @@ NAMES = [
 def main(email="demo@example.com", password="demo12345", assess=17):
     rnd = random.Random(7)
     c = TestClient(app)
-    r = c.post("/api/auth/register", json={"email": email, "password": password, "full_name": "นางพรธิดา โพธิ์สิงห์",
+    r = c.post("/api/auth/register", json={"email": email, "password": password, "full_name": "นางพรธิดา โพธิ์สิงห์", "position": "ครู", "department": "กลุ่มบริหารวิชาการ",
                                           "school_name": "โรงเรียนหนองสวรรค์วิทยาคาร", "accept_terms": True})
     if r.status_code == 409:
         r = c.post("/api/auth/login", json={"email": email, "password": password})
     h = {"X-CSRF-Token": r.json()["csrf"]}
-    c.put("/api/auth/profile", headers=h, json={"full_name": "นางพรธิดา โพธิ์สิงห์", "position": "ครู",
+    c.put("/api/auth/profile", headers=h, json={"full_name": "นางพรธิดา โพธิ์สิงห์", "position": "ครู", "department": "กลุ่มบริหารวิชาการ",
           "school_name": "โรงเรียนหนองสวรรค์วิทยาคาร", "area_office": "สำนักงานเขตพื้นที่การศึกษามัธยมศึกษาเลย หนองบัวลำภู"})
     room = c.post("/api/classrooms", headers=h, json={"subject_name": "คณิตศาสตร์พื้นฐาน", "subject_code": "ค33101",
                   "grade_label": "มัธยมศึกษาปีที่ 6/1", "academic_year": current_academic_term()[0], "semester": current_academic_term()[1]}).json()

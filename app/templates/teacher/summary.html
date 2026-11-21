@@ -39,13 +39,16 @@
 
 <form class="card" id="memo-form">
   <h2>ออกรายงานฉบับเต็ม (PDF)</h2>
-  <p class="muted small">ไฟล์เดียวมีครบ: บันทึกข้อความ แบบสรุปผล กลุ่มผู้เรียน และแบบบันทึกรายบุคคลของนักเรียนที่ประเมินแล้ว ช่องที่เว้นว่างจะใช้ค่าตั้งต้น</p>
+  <p class="muted small">ไฟล์เดียวมีครบ: บันทึกข้อความ แบบสรุปผล กลุ่มผู้เรียน และแบบบันทึกรายบุคคลของนักเรียนที่ประเมินแล้ว</p>
+  <dl class="memo-preview">
+    <div><dt>ส่วนราชการ</dt><dd><span id="memo-dept"></span> <a href="/app/profile" class="small">แก้ไข</a></dd></div>
+    <div><dt>วันที่</dt><dd id="memo-date"></dd></div>
+  </dl>
   <div class="fields">
-    <div class="field half"><label for="doc_no">ที่ (เลขที่หนังสือ)</label><input id="doc_no" name="doc_no" maxlength="60" placeholder="เช่น ๔๑๗/๒๕๖๙"></div>
-    <div class="field half"><label for="doc_date">วันที่</label><input id="doc_date" name="doc_date" type="date"></div>
+    <div class="field half"><label for="doc_no">ที่ (เลขที่หนังสือ) <span class="req">*</span></label><input id="doc_no" name="doc_no" required maxlength="60" placeholder="เช่น ๔๑๗/๒๕๖๙"></div>
     <div class="field"><label for="to">เรียน</label><input id="to" name="to" maxlength="200" placeholder="ผู้อำนวยการโรงเรียน..."></div>
-    <div class="field"><label for="dept">ส่วนราชการ</label><input id="dept" name="dept" maxlength="200" placeholder="กลุ่มบริหารวิชาการ โรงเรียน..."></div>
   </div>
+  <div id="memo-error" class="alert alert-error hidden" role="alert"></div>
   <div class="row mt-4">
     <button class="btn btn-primary" type="submit" id="pdf-full">ดาวน์โหลดรายงานฉบับเต็ม</button>
   </div>

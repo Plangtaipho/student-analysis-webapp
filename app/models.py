@@ -59,6 +59,8 @@ class User(Base):
     full_name: Mapped[str] = mapped_column(String(120))
     position: Mapped[str] = mapped_column(String(80), default="ครู")
     school_name: Mapped[str] = mapped_column(String(160), default="")
+    # กลุ่มงาน / กลุ่มสาระ, printed as ส่วนราชการ in the memo, e.g. "กลุ่มบริหารวิชาการ".
+    department: Mapped[str] = mapped_column(String(120), default="", server_default="")
     area_office: Mapped[str] = mapped_column(String(200), default="")
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)

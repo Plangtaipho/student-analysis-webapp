@@ -471,3 +471,8 @@ html { scroll-behavior: smooth; }
 .keep-note.soon { color: var(--stamp); font-weight: 600; }
 #purge-alert { margin-bottom: 1rem; }
 .optional-note { margin-bottom: 1rem; }
+.memo-preview { margin: 1rem 0; display: grid; gap: .4rem; }
+.memo-preview > div { display: flex; gap: .8rem; }
+.memo-preview dt { font-weight: 600; min-width: 6.5rem; color: var(--ink-deep); }
+.memo-preview dd { margin: 0; }
+.hint { font-weight: 400; color: var(--muted); font-size: .82rem; }

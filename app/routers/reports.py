@@ -1,5 +1,4 @@
 """PDF downloads for the teacher."""
-from datetime import date
 from urllib.parse import quote
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
@@ -74,9 +73,7 @@ def grade_text(label: str) -> str:
 def full_report_pdf(
     classroom_id: int,
     doc_no: str = Query(default="", max_length=60),
-    doc_date: date | None = None,
     to: str = Query(default="", max_length=200),
-    dept: str = Query(default="", max_length=200),
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
@@ -86,11 +83,17 @@ def full_report_pdf(
     summary = classroom_summary(room)
     if summary["evaluated"] == 0:
         raise HTTPException(status.HTTP_409_CONFLICT, "ยังไม่มีนักเรียนที่ประเมินแล้ว กรุณาประเมินอย่างน้อย 1 คนก่อนออกรายงาน")
+    if not doc_no.strip():
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "กรุณากรอกเลขที่หนังสือ (ที่) ก่อนออกรายงาน")
+    if not user.department.strip():
+        raise HTTPException(
+            status.HTTP_409_CONFLICT, "กรุณากรอกกลุ่มงานในหน้าข้อมูลครูก่อน เพื่อใช้เป็นส่วนราชการในบันทึกข้อความ"
+        )
     school = school_text(user.school_name)
-    d = doc_date or today()
+    d = today()  # the memo is dated the day it is exported
     memo = {
-        "dept": dept.strip() or f"กลุ่มบริหารวิชาการ {school}",
-        "doc_no": doc_no.strip() or "............................",
+        "dept": f"{user.department.strip()} {school}",
+        "doc_no": thai_number(doc_no.strip()),
         "date_text": thai_number(f"{d.day} {THAI_MONTHS[d.month - 1]} {d.year + 543}"),
         "to": to.strip() or f"ผู้อำนวยการ{school}",
     }

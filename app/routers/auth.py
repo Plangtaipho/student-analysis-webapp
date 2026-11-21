@@ -40,6 +40,8 @@ def register(body: RegisterIn, request: Request, db: Session = Depends(get_db)):
         email=email,
         password_hash=hash_password(body.password),
         full_name=body.full_name,
+        position=body.position,
+        department=body.department,
         school_name=body.school_name,
     )
     db.add(user)
@@ -84,6 +86,7 @@ def update_profile(body: ProfileIn, user: User = Depends(get_current_user), db: 
     user = db.merge(user)
     user.full_name = body.full_name
     user.position = body.position
+    user.department = body.department
     user.school_name = body.school_name
     user.area_office = body.area_office
     db.commit()

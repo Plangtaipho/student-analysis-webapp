@@ -36,10 +36,12 @@ class Password(BaseModel):
 class RegisterIn(Password):
     email: EmailStr
     full_name: str = Field(min_length=2, max_length=120)
+    position: str = Field(min_length=1, max_length=80)
+    department: str = Field(min_length=2, max_length=120)
     school_name: str = Field(min_length=2, max_length=160)
     accept_terms: bool
 
-    @field_validator("full_name", "school_name")
+    @field_validator("full_name", "position", "department", "school_name")
     @classmethod
     def _strip(cls, v: str) -> str:
         return _clean(v)
@@ -60,10 +62,11 @@ class LoginIn(BaseModel):
 class ProfileIn(BaseModel):
     full_name: str = Field(min_length=2, max_length=120)
     position: str = Field(min_length=1, max_length=80)
+    department: str = Field(min_length=2, max_length=120)
     school_name: str = Field(min_length=2, max_length=160)
     area_office: str = Field(default="", max_length=200)
 
-    @field_validator("full_name", "position", "school_name", "area_office")
+    @field_validator("full_name", "position", "department", "school_name", "area_office")
     @classmethod
     def _strip(cls, v: str) -> str:
         return _clean(v)
@@ -79,6 +82,7 @@ class UserOut(BaseModel):
     email: str
     full_name: str
     position: str
+    department: str
     school_name: str
     area_office: str
     role: str

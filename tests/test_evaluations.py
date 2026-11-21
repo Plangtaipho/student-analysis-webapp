@@ -1,6 +1,7 @@
 import pytest
 
-from app.models import Rating
+from app.database import SessionLocal
+from app.models import Rating, User
 from app.services.summary import ITEM_CODES, auto_group
 from tests.conftest import Teacher, student_payload, token_of
 
@@ -138,6 +139,17 @@ def test_full_report_pdf(teacher, student):
     url = f"/api/classrooms/{room['id']}/pdf/full"
     assert teacher.get(url).status_code == 409  # nobody assessed yet
     teacher.put(ev_url(room, ids[0]), {"scores": all_scores("good"), "teacher_comment": "ดีมาก"})
-    r = teacher.get(url, params={"doc_no": "417/2569", "doc_date": "2026-11-20", "to": "ผู้อำนวยการโรงเรียนทดสอบ"})
+    r = teacher.get(url, params={"doc_no": "417/2569", "to": "ผู้อำนวยการโรงเรียนทดสอบ"})
     assert r.status_code == 200 and r.content.startswith(b"%PDF")
-    assert teacher.get(url, params={"doc_date": "not-a-date"}).status_code == 422
+    assert teacher.get(url).status_code == 422  # doc number is required
+    assert teacher.get(url, params={"doc_no": "  "}).status_code == 422
+
+
+def test_full_report_needs_department(teacher, student):
+    room, ids = setup_room(teacher, student, 1)
+    teacher.put(ev_url(room, ids[0]), {"scores": all_scores("good")})
+    with SessionLocal() as db:
+        db.get(User, teacher.user["id"]).department = ""
+        db.commit()
+    r = teacher.get(f"/api/classrooms/{room['id']}/pdf/full", params={"doc_no": "1/2569"})
+    assert r.status_code == 409 and "กลุ่มงาน" in r.text

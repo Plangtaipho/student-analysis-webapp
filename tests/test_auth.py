@@ -14,7 +14,7 @@ def test_register_logs_in_and_me_works(teacher):
 def test_register_duplicate_email_is_rejected_case_insensitive(teacher):
     c = TestClient(app)
     r = c.post("/api/auth/register", json={
-        "email": "KRU@example.com", "password": PASSWORD, "full_name": "ครูอีกคน",
+        "email": "KRU@example.com", "password": PASSWORD, "full_name": "ครูอีกคน", "position": "ครู", "department": "กลุ่มบริหารวิชาการ",
         "school_name": "โรงเรียนอื่น", "accept_terms": True,
     })
     assert r.status_code == 409
@@ -22,10 +22,15 @@ def test_register_duplicate_email_is_rejected_case_insensitive(teacher):
 
 def test_register_requires_terms_and_valid_input():
     c = TestClient(app)
-    base = {"email": "a@example.com", "password": PASSWORD, "full_name": "ครูเอ", "school_name": "โรงเรียนเอ"}
+    base = {"email": "a@example.com", "password": PASSWORD, "full_name": "ครูเอ", "position": "ครู",
+            "department": "กลุ่มบริหารวิชาการ", "school_name": "โรงเรียนเอ"}
     assert c.post("/api/auth/register", json=base | {"accept_terms": False}).status_code == 422
     assert c.post("/api/auth/register", json=base | {"accept_terms": True, "password": "short"}).status_code == 422
     assert c.post("/api/auth/register", json=base | {"accept_terms": True, "email": "not-an-email"}).status_code == 422
+    assert c.post("/api/auth/register", json=base | {"accept_terms": True, "position": ""}).status_code == 422
+    assert c.post("/api/auth/register", json=base | {"accept_terms": True, "department": ""}).status_code == 422
+    r = c.post("/api/auth/register", json=base | {"accept_terms": True})
+    assert r.status_code == 201 and r.json()["user"]["department"] == "กลุ่มบริหารวิชาการ"
 
 
 def test_login_logout_and_wrong_password(teacher):
@@ -47,7 +52,7 @@ def test_login_is_rate_limited(teacher):
 
 
 def test_profile_update_needs_csrf(teacher):
-    body = {"full_name": "นางพรธิดา โพธิ์สิงห์", "position": "ครูชำนาญการ", "school_name": "โรงเรียนหนองสวรรค์วิทยาคาร", "area_office": "สพม.เลย หนองบัวลำภู"}
+    body = {"full_name": "นางพรธิดา โพธิ์สิงห์", "position": "ครูชำนาญการ", "department": "กลุ่มสาระการเรียนรู้คณิตศาสตร์", "school_name": "โรงเรียนหนองสวรรค์วิทยาคาร", "area_office": "สพม.เลย หนองบัวลำภู"}
     assert teacher.c.put("/api/auth/profile", json=body).status_code == 403
     r = teacher.put("/api/auth/profile", body)
     assert r.status_code == 200

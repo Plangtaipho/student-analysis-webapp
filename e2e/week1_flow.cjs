@@ -27,6 +27,8 @@ function watch(page, label, errors) {
   const email = `kru${Date.now()}@example.com`;
   await t.goto(`${BASE}/register`);
   await t.fill("#full_name", "นางพรธิดา โพธิ์สิงห์");
+  await t.fill("#position", "ครู");
+  await t.fill("#department", "กลุ่มบริหารวิชาการ");
   await t.fill("#school_name", "โรงเรียนหนองสวรรค์วิทยาคาร");
   await t.fill("#email", email);
   await t.fill("#password", "password123");
