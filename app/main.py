@@ -16,7 +16,7 @@ from app.config import get_settings
 from app.database import SessionLocal
 from app.models import Role, User
 from app.routers import auth, billing, classrooms, evaluations, pages, reports, student
-from app.security import hash_password
+from app.security import MAX_PASSWORD_BYTES, hash_password
 from app.services.retention import purge_loop
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
@@ -27,6 +27,14 @@ settings = get_settings()
 def bootstrap_admin() -> None:
     """Create the first admin from env vars when no admin exists yet."""
     if not (settings.initial_admin_email and settings.initial_admin_password):
+        return
+    password = settings.initial_admin_password
+    if not 8 <= len(password.encode("utf-8")) <= MAX_PASSWORD_BYTES:
+        # Never stop the whole site over a bad bootstrap value; just skip it.
+        log.error(
+            "INITIAL_ADMIN_PASSWORD must be 8-%d bytes (English letters/digits); admin not created",
+            MAX_PASSWORD_BYTES,
+        )
         return
     with SessionLocal() as db:
         if db.scalar(select(User).where(User.role == Role.admin)):

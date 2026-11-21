@@ -79,3 +79,14 @@ def test_security_headers():
     r = TestClient(app).get("/")
     assert "default-src 'self'" in r.headers["content-security-policy"]
     assert r.headers["x-frame-options"] == "DENY"
+
+
+def test_bad_initial_admin_password_does_not_crash(monkeypatch):
+    """A placeholder pasted as INITIAL_ADMIN_PASSWORD (e.g. long Thai text) must not stop the site."""
+    from app import main
+
+    monkeypatch.setattr(main.settings, "initial_admin_email", "admin@example.com")
+    monkeypatch.setattr(main.settings, "initial_admin_password", "(รหัสผ่านแอดมิน อย่างน้อย 12 ตัว)")
+    main.bootstrap_admin()  # no exception, no admin
+    with TestClient(main.app) as c:
+        assert c.get("/healthz").status_code == 200
