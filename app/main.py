@@ -1,4 +1,5 @@
 """FastAPI application: middleware, routers, error handlers, first-admin bootstrap."""
+import asyncio
 import logging
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -16,6 +17,7 @@ from app.database import SessionLocal
 from app.models import Role, User
 from app.routers import auth, classrooms, evaluations, pages, reports, student
 from app.security import hash_password
+from app.services.retention import purge_loop
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 log = logging.getLogger("app")
@@ -50,7 +52,10 @@ async def lifespan(_: FastAPI):
     if settings.is_production and settings.secret_key == "dev-only-change-me":
         raise RuntimeError("SECRET_KEY must be set in production")
     bootstrap_admin()
+    purge_task = asyncio.create_task(purge_loop()) if settings.retention_enabled else None
     yield
+    if purge_task:
+        purge_task.cancel()
 
 
 app = FastAPI(

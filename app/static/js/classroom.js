@@ -21,6 +21,9 @@
     const base = room.roster_count || room.submitted_count;
     $("eval-progress").value = base ? Math.round((room.evaluated_count / base) * 100) : 0;
     $("pdf-all").classList.toggle("hidden", room.submitted_count === 0);
+    const pa = $("purge-alert");
+    pa.textContent = `ภาคเรียนนี้จบแล้ว ระบบจะลบห้องนี้และคำตอบของนักเรียนทั้งหมดในวันที่ ${API.thaiDate(room.purge_on)} กรุณาดาวน์โหลดรายงาน PDF เก็บไว้ก่อน`;
+    pa.classList.toggle("hidden", !room.term_ended);
     $("summary-link").href = `/app/classrooms/${id}/summary`;
   }
 

@@ -52,6 +52,11 @@
     return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   }
 
+  function thaiDate(isoDay) {
+    if (!isoDay) return "";
+    const [y, m, d] = isoDay.split("-").map(Number);
+    return new Date(Date.UTC(y, m - 1, d)).toLocaleDateString("th-TH", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+  }
   function thaiDateTime(iso) {
     if (!iso) return "";
     return new Date(iso).toLocaleString("th-TH", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Bangkok" });
@@ -76,6 +81,6 @@
     put: (u, b) => request("PUT", u, b ?? {}),
     patch: (u, b) => request("PATCH", u, b ?? {}),
     del: (u) => request("DELETE", u),
-    loadMe, toast, showError, hide, esc, thaiDateTime,
+    loadMe, toast, showError, hide, esc, thaiDate, thaiDateTime,
   };
 })();

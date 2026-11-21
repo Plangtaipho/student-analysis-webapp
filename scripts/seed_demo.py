@@ -9,6 +9,7 @@ from fastapi.testclient import TestClient
 
 from app.main import app
 from app.services.summary import ITEM_CODES
+from app.deps import current_academic_term
 
 NAMES = [
     "นายนนทพัทธ์ ภูแซมโชติ", "นางสาวสุดธิดา ทองคำแสน", "นางสาวศิริรัตน์ พรมาแข้", "นางสาวกมลชนก จูมจะนะ",
@@ -30,7 +31,7 @@ def main(email="demo@example.com", password="demo12345", assess=17):
     c.put("/api/auth/profile", headers=h, json={"full_name": "นางพรธิดา โพธิ์สิงห์", "position": "ครู",
           "school_name": "โรงเรียนหนองสวรรค์วิทยาคาร", "area_office": "สำนักงานเขตพื้นที่การศึกษามัธยมศึกษาเลย หนองบัวลำภู"})
     room = c.post("/api/classrooms", headers=h, json={"subject_name": "คณิตศาสตร์พื้นฐาน", "subject_code": "ค33101",
-                  "grade_label": "มัธยมศึกษาปีที่ 6/1", "academic_year": 2569, "semester": 2}).json()
+                  "grade_label": "มัธยมศึกษาปีที่ 6/1", "academic_year": current_academic_term()[0], "semester": current_academic_term()[1]}).json()
     c.put(f"/api/classrooms/{room['id']}/roster", headers=h, json={"text": "\n".join(f"{i}\t{n}" for i, n in enumerate(NAMES, 1))})
     token = room["student_link"].rsplit("/", 1)[1]
     methods = ["lecture", "discussion", "mindmap", "questioning", "project", "roleplay", "experiment", "group"]

@@ -121,6 +121,9 @@ class ClassroomOut(BaseModel):
     submitted_count: int = 0
     roster_count: int = 0
     evaluated_count: int = 0
+    # Retention: the day this classroom and its answers are deleted, and whether the term has ended.
+    purge_on: date | None = None
+    term_ended: bool = False
 
 
 class RosterIn(BaseModel):

@@ -31,6 +31,9 @@ class Settings(BaseSettings):
     initial_admin_email: str = ""
     initial_admin_password: str = ""
 
+    # Delete classrooms 45 days after their semester ends (see app/services/retention.py).
+    retention_enabled: bool = True
+
     @property
     def is_production(self) -> bool:
         return self.env.lower() == "production"

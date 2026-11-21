@@ -12,6 +12,7 @@ os.environ["PUBLIC_BASE_URL"] = "https://example.test"
 import pytest  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 
+from app.deps import current_academic_term  # noqa: E402
 from app.database import Base, SessionLocal, engine  # noqa: E402
 from app.main import app  # noqa: E402
 from app.models import AssessmentItem  # noqa: E402
@@ -75,8 +76,8 @@ class Teacher:
             "subject_name": "คณิตศาสตร์",
             "subject_code": "ค33101",
             "grade_label": "มัธยมศึกษาปีที่ 6/1",
-            "academic_year": 2569,
-            "semester": 2,
+            "academic_year": current_academic_term()[0],
+            "semester": current_academic_term()[1],
         } | kw
         r = self.post("/api/classrooms", body)
         assert r.status_code == 201, r.text

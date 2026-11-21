@@ -23,6 +23,7 @@
           <div><b>${r.evaluated_count}</b><span>ครูประเมินแล้ว</span></div>
         </div>
         ${r.roster_count ? `<progress class="progress" max="100" value="${pct}" aria-label="ส่งแล้ว ${pct}%"></progress>` : ""}
+        <div class="keep-note${r.term_ended ? " soon" : ""}">${r.term_ended ? "จบภาคเรียนแล้ว ข้อมูลจะถูกลบ" : "เก็บข้อมูลถึง"} ${API.thaiDate(r.purge_on)}</div>
       </a>`;
   }
 

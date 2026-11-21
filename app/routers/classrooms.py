@@ -8,11 +8,12 @@ from sqlalchemy.orm import Session
 
 from app.config import get_settings
 from app.database import get_db
-from app.deps import current_academic_term, get_current_user, get_owned_classroom, verify_csrf
+from app.deps import current_academic_term, get_current_user, get_owned_classroom, today, verify_csrf
 from app.models import Classroom, Evaluation, RosterEntry, Submission, User
 from app.schemas import ClassroomIn, ClassroomOut, ClassroomPatch, RosterEntryOut, RosterIn
 from app.security import hash_edit_code, new_edit_code, new_public_token
 from app.services.form_definition import LEARNING_METHOD_LABELS
+from app.services.retention import purge_on, term_end
 from app.services.roster import parse_roster
 
 router = APIRouter(prefix="/api/classrooms", tags=["classrooms"], dependencies=[Depends(verify_csrf)])
@@ -38,6 +39,8 @@ def _out(request: Request, db: Session, room: Classroom) -> ClassroomOut:
     out = ClassroomOut.model_validate(room)
     out.student_link = student_link(request, room)
     out.submitted_count, out.roster_count, out.evaluated_count = submitted, roster, evaluated
+    out.purge_on = purge_on(room.academic_year, room.semester)
+    out.term_ended = today() > term_end(room.academic_year, room.semester)
     return out
 
 
@@ -62,6 +65,11 @@ def list_classrooms(request: Request, user: User = Depends(get_current_user), db
 def create_classroom(
     body: ClassroomIn, request: Request, user: User = Depends(get_current_user), db: Session = Depends(get_db)
 ):
+    if purge_on(body.academic_year, body.semester) <= today():
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_CONTENT,
+            f"ภาคเรียนที่ {body.semester}/{body.academic_year} จบไปนานแล้ว ระบบเก็บข้อมูลไว้แค่ 45 วันหลังจบภาคเรียน",
+        )
     has_any = db.scalar(select(func.count()).select_from(Classroom).where(Classroom.teacher_id == user.id))
     room = Classroom(
         teacher_id=user.id,

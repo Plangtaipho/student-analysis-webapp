@@ -1,6 +1,6 @@
 {% macro field_input(f) -%}
 <div class="field {{ f.width }}">
-  <label for="f-{{ f.key }}">{{ f.label }}{% if f.sensitive %} <span class="tag">ไม่บังคับ</span>{% endif %}</label>
+  <label for="f-{{ f.key }}">{{ f.label }}</label>
   {% if f.kind == "select" %}
   <select id="f-{{ f.key }}" name="{{ f.key }}" data-personal>
     <option value="">— เลือก —</option>
@@ -73,6 +73,7 @@
     </section>
 
     <section class="step" data-kind="personal">
+      <div class="alert alert-info small optional-note"><b>ส่วนนี้ไม่บังคับกรอกทุกช่อง</b> จำไม่ได้หรือไม่อยากบอก เว้นว่างไว้ได้เลย แล้วกด "ถัดไป"</div>
       {% for section in sections[:2] %}
       <h2 {% if not loop.first %}class="mt-5"{% endif %}>{{ section.title }}</h2>
       <div class="fields">{% for f in section.fields %}{{ field_input(f) }}{% endfor %}</div>
@@ -80,6 +81,7 @@
     </section>
 
     <section class="step" data-kind="personal">
+      <div class="alert alert-info small optional-note"><b>ส่วนนี้ไม่บังคับกรอกทุกช่อง</b> จำไม่ได้หรือไม่อยากบอก เว้นว่างไว้ได้เลย แล้วกด "ถัดไป"</div>
       {% for section in sections[2:] %}
       <h2 {% if not loop.first %}class="mt-5"{% endif %}>{{ section.title }} {% if section.note %}<span class="tag">{{ section.note }}</span>{% endif %}</h2>
       <div class="fields">{% for f in section.fields %}{{ field_input(f) }}{% endfor %}</div>
@@ -109,7 +111,7 @@
       <h2>ยืนยันการส่ง</h2>
       <div class="alert alert-info small">
         ข้อมูลในแบบฟอร์มนี้ใช้เพื่อให้ครูผู้สอนวิเคราะห์ผู้เรียนและวางแผนการสอน และจัดทำรายงานส่งโรงเรียนเท่านั้น
-        ครูผู้สอนวิชานี้เป็นผู้เห็นข้อมูล ข้อมูลที่อยู่และสุขภาพไม่บังคับกรอก
+        ครูผู้สอนวิชานี้เป็นผู้เห็นข้อมูล ข้อมูลส่วนตัว ครอบครัว ที่อยู่ และสุขภาพไม่บังคับกรอก
         อ่านเพิ่มเติมที่ <a href="/privacy" target="_blank">นโยบายความเป็นส่วนตัว</a>
       </div>
       <label class="check"><input type="checkbox" name="consent" required> <span>ข้าพเจ้ายินยอมให้เก็บและใช้ข้อมูลตามที่แจ้งไว้ข้างต้น</span></label>

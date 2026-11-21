@@ -20,7 +20,7 @@ ITEM_CODES = tuple(code for _, _, items in ASSESSMENT_DOMAINS for code, _ in ite
 
 
 def auto_group(ratings: list[Rating]) -> LearnerGroup:
-    """DEFAULT rule (awaiting confirmation): average of good=3, fair=2, improve=1.
+    """Grouping rule confirmed by the user (2026-11-21): average of good=3, fair=2, improve=1.
 
     average >= 2.5 -> high, average < 1.5 -> low, otherwise medium.
     "Learning disability" is never automatic: only the teacher can set it.

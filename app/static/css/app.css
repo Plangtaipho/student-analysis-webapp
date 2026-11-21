@@ -467,3 +467,7 @@ html { scroll-behavior: smooth; }
 @media (max-width: 639px) { .lp-hero br { display: none; } .lp-hero h1 { font-size: 1.8rem; } }
 .powered { text-align: center; color: var(--muted); font-size: .85rem; display: flex; gap: .4rem; align-items: center; justify-content: center; margin: 0 0 2rem; }
 .foot-brand { display: inline-flex; align-items: center; gap: .6rem; }
+.keep-note { font-size: .8rem; color: var(--muted); margin-top: .6rem; }
+.keep-note.soon { color: var(--stamp); font-weight: 600; }
+#purge-alert { margin-bottom: 1rem; }
+.optional-note { margin-bottom: 1rem; }
