@@ -47,6 +47,7 @@ def register(body: RegisterIn, request: Request, db: Session = Depends(get_db)):
         full_name=body.full_name,
         position=body.position,
         department=body.department,
+        learning_area=body.learning_area,
         school_name=body.school_name,
     )
     db.add(user)
@@ -92,6 +93,7 @@ def update_profile(body: ProfileIn, user: User = Depends(get_current_user), db: 
     user.full_name = body.full_name
     user.position = body.position
     user.department = body.department
+    user.learning_area = body.learning_area
     user.school_location = body.school_location
     user.school_name = body.school_name
     user.area_office = body.area_office
@@ -209,6 +211,7 @@ def google_register(body: GoogleRegisterIn, request: Request, db: Session = Depe
         full_name=body.full_name,
         position=body.position,
         department=body.department,
+        learning_area=body.learning_area,
         school_name=body.school_name,
     )
     db.add(user)

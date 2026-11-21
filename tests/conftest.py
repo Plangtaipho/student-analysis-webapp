@@ -47,6 +47,7 @@ class Teacher:
                 "full_name": name,
                 "position": "ครู",
                 "department": "กลุ่มบริหารวิชาการ",
+                "learning_area": "กลุ่มสาระการเรียนรู้คณิตศาสตร์",
                 "school_name": "โรงเรียนทดสอบวิทยา",
                 "accept_terms": True,
             },

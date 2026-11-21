@@ -9,7 +9,8 @@
   <div class="fields">
     <div class="field half"><label for="full_name">ชื่อ-สกุล</label><input id="full_name" name="full_name" required maxlength="120" placeholder="นางพรธิดา โพธิ์สิงห์"></div>
     <div class="field half"><label for="position">ตำแหน่ง</label><select id="position" name="position" required><option value="">— เลือก —</option><option>ครู</option><option>พนักงานราชการ</option><option>อัตราจ้าง</option></select></div>
-    <div class="field"><label for="department">กลุ่มงาน / กลุ่มสาระ <span class="hint">ใช้เป็น "ส่วนราชการ" ในบันทึกข้อความ</span></label><input id="department" name="department" required minlength="2" maxlength="120" list="dept-list" placeholder="กลุ่มบริหารวิชาการ"></div>
+    <div class="field half"><label for="department">กลุ่มงาน <span class="hint">ใช้เป็น "ส่วนราชการ" ในบันทึกข้อความ</span></label><select id="department" name="department" required><option value="">เลือกกลุ่มงาน</option>{% for g in WORK_GROUPS %}<option>{{ g }}</option>{% endfor %}</select></div>
+    <div class="field half"><label for="learning_area">กลุ่มสาระการเรียนรู้</label><select id="learning_area" name="learning_area" required><option value="">เลือกกลุ่มสาระ</option>{% for a in LEARNING_AREAS %}<option value="{{ a }}">{{ a | replace("กลุ่มสาระการเรียนรู้", "") }}</option>{% endfor %}</select></div>
     <div class="field"><label for="school_name">โรงเรียน</label><input id="school_name" name="school_name" required maxlength="160"></div>
     <div class="field"><label for="school_location">อำเภอ จังหวัดของโรงเรียน <span class="hint">ต่อท้ายส่วนราชการในบันทึกข้อความ</span></label><input id="school_location" name="school_location" maxlength="160" placeholder="อำเภอเมือง จังหวัดหนองบัวลำภู"></div>
     <div class="field"><label for="area_office">สำนักงานเขตพื้นที่การศึกษา <span class="tag">ไม่บังคับ</span></label><input id="area_office" name="area_office" maxlength="200" placeholder="สำนักงานเขตพื้นที่การศึกษามัธยมศึกษา..."></div>
@@ -17,7 +18,6 @@
   <div id="profile-error" class="alert alert-error hidden" role="alert"></div>
   <button class="btn btn-primary mt-4" type="submit">บันทึก</button>
 </form>
-<datalist id="dept-list"><option value="กลุ่มบริหารวิชาการ"><option value="กลุ่มสาระการเรียนรู้ภาษาไทย"><option value="กลุ่มสาระการเรียนรู้คณิตศาสตร์"><option value="กลุ่มสาระการเรียนรู้วิทยาศาสตร์และเทคโนโลยี"><option value="กลุ่มสาระการเรียนรู้สังคมศึกษา ศาสนาและวัฒนธรรม"><option value="กลุ่มสาระการเรียนรู้สุขศึกษาและพลศึกษา"><option value="กลุ่มสาระการเรียนรู้ศิลปะ"><option value="กลุ่มสาระการเรียนรู้การงานอาชีพ"><option value="กลุ่มสาระการเรียนรู้ภาษาต่างประเทศ"><option value="กิจกรรมพัฒนาผู้เรียน"></datalist>
 <form id="password-form" class="card">
   <h2 id="password-title">เปลี่ยนรหัสผ่าน</h2>
   <p id="google-only-note" class="muted small hidden">บัญชีนี้เข้าสู่ระบบด้วย Google ตั้งรหัสผ่านไว้ด้วยก็ได้ เผื่อเข้าด้วยอีเมลและรหัสผ่าน</p>

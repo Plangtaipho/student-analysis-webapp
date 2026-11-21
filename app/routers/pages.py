@@ -10,6 +10,7 @@ from app.config import get_settings
 from app.database import get_db
 from app.deps import get_optional_user
 from app.models import Role, User
+from app.schemas import LEARNING_AREAS, POSITIONS, WORK_GROUPS
 from app.routers.student import get_room_by_token, room_info
 from app.services.form_definition import (
     LEARNING_METHODS,
@@ -19,6 +20,7 @@ from app.services.form_definition import (
 )
 
 templates = Jinja2Templates(directory=str(Path(__file__).resolve().parent.parent / "templates"))
+templates.env.globals.update(WORK_GROUPS=WORK_GROUPS, LEARNING_AREAS=LEARNING_AREAS, POSITIONS=POSITIONS)
 router = APIRouter(include_in_schema=False)
 
 
@@ -44,7 +46,11 @@ def login_page(request: Request, user: User | None = Depends(get_optional_user))
 def register_page(request: Request, user: User | None = Depends(get_optional_user)):
     if user:
         return RedirectResponse("/app", status_code=303)
-    return templates.TemplateResponse(request, "register.html", {"user": None, "google": get_settings().google_enabled})
+    return templates.TemplateResponse(
+        request,
+        "register.html",
+        {"user": None, "google": get_settings().google_enabled, "price": get_settings().price_per_term},
+    )
 
 
 @router.get("/privacy", response_class=HTMLResponse)

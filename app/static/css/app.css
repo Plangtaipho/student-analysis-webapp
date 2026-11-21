@@ -506,3 +506,48 @@ html { scroll-behavior: smooth; }
   table.list.terms td:nth-child(3) { grid-column: 1 / -1; }
   table.list.people td.who { grid-column: 1 / -1; font-weight: 600; }
 }
+
+/* Sign-up page --------------------------------------------------------------------- */
+.auth-container { max-width: 1040px; padding-top: 2rem; }
+.auth { display: grid; grid-template-columns: 1fr; background: var(--sheet); border: 1px solid var(--rule); border-radius: 14px; overflow: hidden; box-shadow: 0 10px 30px rgba(21, 49, 91, .08); }
+.auth-aside { background: var(--ink-deep); color: #dfe7f3; padding: 1.5rem 1.25rem; position: relative; }
+.auth-aside h1 { color: #fff; font-size: 1.45rem; margin: .75rem 0 .5rem; }
+.auth-mark { display: block; }
+.auth-points { list-style: none; padding: 0; margin: 0 0 .75rem; display: grid; gap: .4rem; }
+.auth-points li { position: relative; padding-left: 1.6rem; font-size: .95rem; }
+.auth-points li::before { content: ""; position: absolute; left: 0; top: .45rem; width: 1rem; height: .55rem; border-left: 2.5px solid var(--accent); border-bottom: 2.5px solid var(--accent); transform: rotate(-45deg); }
+.auth-points b { color: #fff; font-weight: 600; }
+.auth-price { margin: 0; font-size: .88rem; color: #aebbd0; }
+.auth-main { padding: 1.5rem 1.25rem 1.75rem; }
+.auth-title { font-size: 1.5rem; margin: 0; }
+.auth-lead { margin: .15rem 0 1.25rem; }
+.auth-step { border-top: 1px solid var(--rule); padding-top: 1.1rem; margin-top: 1.1rem; }
+.auth-step:first-of-type { border-top: 0; padding-top: 0; margin-top: 0; }
+.auth-step h3 { display: flex; align-items: center; gap: .55rem; font-size: 1.05rem; margin: 0 0 .85rem; }
+.step-no { display: inline-grid; place-items: center; width: 1.6rem; height: 1.6rem; border-radius: 50%; background: var(--ink-soft); color: var(--ink-deep); font-size: .85rem; }
+.auth .field .hint { margin-top: -.05rem; }
+.label { font-weight: 600; font-size: .94rem; }
+.pills { display: flex; flex-wrap: wrap; gap: .5rem; }
+.pills label { margin: 0; cursor: pointer; font-weight: 600; }
+.pills input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.pills span { display: inline-flex; align-items: center; min-height: 44px; padding: .4rem 1rem; border: 1px solid var(--rule-strong); border-radius: 999px; background: #fff; color: var(--text); }
+.pills label:hover span { border-color: var(--ink); }
+.pills input:checked + span { background: var(--ink); border-color: var(--ink); color: #fff; }
+.pills input:focus-visible + span { outline: 3px solid var(--mark); outline-offset: 2px; }
+.auth-consent { margin: 1.25rem 0 .25rem; font-size: .93rem; }
+.btn-lg { min-height: 52px; font-size: 1.05rem; margin-top: 1rem; }
+@media (max-width: 899px) {
+  .auth-container { padding-top: 1rem; }
+  .auth-aside { display: flex; flex-wrap: wrap; align-items: center; gap: .25rem .75rem; padding: 1rem 1.25rem; }
+  .auth-aside h1 { font-size: 1.1rem; margin: 0; flex: 1; }
+  .auth-aside h1 br { display: none; }
+  .auth-mark { width: 34px; height: 34px; }
+  .auth-points, .auth-price { display: none; }
+}
+@media (min-width: 900px) {
+  .auth { grid-template-columns: 340px 1fr; }
+  .auth-aside { padding: 2.25rem 2rem; }
+  .auth-aside h1 { font-size: 1.7rem; margin: 1.25rem 0 1.25rem; }
+  .auth-points { gap: .9rem; margin-bottom: 1.75rem; }
+  .auth-main { padding: 2.25rem 2.5rem 2.5rem; }
+}

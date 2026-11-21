@@ -15,7 +15,8 @@ from tests.conftest import PASSWORD, Teacher
 DETAILS = {
     "full_name": "นายสมชาย ใจกว้าง",
     "position": "พนักงานราชการ",
-    "department": "กลุ่มสาระการเรียนรู้คณิตศาสตร์",
+    "department": "กลุ่มบริหารวิชาการ",
+    "learning_area": "กลุ่มสาระการเรียนรู้คณิตศาสตร์",
     "school_name": "โรงเรียนทดสอบวิทยา",
     "accept_terms": True,
 }

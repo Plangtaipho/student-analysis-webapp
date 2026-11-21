@@ -23,6 +23,35 @@ def _clean(s: str) -> str:
 # --- Teacher accounts --------------------------------------------------------------
 
 
+# กลุ่มงาน (printed as ส่วนราชการ in the memo) and กลุ่มสาระ are separate choices.
+WORK_GROUPS = ("กลุ่มบริหารวิชาการ", "กลุ่มบริหารงบประมาณ", "กลุ่มบริหารงานบุคคล", "กลุ่มบริหารงานทั่วไป")
+LEARNING_AREAS = (
+    "กลุ่มสาระการเรียนรู้ภาษาไทย",
+    "กลุ่มสาระการเรียนรู้คณิตศาสตร์",
+    "กลุ่มสาระการเรียนรู้วิทยาศาสตร์และเทคโนโลยี",
+    "กลุ่มสาระการเรียนรู้สังคมศึกษา ศาสนาและวัฒนธรรม",
+    "กลุ่มสาระการเรียนรู้สุขศึกษาและพลศึกษา",
+    "กลุ่มสาระการเรียนรู้ศิลปะ",
+    "กลุ่มสาระการเรียนรู้การงานอาชีพ",
+    "กลุ่มสาระการเรียนรู้ภาษาต่างประเทศ",
+    "กิจกรรมพัฒนาผู้เรียน",
+)
+POSITIONS = ("ครู", "พนักงานราชการ", "อัตราจ้าง")
+Position = Literal["ครู", "พนักงานราชการ", "อัตราจ้าง"]
+WorkGroup = Literal["กลุ่มบริหารวิชาการ", "กลุ่มบริหารงบประมาณ", "กลุ่มบริหารงานบุคคล", "กลุ่มบริหารงานทั่วไป"]
+LearningArea = Literal[
+    "กลุ่มสาระการเรียนรู้ภาษาไทย",
+    "กลุ่มสาระการเรียนรู้คณิตศาสตร์",
+    "กลุ่มสาระการเรียนรู้วิทยาศาสตร์และเทคโนโลยี",
+    "กลุ่มสาระการเรียนรู้สังคมศึกษา ศาสนาและวัฒนธรรม",
+    "กลุ่มสาระการเรียนรู้สุขศึกษาและพลศึกษา",
+    "กลุ่มสาระการเรียนรู้ศิลปะ",
+    "กลุ่มสาระการเรียนรู้การงานอาชีพ",
+    "กลุ่มสาระการเรียนรู้ภาษาต่างประเทศ",
+    "กิจกรรมพัฒนาผู้เรียน",
+]
+
+
 class Password(BaseModel):
     password: str = Field(min_length=8, max_length=128)
 
@@ -37,12 +66,13 @@ class Password(BaseModel):
 class RegisterIn(Password):
     email: EmailStr
     full_name: str = Field(min_length=2, max_length=120)
-    position: Literal["ครู", "พนักงานราชการ", "อัตราจ้าง"]
-    department: str = Field(min_length=2, max_length=120)
+    position: Position
+    department: WorkGroup
+    learning_area: LearningArea
     school_name: str = Field(min_length=2, max_length=160)
     accept_terms: bool
 
-    @field_validator("full_name", "department", "school_name")
+    @field_validator("full_name", "school_name")
     @classmethod
     def _strip(cls, v: str) -> str:
         return _clean(v)
@@ -59,12 +89,13 @@ class GoogleRegisterIn(BaseModel):
     """Finish a Google sign-up: the details a report needs (email comes from Google)."""
 
     full_name: str = Field(min_length=2, max_length=120)
-    position: Literal["ครู", "พนักงานราชการ", "อัตราจ้าง"]
-    department: str = Field(min_length=2, max_length=120)
+    position: Position
+    department: WorkGroup
+    learning_area: LearningArea
     school_name: str = Field(min_length=2, max_length=160)
     accept_terms: bool
 
-    @field_validator("full_name", "department", "school_name")
+    @field_validator("full_name", "school_name")
     @classmethod
     def _strip(cls, v: str) -> str:
         return _clean(v)
@@ -84,13 +115,14 @@ class LoginIn(BaseModel):
 
 class ProfileIn(BaseModel):
     full_name: str = Field(min_length=2, max_length=120)
-    position: Literal["ครู", "พนักงานราชการ", "อัตราจ้าง"]
-    department: str = Field(min_length=2, max_length=120)
+    position: Position
+    department: WorkGroup
+    learning_area: LearningArea
     school_name: str = Field(min_length=2, max_length=160)
     school_location: str = Field(default="", max_length=160)
     area_office: str = Field(default="", max_length=200)
 
-    @field_validator("full_name", "department", "school_name", "school_location", "area_office")
+    @field_validator("full_name", "school_name", "school_location", "area_office")
     @classmethod
     def _strip(cls, v: str) -> str:
         return _clean(v)
@@ -107,6 +139,7 @@ class UserOut(BaseModel):
     full_name: str
     position: str
     department: str
+    learning_area: str
     school_name: str
     school_location: str
     area_office: str

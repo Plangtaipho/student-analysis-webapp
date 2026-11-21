@@ -63,8 +63,10 @@ class User(Base):
     full_name: Mapped[str] = mapped_column(String(120))
     position: Mapped[str] = mapped_column(String(80), default="ครู")
     school_name: Mapped[str] = mapped_column(String(160), default="")
-    # กลุ่มงาน / กลุ่มสาระ, printed as ส่วนราชการ in the memo, e.g. "กลุ่มบริหารวิชาการ".
+    # กลุ่มงาน (one of four), printed as ส่วนราชการ in the memo, e.g. "กลุ่มบริหารวิชาการ".
     department: Mapped[str] = mapped_column(String(120), default="", server_default="")
+    # กลุ่มสาระการเรียนรู้ the teacher belongs to (separate from กลุ่มงาน).
+    learning_area: Mapped[str] = mapped_column(String(120), default="", server_default="")
     # อำเภอ / จังหวัด of the school, appended to ส่วนราชการ, e.g. "อำเภอเมือง จังหวัดหนองบัวลำภู".
     school_location: Mapped[str] = mapped_column(String(160), default="", server_default="")
     area_office: Mapped[str] = mapped_column(String(200), default="")
