@@ -1,0 +1,11 @@
+TH Sarabun New (version 1.35, 2011)
+Copyright (c) 2010-2011 Software Industry Promotion Agency (Public Organization) (SIPA).
+Created by Suppakit Chalermlarp.
+
+One of the 13 Thai national fonts released by SIPA and the Department of
+Intellectual Property (DIP) for free public use. The fonts may be used,
+embedded in documents (including PDF), bundled with software and
+redistributed without fee, under the DIP-SIPA font licence.
+
+Used here for the PDF reports, to match the standard Thai government
+document font (ระเบียบงานสารบรรณ).

@@ -5,17 +5,17 @@
 <title>{% block title %}รายงาน{% endblock %}</title>
 <style>
   /* Layout follows the school's sample "แบบบันทึกการวิเคราะห์ผู้เรียนเป็นรายบุคคล" (TH Sarabun, A4). */
-  @font-face { font-family: "Sarabun"; src: url("{{ font_dir }}/Sarabun-Regular.ttf"); font-weight: normal; }
-  @font-face { font-family: "Sarabun"; src: url("{{ font_dir }}/Sarabun-Bold.ttf"); font-weight: bold; }
+  @font-face { font-family: "TH Sarabun New"; src: url("{{ font_dir }}/THSarabunNew-Regular.ttf"); font-weight: normal; }
+  @font-face { font-family: "TH Sarabun New"; src: url("{{ font_dir }}/THSarabunNew-Bold.ttf"); font-weight: bold; }
   @page { size: A4; margin: 1.6cm 1.8cm 1.4cm 2.6cm; }
-  body { font-family: "Sarabun"; font-size: 12.5pt; line-height: 1.4; color: #000; }
-  h1 { font-size: 14pt; text-align: center; margin: 0 0 6pt; }
-  h2 { font-size: 12.5pt; margin: 10pt 0 3pt; }
+  body { font-family: "TH Sarabun New"; font-size: 16pt; line-height: 1.25; color: #000; }
+  h1 { font-size: 18pt; text-align: center; margin: 0 0 6pt; }
+  h2 { font-size: 16pt; margin: 10pt 0 3pt; }
   .page { page-break-after: always; }
   .page:last-child { page-break-after: auto; }
   /* A form line: label cells hug their text, dotted blanks share the rest of the width. */
   table.ln { width: 100%; border-collapse: collapse; margin: 0; }
-  table.ln td { border: none; padding: 1pt 2pt 0; vertical-align: bottom; }
+  table.ln td { border: none; padding: 1pt 2pt 0; vertical-align: bottom; line-height: 1.05; }
   table.ln td.l { white-space: nowrap; width: 1%; }
   table.ln td.f { border-bottom: 1px dotted #000; }
   .tri { font-family: "DejaVu Sans"; font-size: 8pt; padding-right: 2pt; }
