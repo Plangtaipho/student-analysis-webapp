@@ -13,7 +13,7 @@
     <div class="field half"><label for="learning_area">กลุ่มสาระการเรียนรู้</label><select id="learning_area" name="learning_area" required><option value="">เลือกกลุ่มสาระ</option>{% for a in LEARNING_AREAS %}<option value="{{ a }}">{{ a | replace("กลุ่มสาระการเรียนรู้", "") }}</option>{% endfor %}</select></div>
     <div class="field"><label for="school_name">โรงเรียน</label><input id="school_name" name="school_name" required maxlength="160"></div>
     <div class="field"><label for="school_location">อำเภอ จังหวัดของโรงเรียน <span class="hint">ต่อท้ายส่วนราชการในบันทึกข้อความ</span></label><input id="school_location" name="school_location" maxlength="160" placeholder="อำเภอเมือง จังหวัดหนองบัวลำภู"></div>
-    <div class="field"><label for="area_office">สำนักงานเขตพื้นที่การศึกษา <span class="hint">ต่อท้ายส่วนราชการในบันทึกข้อความ</span></label><input id="area_office" name="area_office" required minlength="3" maxlength="200" placeholder="สำนักงานเขตพื้นที่การศึกษามัธยมศึกษา..."></div>
+    <div class="field"><label for="area_office">สำนักงานเขตพื้นที่การศึกษา <span class="hint">ต่อท้ายส่วนราชการในบันทึกข้อความ</span></label><input id="area_office" name="area_office" required minlength="3" maxlength="200" placeholder="สำนักงานเขตพื้นที่การศึกษามัธยมศึกษาเลย หนองบัวลำภู"></div>
   </div>
   <div id="profile-error" class="alert alert-error hidden" role="alert"></div>
   <button class="btn btn-primary mt-4" type="submit">บันทึก</button>

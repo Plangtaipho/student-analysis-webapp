@@ -8,6 +8,7 @@ from app.database import get_db
 from app.deps import get_current_user, get_owned_classroom, today
 from app.models import User
 from app.routers.classrooms import get_owned_submission
+from app.schemas import expand_area_office
 from app.services.billing import LOCKED_MESSAGE, room_is_active
 from app.services.form_definition import (
     ASSESSMENT_DOMAINS,
@@ -108,7 +109,7 @@ def full_report_pdf(
     memo = {
         # ส่วนราชการ: กลุ่มงาน โรงเรียน (อำเภอ จังหวัด) สำนักงานเขตพื้นที่การศึกษา
         "dept": " ".join(
-            x for x in (user.department.strip(), school, user.school_location.strip(), user.area_office.strip()) if x
+            x for x in (user.department.strip(), school, user.school_location.strip(), expand_area_office(user.area_office)) if x
         ),
         "doc_no": thai_number(doc_no.strip()),
         "date_text": thai_number(f"{d.day} {THAI_MONTHS[d.month - 1]} {d.year + 543}"),

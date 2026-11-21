@@ -20,6 +20,23 @@ def _clean(s: str) -> str:
     return re.sub(r"[ \t]+", " ", s).strip()
 
 
+# Official letters need full agency names, so common short forms are spelled out.
+AREA_OFFICE_ABBREVIATIONS = (
+    (r"สพม\.?", "สำนักงานเขตพื้นที่การศึกษามัธยมศึกษา"),
+    (r"สพป\.?", "สำนักงานเขตพื้นที่การศึกษาประถมศึกษา"),
+    (r"สพฐ\.?", "สำนักงานคณะกรรมการการศึกษาขั้นพื้นฐาน"),
+    (r"สช\.", "สำนักงานคณะกรรมการส่งเสริมการศึกษาเอกชน"),
+)
+
+
+def expand_area_office(s: str) -> str:
+    """'สพม.เลย หนองบัวลำภู' -> 'สำนักงานเขตพื้นที่การศึกษามัธยมศึกษาเลย หนองบัวลำภู'."""
+    s = _clean(s)
+    for short, full in AREA_OFFICE_ABBREVIATIONS:
+        s = re.sub(rf"(?<![\u0E00-\u0E7F]){short}\s*", full, s)
+    return s
+
+
 # --- Teacher accounts --------------------------------------------------------------
 
 
@@ -71,9 +88,14 @@ class RegisterIn(Password):
     learning_area: LearningArea
     school_name: str = Field(min_length=2, max_length=160)
     area_office: str = Field(min_length=3, max_length=200)
+
+    @field_validator("area_office")
+    @classmethod
+    def _full_area_office(cls, v: str) -> str:
+        return expand_area_office(v)
     accept_terms: bool
 
-    @field_validator("full_name", "school_name", "area_office")
+    @field_validator("full_name", "school_name")
     @classmethod
     def _strip(cls, v: str) -> str:
         return _clean(v)
@@ -95,9 +117,14 @@ class GoogleRegisterIn(BaseModel):
     learning_area: LearningArea
     school_name: str = Field(min_length=2, max_length=160)
     area_office: str = Field(min_length=3, max_length=200)
+
+    @field_validator("area_office")
+    @classmethod
+    def _full_area_office(cls, v: str) -> str:
+        return expand_area_office(v)
     accept_terms: bool
 
-    @field_validator("full_name", "school_name", "area_office")
+    @field_validator("full_name", "school_name")
     @classmethod
     def _strip(cls, v: str) -> str:
         return _clean(v)
@@ -124,7 +151,12 @@ class ProfileIn(BaseModel):
     school_location: str = Field(default="", max_length=160)
     area_office: str = Field(min_length=3, max_length=200)
 
-    @field_validator("full_name", "school_name", "school_location", "area_office")
+    @field_validator("area_office")
+    @classmethod
+    def _full_area_office(cls, v: str) -> str:
+        return expand_area_office(v)
+
+    @field_validator("full_name", "school_name", "school_location")
     @classmethod
     def _strip(cls, v: str) -> str:
         return _clean(v)

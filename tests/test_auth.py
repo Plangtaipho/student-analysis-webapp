@@ -39,7 +39,7 @@ def test_register_requires_terms_and_valid_input():
     r = c.post("/api/auth/register", json=base | {"accept_terms": True})
     assert r.status_code == 201 and r.json()["user"]["department"] == "กลุ่มบริหารวิชาการ"
     assert r.json()["user"]["learning_area"] == "กิจกรรมพัฒนาผู้เรียน"
-    assert r.json()["user"]["area_office"] == "สพม.เลย หนองบัวลำภู"
+    assert r.json()["user"]["area_office"] == "สำนักงานเขตพื้นที่การศึกษามัธยมศึกษาเลย หนองบัวลำภู"
 
 
 def test_login_logout_and_wrong_password(teacher):
@@ -108,3 +108,20 @@ def test_public_base_url_gets_scheme():
     assert Settings(public_base_url=" kruflow.up.railway.app/ ").public_base_url == "https://kruflow.up.railway.app"
     assert Settings(public_base_url="http://localhost:8000").public_base_url == "http://localhost:8000"
     assert Settings(env=" Production ").is_production
+
+
+def test_area_office_short_forms_are_spelled_out():
+    from app.schemas import expand_area_office
+
+    assert expand_area_office("สพม.เลย หนองบัวลำภู") == "สำนักงานเขตพื้นที่การศึกษามัธยมศึกษาเลย หนองบัวลำภู"
+    assert expand_area_office("สพป. หนองบัวลำภู เขต 1") == "สำนักงานเขตพื้นที่การศึกษาประถมศึกษาหนองบัวลำภู เขต 1"
+    assert expand_area_office("สพปหนองบัวลำภู เขต 2") == "สำนักงานเขตพื้นที่การศึกษาประถมศึกษาหนองบัวลำภู เขต 2"
+    full = "สำนักงานเขตพื้นที่การศึกษามัธยมศึกษาเลย หนองบัวลำภู"
+    assert expand_area_office(full) == full
+    c = TestClient(app)
+    r = c.post("/api/auth/register", json={
+        "email": "b@example.com", "password": PASSWORD, "full_name": "ครูบี", "position": "ครู",
+        "department": "กลุ่มบริหารวิชาการ", "learning_area": "กลุ่มสาระการเรียนรู้ศิลปะ",
+        "school_name": "โรงเรียนบี", "area_office": "สพม.เลย หนองบัวลำภู", "accept_terms": True,
+    })
+    assert r.json()["user"]["area_office"] == full
