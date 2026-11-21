@@ -18,6 +18,7 @@ DETAILS = {
     "department": "กลุ่มบริหารวิชาการ",
     "learning_area": "กลุ่มสาระการเรียนรู้คณิตศาสตร์",
     "school_name": "โรงเรียนทดสอบวิทยา",
+    "area_office": "สพป.หนองบัวลำภู เขต 1",
     "accept_terms": True,
 }
 

@@ -8,7 +8,9 @@
   try {
     me = (await API.loadMe()).user;
     const school = me.school_name.startsWith("โรงเรียน") ? me.school_name : "โรงเรียน" + me.school_name;
-    $("memo-dept").textContent = me.department ? [me.department, school, me.school_location].filter(Boolean).join(" ") : "ยังไม่ได้กรอกกลุ่มงาน";
+    $("memo-dept").textContent = me.department && me.area_office
+      ? [me.department, school, me.school_location, me.area_office].filter(Boolean).join(" ")
+      : "ยังไม่ได้กรอกกลุ่มงานหรือเขตพื้นที่การศึกษา (แก้ได้ที่หน้าข้อมูลครู)";
     $("memo-date").textContent = new Date().toLocaleDateString("th-TH-u-nu-thai", { day: "numeric", month: "long", year: "numeric" }) + " (วันที่ดาวน์โหลด)";
     $("to").placeholder = `ผู้อำนวยการ${school}`;
     const [room, s] = await Promise.all([API.get(`/api/classrooms/${id}`), API.get(`/api/classrooms/${id}/summary`)]);
@@ -41,7 +43,7 @@
     ev.preventDefault();
     const err = $("memo-error");
     API.hide(err);
-    if (me && !me.department) { API.showError(err, "กรุณากรอกกลุ่มงานในหน้าข้อมูลครูก่อน เพื่อใช้เป็นส่วนราชการในบันทึกข้อความ"); return; }
+    if (me && (!me.department || !me.area_office)) { API.showError(err, "กรุณากรอกกลุ่มงานและสำนักงานเขตพื้นที่การศึกษาในหน้าข้อมูลครูก่อน เพื่อใช้เป็นส่วนราชการในบันทึกข้อความ"); return; }
     if (!$("doc_no").value.trim()) { API.showError(err, "กรุณากรอกเลขที่หนังสือ (ที่) ก่อนดาวน์โหลด"); $("doc_no").focus(); return; }
     const q = new URLSearchParams();
     for (const [k, v] of new FormData(ev.target).entries()) if (String(v).trim()) q.set(k, String(v).trim());

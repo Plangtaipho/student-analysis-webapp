@@ -49,6 +49,7 @@ def register(body: RegisterIn, request: Request, db: Session = Depends(get_db)):
         department=body.department,
         learning_area=body.learning_area,
         school_name=body.school_name,
+        area_office=body.area_office,
     )
     db.add(user)
     db.commit()
@@ -213,6 +214,7 @@ def google_register(body: GoogleRegisterIn, request: Request, db: Session = Depe
         department=body.department,
         learning_area=body.learning_area,
         school_name=body.school_name,
+        area_office=body.area_office,
     )
     db.add(user)
     db.commit()

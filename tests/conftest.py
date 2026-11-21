@@ -49,6 +49,7 @@ class Teacher:
                 "department": "กลุ่มบริหารวิชาการ",
                 "learning_area": "กลุ่มสาระการเรียนรู้คณิตศาสตร์",
                 "school_name": "โรงเรียนทดสอบวิทยา",
+                "area_office": "สพม.เลย หนองบัวลำภู",
                 "accept_terms": True,
             },
         )

@@ -70,9 +70,10 @@ class RegisterIn(Password):
     department: WorkGroup
     learning_area: LearningArea
     school_name: str = Field(min_length=2, max_length=160)
+    area_office: str = Field(min_length=3, max_length=200)
     accept_terms: bool
 
-    @field_validator("full_name", "school_name")
+    @field_validator("full_name", "school_name", "area_office")
     @classmethod
     def _strip(cls, v: str) -> str:
         return _clean(v)
@@ -93,9 +94,10 @@ class GoogleRegisterIn(BaseModel):
     department: WorkGroup
     learning_area: LearningArea
     school_name: str = Field(min_length=2, max_length=160)
+    area_office: str = Field(min_length=3, max_length=200)
     accept_terms: bool
 
-    @field_validator("full_name", "school_name")
+    @field_validator("full_name", "school_name", "area_office")
     @classmethod
     def _strip(cls, v: str) -> str:
         return _clean(v)
@@ -120,7 +122,7 @@ class ProfileIn(BaseModel):
     learning_area: LearningArea
     school_name: str = Field(min_length=2, max_length=160)
     school_location: str = Field(default="", max_length=160)
-    area_office: str = Field(default="", max_length=200)
+    area_office: str = Field(min_length=3, max_length=200)
 
     @field_validator("full_name", "school_name", "school_location", "area_office")
     @classmethod

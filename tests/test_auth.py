@@ -15,7 +15,7 @@ def test_register_duplicate_email_is_rejected_case_insensitive(teacher):
     c = TestClient(app)
     r = c.post("/api/auth/register", json={
         "email": "KRU@example.com", "password": PASSWORD, "full_name": "ครูอีกคน", "position": "ครู", "department": "กลุ่มบริหารวิชาการ",
-        "learning_area": "กลุ่มสาระการเรียนรู้ศิลปะ", "school_name": "โรงเรียนอื่น", "accept_terms": True,
+        "learning_area": "กลุ่มสาระการเรียนรู้ศิลปะ", "school_name": "โรงเรียนอื่น", "area_office": "สพม.เลย", "accept_terms": True,
     })
     assert r.status_code == 409
 
@@ -23,7 +23,8 @@ def test_register_duplicate_email_is_rejected_case_insensitive(teacher):
 def test_register_requires_terms_and_valid_input():
     c = TestClient(app)
     base = {"email": "a@example.com", "password": PASSWORD, "full_name": "ครูเอ", "position": "ครู",
-            "department": "กลุ่มบริหารวิชาการ", "learning_area": "กิจกรรมพัฒนาผู้เรียน", "school_name": "โรงเรียนเอ"}
+            "department": "กลุ่มบริหารวิชาการ", "learning_area": "กิจกรรมพัฒนาผู้เรียน", "school_name": "โรงเรียนเอ",
+            "area_office": "สพม.เลย หนองบัวลำภู"}
     assert c.post("/api/auth/register", json=base | {"accept_terms": False}).status_code == 422
     assert c.post("/api/auth/register", json=base | {"accept_terms": True, "password": "short"}).status_code == 422
     assert c.post("/api/auth/register", json=base | {"accept_terms": True, "email": "not-an-email"}).status_code == 422
@@ -34,9 +35,11 @@ def test_register_requires_terms_and_valid_input():
     bad_dept = base | {"accept_terms": True, "department": "กลุ่มสาระการเรียนรู้คณิตศาสตร์"}
     assert c.post("/api/auth/register", json=bad_dept).status_code == 422
     assert c.post("/api/auth/register", json=base | {"accept_terms": True, "learning_area": ""}).status_code == 422
+    assert c.post("/api/auth/register", json=base | {"accept_terms": True, "area_office": ""}).status_code == 422
     r = c.post("/api/auth/register", json=base | {"accept_terms": True})
     assert r.status_code == 201 and r.json()["user"]["department"] == "กลุ่มบริหารวิชาการ"
     assert r.json()["user"]["learning_area"] == "กิจกรรมพัฒนาผู้เรียน"
+    assert r.json()["user"]["area_office"] == "สพม.เลย หนองบัวลำภู"
 
 
 def test_login_logout_and_wrong_password(teacher):
