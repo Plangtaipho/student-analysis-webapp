@@ -15,6 +15,7 @@ from app.security import (
     submit_limiter,
     verify_password,
 )
+from app.services.billing import room_is_active
 
 router = APIRouter(prefix="/api/f", tags=["student"])
 
@@ -26,7 +27,7 @@ def get_room_by_token(token: str, db: Session) -> Classroom:
     return room
 
 
-def room_info(room: Classroom) -> dict:
+def room_info(room: Classroom, db: Session) -> dict:
     t = room.teacher
     return {
         "subject_name": room.subject_name,
@@ -37,6 +38,7 @@ def room_info(room: Classroom) -> dict:
         "teacher_name": f"{t.position}{t.full_name}" if t.position == "ครู" else t.full_name,
         "school_name": t.school_name,
         "is_open": room.is_open,
+        "is_active": room_is_active(db, room),
         "has_roster": bool(room.roster),
     }
 
@@ -64,7 +66,7 @@ def _check_code(room: Classroom, sub: Submission | None, student_no: int, code: 
 
 @router.get("/{token}")
 def get_form(token: str, db: Session = Depends(get_db)):
-    return room_info(get_room_by_token(token, db))
+    return room_info(get_room_by_token(token, db), db)
 
 
 @router.post("/{token}/submissions", status_code=status.HTTP_201_CREATED)
@@ -72,6 +74,8 @@ def submit(token: str, body: SubmissionIn, request: Request, db: Session = Depen
     """Send the form. With `edit_code`, replaces the answers sent before by the same student number."""
     room = get_room_by_token(token, db)
     _require_open(room)
+    if not room_is_active(db, room):
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "ห้องนี้ยังไม่เปิดใช้งาน กรุณาแจ้งครูผู้สอน")
 
     roster_name = None
     if room.roster:

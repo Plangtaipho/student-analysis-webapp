@@ -1,7 +1,7 @@
 """Pydantic request/response models."""
 import re
-from typing import Literal
 from datetime import date
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
@@ -130,6 +130,8 @@ class ClassroomOut(BaseModel):
     evaluated_count: int = 0
     # Retention: the day this classroom and its answers are deleted, and whether the term has ended.
     purge_on: date | None = None
+    # False for a non-trial room whose semester is not paid (see app/services/billing.py).
+    is_active: bool = True
     term_ended: bool = False
 
 

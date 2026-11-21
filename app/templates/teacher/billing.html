@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}ชำระเงิน{% endblock %}
+{% block container_class %}form-container{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><h1>ชำระเงิน</h1><div class="sub">ห้องแรกใช้ฟรี ห้องอื่นจ่าย <b id="price-inline">-</b> บาทต่อภาคเรียน ครั้งเดียวใช้ได้ทุกห้องในภาคเรียนนั้น</div></div>
+</div>
+
+<section class="card">
+  <h2>สถานะแต่ละภาคเรียน</h2>
+  <div class="list-wrap">
+    <table class="list terms">
+      <thead><tr><th>ภาคเรียน</th><th>ห้องที่ต้องชำระ</th><th>สถานะ</th><th></th></tr></thead>
+      <tbody id="terms-body"></tbody>
+    </table>
+  </div>
+</section>
+
+<form class="card ruled" id="pay-form">
+  <h2>โอนเงินและแนบสลิป</h2>
+  <div class="pay-grid">
+    <div class="pay-qr">
+      <img id="qr" alt="QR PromptPay" class="hidden" width="220" height="220">
+      <div id="qr-missing" class="alert alert-warn small hidden">ยังไม่ได้ตั้งค่าบัญชี PromptPay กรุณาติดต่อผู้ให้บริการ</div>
+      <div class="pay-amount"><b id="price-big">-</b> บาท</div>
+      <div class="muted small" id="pp-name"></div>
+    </div>
+    <div>
+      <ol class="pay-steps">
+        <li>สแกน QR ด้วยแอปธนาคาร ยอดเงินจะขึ้นให้อัตโนมัติ</li>
+        <li>เลือกภาคเรียนที่ต้องการชำระ</li>
+        <li>แนบรูปสลิปแล้วกดส่ง ห้องจะใช้งานได้ทันทีระหว่างรอผู้ดูแลตรวจสอบ</li>
+      </ol>
+      <div class="fields">
+        <div class="field"><label for="term">ภาคเรียน</label><select id="term" name="term" required></select></div>
+        <div class="field"><label for="slip">รูปสลิป (JPG, PNG หรือ WEBP ไม่เกิน 8 MB)</label><input id="slip" name="file" type="file" accept="image/jpeg,image/png,image/webp" required></div>
+      </div>
+      <div id="pay-error" class="alert alert-error hidden" role="alert"></div>
+      <button class="btn btn-primary mt-4" type="submit" id="pay-submit">ส่งสลิป</button>
+    </div>
+  </div>
+</form>
+{% endblock %}
+{% block scripts %}<script src="/static/js/billing.js"></script>{% endblock %}

@@ -8,7 +8,12 @@ from app.database import get_db
 from app.deps import get_current_user, get_owned_classroom, today
 from app.models import User
 from app.routers.classrooms import get_owned_submission
-from app.services.form_definition import ASSESSMENT_DOMAINS, LEARNING_METHODS, OPEN_QUESTIONS
+from app.services.billing import LOCKED_MESSAGE, room_is_active
+from app.services.form_definition import (
+    ASSESSMENT_DOMAINS,
+    LEARNING_METHODS,
+    OPEN_QUESTIONS,
+)
 from app.services.pdf import render_pdf, thai_number
 from app.services.records import THAI_MONTHS, individual_record
 from app.services.summary import classroom_summary
@@ -25,6 +30,11 @@ def _pdf_response(data: bytes, filename: str) -> Response:
             "Cache-Control": "no-store",
         },
     )
+
+
+def _require_active(db: Session, room) -> None:
+    if not room_is_active(db, room):
+        raise HTTPException(status.HTTP_402_PAYMENT_REQUIRED, LOCKED_MESSAGE)
 
 
 def _render_individual(room, teacher, subs) -> bytes:
@@ -45,6 +55,7 @@ def individual_pdf(
 ):
     sub = get_owned_submission(classroom_id, submission_id, user, db)
     room = sub.classroom
+    _require_active(db, room)
     data = _render_individual(room, user, [sub])
     return _pdf_response(data, f"วิเคราะห์ผู้เรียน-{room.grade_label}-เลขที่{sub.student_no}.pdf")
 
@@ -53,6 +64,7 @@ def individual_pdf(
 def all_individual_pdf(classroom_id: int, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """Every student's record in one file, in class-number order."""
     room = get_owned_classroom(classroom_id, user, db)
+    _require_active(db, room)
     if not room.submissions:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "ยังไม่มีนักเรียนส่งแบบฟอร์ม")
     data = _render_individual(room, user, room.submissions)
@@ -80,6 +92,7 @@ def full_report_pdf(
     """The complete set sent to the academic department:
     memo, summary table, learner groups, then every assessed student's individual record."""
     room = get_owned_classroom(classroom_id, user, db)
+    _require_active(db, room)
     summary = classroom_summary(room)
     if summary["evaluated"] == 0:
         raise HTTPException(status.HTTP_409_CONFLICT, "ยังไม่มีนักเรียนที่ประเมินแล้ว กรุณาประเมินอย่างน้อย 1 คนก่อนออกรายงาน")

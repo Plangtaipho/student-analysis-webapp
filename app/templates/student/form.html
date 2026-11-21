@@ -39,7 +39,9 @@
 </header>
 <main class="container form-container student-main" id="student-app" data-token="{{ token }}" data-min-ranked="{{ min_ranked }}">
 
-  {% if not room.is_open %}
+  {% if not room.is_active %}
+  <div class="card"><h2>ห้องนี้ยังไม่เปิดใช้งาน</h2><p class="muted">ครูผู้สอนยังไม่ได้เปิดใช้งานแบบฟอร์มของห้องนี้ กรุณาแจ้งครูผู้สอน แล้วลองเปิดลิงก์นี้อีกครั้งภายหลัง</p></div>
+  {% elif not room.is_open %}
   <div class="card"><h2>ปิดรับคำตอบแล้ว</h2><p class="muted">ครูปิดรับแบบฟอร์มของห้องนี้แล้ว หากยังไม่ได้ส่งหรือต้องการแก้ไข กรุณาติดต่อครูผู้สอน</p></div>
   {% else %}
 

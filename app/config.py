@@ -31,6 +31,13 @@ class Settings(BaseSettings):
     initial_admin_email: str = ""
     initial_admin_password: str = ""
 
+    # Price of one semester (all classrooms of that term), in baht.
+    price_per_term: int = 129
+    # PromptPay receiver: a mobile number (0812345678) or a 13-digit ID. Empty = QR not shown.
+    promptpay_id: str = ""
+    # Account name shown to teachers before they transfer, e.g. "นางสาว... (KruFlow)".
+    promptpay_name: str = ""
+
     # Delete classrooms 45 days after their semester ends (see app/services/retention.py).
     retention_enabled: bool = True
 

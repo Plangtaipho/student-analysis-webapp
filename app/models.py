@@ -10,6 +10,7 @@ from sqlalchemy import (
     Enum,
     ForeignKey,
     Integer,
+    LargeBinary,
     Numeric,
     SmallInteger,
     String,
@@ -84,10 +85,35 @@ class Subscription(Base):
     status: Mapped[SubscriptionStatus] = mapped_column(
         Enum(SubscriptionStatus, native_enum=False, length=16), default=SubscriptionStatus.pending
     )
-    slip_path: Mapped[str] = mapped_column(String(255), default="")
+    slip_path: Mapped[str] = mapped_column(String(255), default="")  # unused: slips are kept in payment_slips
+    # Why the admin rejected the slip, shown to the teacher.
+    reject_reason: Mapped[str] = mapped_column(String(200), default="", server_default="")
     approved_by: Mapped[int | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
     approved_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+    # Time of the latest slip upload (a rejected slip can be sent again).
+    submitted_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+
+    teacher: Mapped["User"] = relationship(foreign_keys=[teacher_id])
+    slip: Mapped["PaymentSlip | None"] = relationship(
+        back_populates="subscription", cascade="all, delete-orphan", uselist=False, lazy="select"
+    )
+
+
+class PaymentSlip(Base):
+    """The transfer slip image for a subscription, kept in the database because
+    Railway's disk is wiped on every deploy. Re-encoded as JPEG on upload."""
+
+    __tablename__ = "payment_slips"
+
+    subscription_id: Mapped[int] = mapped_column(
+        ForeignKey("subscriptions.id", ondelete="CASCADE"), primary_key=True
+    )
+    mime: Mapped[str] = mapped_column(String(40), default="image/jpeg")
+    data: Mapped[bytes] = mapped_column(LargeBinary(length=16_777_215))  # MEDIUMBLOB on MySQL
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+
+    subscription: Mapped[Subscription] = relationship(back_populates="slip")
 
 
 class Classroom(Base):

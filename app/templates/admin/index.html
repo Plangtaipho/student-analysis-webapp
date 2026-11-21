@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}แอดมิน{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><h1>แอดมิน</h1><div class="sub">ตรวจสลิปการชำระเงิน และดูรายชื่อครูที่สมัคร</div></div>
+</div>
+
+<section class="card">
+  <div class="card-head row">
+    <h2>สลิปการชำระเงิน</h2>
+    <select id="sub-filter" aria-label="กรองสถานะ" class="w-auto">
+      <option value="pending">รอตรวจสอบ</option>
+      <option value="approved">อนุมัติแล้ว</option>
+      <option value="rejected">ไม่ผ่าน</option>
+      <option value="all">ทั้งหมด</option>
+    </select>
+  </div>
+  <div id="subs-empty" class="empty-state hidden">ไม่มีรายการ</div>
+  <div class="slip-list" id="subs"></div>
+</section>
+
+<section class="card">
+  <h2>ครูที่สมัคร <span class="muted small" id="teacher-count"></span></h2>
+  <div class="list-wrap">
+    <table class="list people">
+      <thead><tr><th>ชื่อ</th><th>โรงเรียน</th><th>ห้อง</th><th>ภาคเรียนที่ชำระ</th><th>สมัครเมื่อ</th></tr></thead>
+      <tbody id="teachers-body"></tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}<script src="/static/js/admin.js"></script>{% endblock %}

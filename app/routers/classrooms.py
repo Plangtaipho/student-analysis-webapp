@@ -8,10 +8,23 @@ from sqlalchemy.orm import Session
 
 from app.config import get_settings
 from app.database import get_db
-from app.deps import current_academic_term, get_current_user, get_owned_classroom, today, verify_csrf
+from app.deps import (
+    current_academic_term,
+    get_current_user,
+    get_owned_classroom,
+    today,
+    verify_csrf,
+)
 from app.models import Classroom, Evaluation, RosterEntry, Submission, User
-from app.schemas import ClassroomIn, ClassroomOut, ClassroomPatch, RosterEntryOut, RosterIn
+from app.schemas import (
+    ClassroomIn,
+    ClassroomOut,
+    ClassroomPatch,
+    RosterEntryOut,
+    RosterIn,
+)
 from app.security import hash_edit_code, new_edit_code, new_public_token
+from app.services.billing import room_is_active
 from app.services.form_definition import LEARNING_METHOD_LABELS
 from app.services.retention import purge_on, term_end
 from app.services.roster import parse_roster
@@ -40,6 +53,7 @@ def _out(request: Request, db: Session, room: Classroom) -> ClassroomOut:
     out.student_link = student_link(request, room)
     out.submitted_count, out.roster_count, out.evaluated_count = submitted, roster, evaluated
     out.purge_on = purge_on(room.academic_year, room.semester)
+    out.is_active = room_is_active(db, room)
     out.term_ended = today() > term_end(room.academic_year, room.semester)
     return out
 

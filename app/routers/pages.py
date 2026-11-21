@@ -6,9 +6,10 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
+from app.config import get_settings
 from app.database import get_db
 from app.deps import get_optional_user
-from app.models import User
+from app.models import Role, User
 from app.routers.student import get_room_by_token, room_info
 from app.services.form_definition import (
     LEARNING_METHODS,
@@ -29,7 +30,7 @@ def _teacher_page(request: Request, user: User | None, name: str, **ctx):
 
 @router.get("/", response_class=HTMLResponse)
 def home(request: Request, user: User | None = Depends(get_optional_user)):
-    return templates.TemplateResponse(request, "home.html", {"user": user})
+    return templates.TemplateResponse(request, "home.html", {"user": user, "price": get_settings().price_per_term})
 
 
 @router.get("/login", response_class=HTMLResponse)
@@ -54,6 +55,18 @@ def privacy_page(request: Request, user: User | None = Depends(get_optional_user
 @router.get("/app", response_class=HTMLResponse)
 def dashboard(request: Request, user: User | None = Depends(get_optional_user)):
     return _teacher_page(request, user, "teacher/dashboard.html")
+
+
+@router.get("/app/billing", response_class=HTMLResponse)
+def billing_page(request: Request, user: User | None = Depends(get_optional_user)):
+    return _teacher_page(request, user, "teacher/billing.html")
+
+
+@router.get("/admin", response_class=HTMLResponse)
+def admin_page(request: Request, user: User | None = Depends(get_optional_user)):
+    if user is not None and user.role != Role.admin:
+        return RedirectResponse("/app", status_code=303)
+    return _teacher_page(request, user, "admin/index.html")
 
 
 @router.get("/app/profile", response_class=HTMLResponse)
@@ -92,7 +105,7 @@ def student_form(token: str, request: Request, db: Session = Depends(get_db)):
         "student/form.html",
         {
             "token": token,
-            "room": room_info(room),
+            "room": room_info(room, db),
             "sections": PERSONAL_SECTIONS,
             "questions": OPEN_QUESTIONS,
             "methods": LEARNING_METHODS,

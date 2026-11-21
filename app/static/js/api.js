@@ -4,7 +4,9 @@
 
   async function request(method, url, body) {
     const opts = { method, headers: {}, credentials: "same-origin" };
-    if (body !== undefined) {
+    if (body instanceof FormData) {
+      opts.body = body; // multipart upload: the browser sets the boundary header
+    } else if (body !== undefined) {
       opts.headers["Content-Type"] = "application/json";
       opts.body = JSON.stringify(body);
     }

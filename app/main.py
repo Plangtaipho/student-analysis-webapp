@@ -15,7 +15,7 @@ from starlette.middleware.sessions import SessionMiddleware
 from app.config import get_settings
 from app.database import SessionLocal
 from app.models import Role, User
-from app.routers import auth, classrooms, evaluations, pages, reports, student
+from app.routers import auth, billing, classrooms, evaluations, pages, reports, student
 from app.security import hash_password
 from app.services.retention import purge_loop
 
@@ -127,6 +127,8 @@ def healthz():
 
 app.mount("/static", StaticFiles(directory=str(Path(__file__).resolve().parent / "static")), name="static")
 app.include_router(auth.router)
+app.include_router(billing.router)
+app.include_router(billing.admin_router)
 app.include_router(classrooms.router)
 app.include_router(evaluations.router)
 app.include_router(reports.router)

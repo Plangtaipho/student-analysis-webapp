@@ -17,7 +17,9 @@
         {% block nav %}
         {% if user %}
           <a href="/app">ห้องเรียนของฉัน</a>
+          <a href="/app/billing">ชำระเงิน</a>
           <a href="/app/profile">ข้อมูลครู</a>
+          {% if user.role.value == "admin" %}<a href="/admin">แอดมิน</a>{% endif %}
           <button type="button" data-logout>ออกจากระบบ</button>
         {% else %}
           <a href="/login">เข้าสู่ระบบ</a>
