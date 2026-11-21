@@ -1,5 +1,6 @@
 """Pydantic request/response models."""
 import re
+from typing import Literal
 from datetime import date
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
@@ -36,12 +37,12 @@ class Password(BaseModel):
 class RegisterIn(Password):
     email: EmailStr
     full_name: str = Field(min_length=2, max_length=120)
-    position: str = Field(min_length=1, max_length=80)
+    position: Literal["ครู", "พนักงานราชการ", "อัตราจ้าง"]
     department: str = Field(min_length=2, max_length=120)
     school_name: str = Field(min_length=2, max_length=160)
     accept_terms: bool
 
-    @field_validator("full_name", "position", "department", "school_name")
+    @field_validator("full_name", "department", "school_name")
     @classmethod
     def _strip(cls, v: str) -> str:
         return _clean(v)
@@ -61,12 +62,12 @@ class LoginIn(BaseModel):
 
 class ProfileIn(BaseModel):
     full_name: str = Field(min_length=2, max_length=120)
-    position: str = Field(min_length=1, max_length=80)
+    position: Literal["ครู", "พนักงานราชการ", "อัตราจ้าง"]
     department: str = Field(min_length=2, max_length=120)
     school_name: str = Field(min_length=2, max_length=160)
     area_office: str = Field(default="", max_length=200)
 
-    @field_validator("full_name", "position", "department", "school_name", "area_office")
+    @field_validator("full_name", "department", "school_name", "area_office")
     @classmethod
     def _strip(cls, v: str) -> str:
         return _clean(v)
