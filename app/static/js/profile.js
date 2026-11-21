@@ -5,6 +5,14 @@
   const me = (await API.loadMe()).user;
   for (const k of ["full_name", "position", "department", "school_name", "school_location", "area_office"]) pf[k].value = me[k] || "";
   document.getElementById("email").textContent = me.email;
+  if (!me.has_password) {
+    // Google-only account: setting a first password needs no current one.
+    const cur = document.getElementById("current-password-field");
+    cur.classList.add("hidden");
+    cur.querySelector("input").required = false;
+    document.getElementById("password-title").textContent = "ตั้งรหัสผ่าน";
+    document.getElementById("google-only-note").classList.remove("hidden");
+  }
 
   pf.addEventListener("submit", async (ev) => {
     ev.preventDefault();
@@ -26,7 +34,8 @@
     try {
       await API.put("/api/auth/password", { current_password: f.get("current_password"), password: f.get("password") });
       pw.reset();
-      API.toast("เปลี่ยนรหัสผ่านแล้ว");
+      API.toast("บันทึกรหัสผ่านแล้ว");
+      if (!me.has_password) location.reload();
     } catch (e) { API.showError(err, e.message); }
   });
 })();

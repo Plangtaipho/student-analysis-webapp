@@ -129,6 +129,10 @@ input[readonly] { background: var(--paper); }
 .btn-block { width: 100%; }
 .btn-sm { min-height: 36px; padding: .25rem .75rem; font-size: .9rem; }
 .btn[disabled] { opacity: .55; cursor: not-allowed; }
+.btn-google { gap: .6rem; font-weight: 600; margin-top: .4rem; }
+.btn-google .g-logo { flex: none; }
+.or-divider { display: flex; align-items: center; gap: .75rem; margin: 1.1rem 0 .4rem; color: var(--muted, #6b7280); font-size: .9rem; }
+.or-divider::before, .or-divider::after { content: ""; flex: 1; border-top: 1px solid var(--rule-strong); }
 
 .alert { border-radius: var(--r-ctl); padding: .7rem 1rem; margin: .75rem 0; border-left: 4px solid currentColor; }
 .alert-error { background: var(--stamp-soft); color: var(--stamp); }

@@ -19,9 +19,10 @@
 </form>
 <datalist id="dept-list"><option value="กลุ่มบริหารวิชาการ"><option value="กลุ่มสาระการเรียนรู้ภาษาไทย"><option value="กลุ่มสาระการเรียนรู้คณิตศาสตร์"><option value="กลุ่มสาระการเรียนรู้วิทยาศาสตร์และเทคโนโลยี"><option value="กลุ่มสาระการเรียนรู้สังคมศึกษา ศาสนาและวัฒนธรรม"><option value="กลุ่มสาระการเรียนรู้สุขศึกษาและพลศึกษา"><option value="กลุ่มสาระการเรียนรู้ศิลปะ"><option value="กลุ่มสาระการเรียนรู้การงานอาชีพ"><option value="กลุ่มสาระการเรียนรู้ภาษาต่างประเทศ"><option value="กิจกรรมพัฒนาผู้เรียน"></datalist>
 <form id="password-form" class="card">
-  <h2>เปลี่ยนรหัสผ่าน</h2>
+  <h2 id="password-title">เปลี่ยนรหัสผ่าน</h2>
+  <p id="google-only-note" class="muted small hidden">บัญชีนี้เข้าสู่ระบบด้วย Google ตั้งรหัสผ่านไว้ด้วยก็ได้ เผื่อเข้าด้วยอีเมลและรหัสผ่าน</p>
   <div class="fields">
-    <div class="field"><label for="current_password">รหัสผ่านปัจจุบัน</label><input id="current_password" name="current_password" type="password" required autocomplete="current-password"></div>
+    <div class="field" id="current-password-field"><label for="current_password">รหัสผ่านปัจจุบัน</label><input id="current_password" name="current_password" type="password" required autocomplete="current-password"></div>
     <div class="field half"><label for="password">รหัสผ่านใหม่</label><input id="password" name="password" type="password" required minlength="8" autocomplete="new-password"></div>
     <div class="field half"><label for="password2">ยืนยันรหัสผ่านใหม่</label><input id="password2" name="password2" type="password" required minlength="8" autocomplete="new-password"></div>
   </div>

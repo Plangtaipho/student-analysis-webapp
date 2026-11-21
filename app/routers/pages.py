@@ -37,14 +37,14 @@ def home(request: Request, user: User | None = Depends(get_optional_user)):
 def login_page(request: Request, user: User | None = Depends(get_optional_user)):
     if user:
         return RedirectResponse("/app", status_code=303)
-    return templates.TemplateResponse(request, "login.html", {"user": None})
+    return templates.TemplateResponse(request, "login.html", {"user": None, "google": get_settings().google_enabled})
 
 
 @router.get("/register", response_class=HTMLResponse)
 def register_page(request: Request, user: User | None = Depends(get_optional_user)):
     if user:
         return RedirectResponse("/app", status_code=303)
-    return templates.TemplateResponse(request, "register.html", {"user": None})
+    return templates.TemplateResponse(request, "register.html", {"user": None, "google": get_settings().google_enabled})
 
 
 @router.get("/privacy", response_class=HTMLResponse)

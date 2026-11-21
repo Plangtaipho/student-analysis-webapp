@@ -38,8 +38,17 @@ class Settings(BaseSettings):
     # Account name shown to teachers before they transfer, e.g. "นางสาว... (KruFlow)".
     promptpay_name: str = ""
 
+    # "Sign in with Google". Both empty = the Google button is hidden.
+    # Create an OAuth client (type: Web application) at console.cloud.google.com.
+    google_client_id: str = ""
+    google_client_secret: str = ""
+
     # Delete classrooms 45 days after their semester ends (see app/services/retention.py).
     retention_enabled: bool = True
+
+    @property
+    def google_enabled(self) -> bool:
+        return bool(self.google_client_id and self.google_client_secret)
 
     @property
     def is_production(self) -> bool:

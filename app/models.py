@@ -55,7 +55,10 @@ class User(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     email: Mapped[str] = mapped_column(String(254), unique=True, index=True)
+    # Empty for accounts created with Google that never set a password.
     password_hash: Mapped[str] = mapped_column(String(100))
+    # Google account id ("sub"), set when the teacher signs in with Google.
+    google_sub: Mapped[str | None] = mapped_column(String(64), unique=True, nullable=True)
     role: Mapped[Role] = mapped_column(Enum(Role, native_enum=False, length=16), default=Role.teacher)
     full_name: Mapped[str] = mapped_column(String(120))
     position: Mapped[str] = mapped_column(String(80), default="ครู")

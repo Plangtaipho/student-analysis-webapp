@@ -3,7 +3,7 @@ import re
 from datetime import date
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator, model_validator
 
 from app.security import MAX_PASSWORD_BYTES
 from app.services.form_definition import (
@@ -36,6 +36,28 @@ class Password(BaseModel):
 
 class RegisterIn(Password):
     email: EmailStr
+    full_name: str = Field(min_length=2, max_length=120)
+    position: Literal["ครู", "พนักงานราชการ", "อัตราจ้าง"]
+    department: str = Field(min_length=2, max_length=120)
+    school_name: str = Field(min_length=2, max_length=160)
+    accept_terms: bool
+
+    @field_validator("full_name", "department", "school_name")
+    @classmethod
+    def _strip(cls, v: str) -> str:
+        return _clean(v)
+
+    @field_validator("accept_terms")
+    @classmethod
+    def _must_accept(cls, v: bool) -> bool:
+        if not v:
+            raise ValueError("กรุณายอมรับเงื่อนไขการใช้งานและนโยบายความเป็นส่วนตัว")
+        return v
+
+
+class GoogleRegisterIn(BaseModel):
+    """Finish a Google sign-up: the details a report needs (email comes from Google)."""
+
     full_name: str = Field(min_length=2, max_length=120)
     position: Literal["ครู", "พนักงานราชการ", "อัตราจ้าง"]
     department: str = Field(min_length=2, max_length=120)
@@ -89,6 +111,19 @@ class UserOut(BaseModel):
     school_location: str
     area_office: str
     role: str
+    has_password: bool = True
+    google_linked: bool = False
+
+    @model_validator(mode="before")
+    @classmethod
+    def _flags(cls, v):
+        if hasattr(v, "password_hash"):
+            return {
+                **{k: getattr(v, k) for k in cls.model_fields if hasattr(v, k)},
+                "has_password": bool(v.password_hash),
+                "google_linked": bool(getattr(v, "google_sub", None)),
+            }
+        return v
 
 
 # --- Classrooms ----------------------------------------------------------------------
