@@ -551,3 +551,4 @@ html { scroll-behavior: smooth; }
   .auth-points { gap: .9rem; margin-bottom: 1.75rem; }
   .auth-main { padding: 2.25rem 2.5rem 2.5rem; }
 }
+.google-hint { text-align: center; margin: .45rem 0 0; }

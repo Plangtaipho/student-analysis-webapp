@@ -6,6 +6,7 @@
   const GOOGLE_ERRORS = {
     failed: "เข้าสู่ระบบด้วย Google ไม่สำเร็จ กรุณาลองใหม่",
     inactive: "บัญชีนี้ถูกปิดการใช้งาน กรุณาติดต่อผู้ดูแลระบบ",
+    expired: "ไม่พบข้อมูลจาก Google (อาจหมดเวลา) กรุณากด สมัครด้วย Google อีกครั้ง",
   };
   const gErr = document.getElementById("google-error");
   if (gErr && GOOGLE_ERRORS[params.get("google")]) API.showError(gErr, GOOGLE_ERRORS[params.get("google")]);
@@ -26,7 +27,7 @@
         document.getElementById("google-email").textContent = p.email;
         document.getElementById("google-note").classList.remove("hidden");
       })
-      .catch((e) => { location.href = "/register"; });
+      .catch(() => { location.href = "/register?google=expired"; });
   }
 
   function bind(formId, url, build) {
