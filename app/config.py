@@ -33,7 +33,11 @@ class Settings(BaseSettings):
     initial_admin_password: str = ""
 
     # Price of one semester (all classrooms of that term), in baht.
-    price_per_term: int = 129
+    price_per_term: int = 99
+    # "Normal" price shown struck through next to price_per_term as a promotion. 0 = no promotion.
+    price_full: int = 139
+    # Students a free trial classroom accepts before the term is paid.
+    trial_student_limit: int = 5
     # PromptPay receiver: a mobile number (0812345678) or a 13-digit ID. Empty = QR not shown.
     promptpay_id: str = ""
     # Account name shown to teachers before they transfer, e.g. "นางสาว... (KruFlow)".

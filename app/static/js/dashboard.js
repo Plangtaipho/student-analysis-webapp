@@ -15,7 +15,7 @@
         <h3>${API.esc(r.subject_name)}</h3>
         <div class="muted small">${r.subject_code ? API.esc(r.subject_code) + ", " : ""}ภาคเรียนที่ ${r.semester}/${r.academic_year}</div>
         <div class="stamps">
-          ${r.is_trial ? '<span class="badge badge-trial">ทดลองใช้</span>' : ""}
+          ${r.student_limit ? `<span class="badge badge-trial">ทดลองใช้ ${r.submitted_count}/${r.student_limit} คน</span>` : ""}
           ${r.is_active ? `<span class="badge ${r.is_open ? "badge-open" : "badge-closed"}">${r.is_open ? "เปิดรับ" : "ปิดรับแล้ว"}</span>` : '<span class="badge badge-danger">รอชำระเงิน</span>'}
         </div>
         <div class="counts">

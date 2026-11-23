@@ -67,7 +67,7 @@ def billing_overview(user: User = Depends(get_current_user), db: Session = Depen
     s = get_settings()
     rows = db.execute(
         select(Classroom.academic_year, Classroom.semester, func.count())
-        .where(Classroom.teacher_id == user.id, Classroom.is_trial.is_(False))
+        .where(Classroom.teacher_id == user.id)
         .group_by(Classroom.academic_year, Classroom.semester)
     ).all()
     terms = {(y, sem): n for y, sem, n in rows}
@@ -82,6 +82,8 @@ def billing_overview(user: User = Depends(get_current_user), db: Session = Depen
         out.append(_term_out(term_subscription(db, user.id, year, sem), year, sem, n))
     return {
         "price": s.price_per_term,
+        "price_full": s.price_full,
+        "trial_student_limit": s.trial_student_limit,
         "promptpay_ready": bool(s.promptpay_id),
         "promptpay_name": s.promptpay_name,
         "terms": out,
@@ -134,7 +136,7 @@ async def upload_slip(
 
     sub = term_subscription(db, user.id, academic_year, semester)
     if sub is not None and sub.status == SubscriptionStatus.approved:
-        raise HTTPException(status.HTTP_409_CONFLICT, "ภาคเรียนนี้ชำระและอนุมัติแล้ว")
+        raise HTTPException(status.HTTP_409_CONFLICT, "ภาคเรียนนี้ชำระแล้ว")
     if sub is None:
         sub = Subscription(
             teacher_id=user.id,
@@ -143,7 +145,9 @@ async def upload_slip(
             amount=get_settings().price_per_term,
         )
         db.add(sub)
-    sub.status = SubscriptionStatus.pending
+    # The QR fixes the amount, so the slip is accepted right away (decision 2026-11-23).
+    sub.status = SubscriptionStatus.approved
+    sub.approved_by, sub.approved_at = None, utcnow()  # approved automatically, not by an admin
     sub.reject_reason = ""
     sub.submitted_at = utcnow()
     sub.amount = get_settings().price_per_term
@@ -194,7 +198,7 @@ def _admin_sub_out(sub: Subscription) -> dict:
 
 @admin_router.get("/subscriptions")
 def admin_subscriptions(
-    status_filter: str = "pending", _: User = Depends(require_admin), db: Session = Depends(get_db)
+    status_filter: str = "all", _: User = Depends(require_admin), db: Session = Depends(get_db)
 ):
     q = select(Subscription).options(selectinload(Subscription.teacher)).order_by(Subscription.submitted_at.desc())
     if status_filter != "all":

@@ -17,7 +17,7 @@
           <span class="badge ${BADGE[s.status]} mt-2">${API.esc(s.status_text)}</span>
           ${s.reject_reason ? `<div class="small stamp-text">เหตุผล: ${API.esc(s.reject_reason)}</div>` : ""}
           <div class="row mt-3">
-            ${s.status !== "approved" ? `<button class="btn btn-primary btn-sm" data-act="approve">อนุมัติ</button>` : ""}
+            ${s.status !== "approved" ? `<button class="btn btn-primary btn-sm" data-act="approve">เปิดใช้งานอีกครั้ง</button>` : ""}
             ${s.status !== "rejected" ? `<button class="btn btn-sm" data-act="reject">ปฏิเสธ</button>` : ""}
           </div>
           <form class="reject-form hidden mt-2">
@@ -56,7 +56,7 @@
     btn.disabled = true;
     try {
       await API.post(`/api/admin/subscriptions/${card.dataset.id}/approve`);
-      API.toast("อนุมัติแล้ว");
+      API.toast("เปิดใช้งานแล้ว");
       await Promise.all([loadSubs(), loadTeachers()]);
     } catch (e) { API.toast(e.message); btn.disabled = false; }
   });

@@ -24,7 +24,7 @@ from app.schemas import (
     RosterIn,
 )
 from app.security import hash_edit_code, new_edit_code, new_public_token
-from app.services.billing import room_is_active
+from app.services.billing import room_is_active, student_limit
 from app.services.form_definition import LEARNING_METHOD_LABELS
 from app.services.retention import purge_on, term_end
 from app.services.roster import parse_roster
@@ -54,6 +54,7 @@ def _out(request: Request, db: Session, room: Classroom) -> ClassroomOut:
     out.submitted_count, out.roster_count, out.evaluated_count = submitted, roster, evaluated
     out.purge_on = purge_on(room.academic_year, room.semester)
     out.is_active = room_is_active(db, room)
+    out.student_limit = student_limit(db, room)
     out.term_ended = today() > term_end(room.academic_year, room.semester)
     return out
 

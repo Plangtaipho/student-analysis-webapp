@@ -8,6 +8,7 @@ from app.deps import get_current_user, get_owned_classroom, verify_csrf
 from app.models import Evaluation, EvaluationScore, LearnerGroup, Rating, Submission, User
 from app.routers.classrooms import get_owned_submission
 from app.schemas import EvaluationIn, ManualSubmissionIn
+from app.services.billing import student_limit, trial_full_message
 from app.services.form_definition import ASSESSMENT_DOMAINS
 from app.services.summary import ITEM_CODES, auto_group, classroom_summary, group_of
 
@@ -112,6 +113,9 @@ def create_manual_submission(
     )
     if exists:
         raise HTTPException(status.HTTP_409_CONFLICT, "เลขที่นี้มีข้อมูลอยู่แล้ว")
+    limit = student_limit(db, room)
+    if limit is not None and len(room.submissions) >= limit:
+        raise HTTPException(status.HTTP_402_PAYMENT_REQUIRED, trial_full_message(limit))
     roster_name = next((r.full_name for r in room.roster if r.student_no == body.student_no), None)
     sub = Submission(
         classroom_id=room.id,

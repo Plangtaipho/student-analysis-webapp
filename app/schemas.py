@@ -234,6 +234,7 @@ class ClassroomOut(BaseModel):
     purge_on: date | None = None
     # False for a non-trial room whose semester is not paid (see app/services/billing.py).
     is_active: bool = True
+    student_limit: int | None = None
     term_ended: bool = False
 
 

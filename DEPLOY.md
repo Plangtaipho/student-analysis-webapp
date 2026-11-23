@@ -28,7 +28,8 @@ INITIAL_ADMIN_EMAIL=(อีเมลแอดมิน)
 INITIAL_ADMIN_PASSWORD=(รหัสผ่านแอดมิน อย่างน้อย 12 ตัว)
 PROMPTPAY_ID=(เบอร์มือถือหรือเลขบัตรประชาชนที่ผูก PromptPay)
 PROMPTPAY_NAME=(ชื่อบัญชีที่ให้ครูเห็นก่อนโอน)
-PRICE_PER_TERM=129
+PRICE_PER_TERM=99
+PRICE_FULL=139
 ```
 
 - `${{MySQL.MYSQL_URL}}` และ `${{secret(48)}}` ให้พิมพ์ตามนี้เลย Railway จะแทนค่าให้เอง

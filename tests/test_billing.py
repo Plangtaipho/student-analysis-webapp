@@ -55,14 +55,15 @@ def test_first_room_free_second_locked_until_slip(teacher, student):
 
     r = upload(teacher, paid)
     assert r.status_code == 201, r.text
-    assert r.json()["status"] == "pending"
+    assert r.json()["status"] == "approved"  # the QR fixes the amount: no admin approval needed
     assert teacher.get(f"/api/classrooms/{paid['id']}").json()["is_active"] is True
     assert student.post(url, json=student_payload(1)).status_code == 201
 
     overview = teacher.get("/api/billing").json()
-    assert overview["price"] == get_settings().price_per_term == 129
+    assert overview["price"] == get_settings().price_per_term == 99
+    assert overview["price_full"] == 139 and overview["trial_student_limit"] == 5
     term = overview["terms"][0]
-    assert term["status"] == "pending" and term["rooms"] == 1 and term["has_slip"]
+    assert term["status"] == "approved" and term["rooms"] == 2 and term["has_slip"]
 
 
 def test_admin_approve_and_reject(teacher):
@@ -71,8 +72,8 @@ def test_admin_approve_and_reject(teacher):
     sub_id = upload(teacher, paid).json()["subscription_id"]
     admin = make_admin()
 
-    pending = admin.get("/api/admin/subscriptions").json()
-    assert [s["id"] for s in pending] == [sub_id]
+    listed = admin.get("/api/admin/subscriptions").json()
+    assert [s["id"] for s in listed] == [sub_id] and listed[0]["status"] == "approved"
     slip = admin.get(f"/api/admin/subscriptions/{sub_id}/slip")
     assert slip.status_code == 200 and slip.headers["content-type"] == "image/jpeg"
 
@@ -81,10 +82,12 @@ def test_admin_approve_and_reject(teacher):
     assert teacher.get(f"/api/classrooms/{paid['id']}").json()["is_active"] is False
     assert teacher.get("/api/billing").json()["terms"][0]["reject_reason"] == "ยอดเงินไม่ตรง"
 
-    assert upload(teacher, paid).json()["status"] == "pending"  # sends a new slip
+    # The admin can switch a rejected term back on.
     assert admin.post(f"/api/admin/subscriptions/{sub_id}/approve").json()["status"] == "approved"
     assert teacher.get(f"/api/classrooms/{paid['id']}").json()["is_active"] is True
-    assert upload(teacher, paid).status_code == 409  # already approved
+    assert upload(teacher, paid).status_code == 409  # already paid
+    admin.post(f"/api/admin/subscriptions/{sub_id}/reject", {"reason": "สลิปซ้ำ"})
+    assert upload(teacher, paid).json()["status"] == "approved"  # a new slip unlocks again
 
     teachers = admin.get("/api/admin/teachers").json()
     assert {t["email"] for t in teachers} == {"kru@example.com"}
@@ -117,3 +120,27 @@ def test_upload_needs_csrf(teacher):
         files={"file": ("s.png", png_bytes(), "image/png")},
     )
     assert r.status_code == 403
+
+
+
+def test_trial_room_takes_five_students_until_paid(teacher, student):
+    trial = teacher.make_room()
+    assert trial["student_limit"] == 5
+    url = f"/api/f/{token_of(trial)}/submissions"
+    for no in range(1, 6):
+        assert student.post(url, json=student_payload(no)).status_code == 201
+    assert student.get(f"/api/f/{token_of(trial)}").json()["is_full"] is True
+    r = student.post(url, json=student_payload(6))
+    assert r.status_code == 403 and "5 คน" in r.text
+    # Editing an earlier answer still works when the room is full.
+    room = teacher.get(f"/api/classrooms/{trial['id']}").json()
+    assert room["submitted_count"] == 5 and room["is_active"]
+    # The teacher cannot add a sixth student by hand either.
+    r = teacher.post(f"/api/classrooms/{trial['id']}/submissions/manual", {"student_no": 7, "full_name": "เด็กหญิงเจ็ด ทดสอบ"})
+    assert r.status_code == 402
+    # Reports still work for the five.
+    assert teacher.get(f"/api/classrooms/{trial['id']}/pdf/individual").status_code != 402
+
+    assert upload(teacher, trial).json()["status"] == "approved"
+    assert teacher.get(f"/api/classrooms/{trial['id']}").json()["student_limit"] is None
+    assert student.post(url, json=student_payload(6)).status_code == 201

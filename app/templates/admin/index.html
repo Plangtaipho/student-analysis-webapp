@@ -2,17 +2,16 @@
 {% block title %}แอดมิน{% endblock %}
 {% block content %}
 <div class="page-head">
-  <div><h1>แอดมิน</h1><div class="sub">ตรวจสลิปการชำระเงิน และดูรายชื่อครูที่สมัคร</div></div>
+  <div><h1>แอดมิน</h1><div class="sub">สลิปที่ครูแนบจะใช้งานได้ทันที ไม่ต้องอนุมัติ ถ้าพบสลิปผิด กด "ปฏิเสธ" เพื่อล็อกห้องของภาคเรียนนั้นอีกครั้ง</div></div>
 </div>
 
 <section class="card">
   <div class="card-head row">
     <h2>สลิปการชำระเงิน</h2>
     <select id="sub-filter" aria-label="กรองสถานะ" class="w-auto">
-      <option value="pending">รอตรวจสอบ</option>
-      <option value="approved">อนุมัติแล้ว</option>
-      <option value="rejected">ไม่ผ่าน</option>
       <option value="all">ทั้งหมด</option>
+      <option value="approved">ชำระแล้ว</option>
+      <option value="rejected">ปฏิเสธแล้ว</option>
     </select>
   </div>
   <div id="subs-empty" class="empty-state hidden">ไม่มีรายการ</div>

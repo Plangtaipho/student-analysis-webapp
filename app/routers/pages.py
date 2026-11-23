@@ -21,6 +21,11 @@ from app.services.form_definition import (
 
 templates = Jinja2Templates(directory=str(Path(__file__).resolve().parent.parent / "templates"))
 templates.env.globals.update(WORK_GROUPS=WORK_GROUPS, LEARNING_AREAS=LEARNING_AREAS, POSITIONS=POSITIONS)
+
+
+def _prices() -> dict:
+    s = get_settings()
+    return {"price": s.price_per_term, "price_full": s.price_full, "trial_limit": s.trial_student_limit}
 router = APIRouter(include_in_schema=False)
 
 
@@ -32,7 +37,7 @@ def _teacher_page(request: Request, user: User | None, name: str, **ctx):
 
 @router.get("/", response_class=HTMLResponse)
 def home(request: Request, user: User | None = Depends(get_optional_user)):
-    return templates.TemplateResponse(request, "home.html", {"user": user, "price": get_settings().price_per_term})
+    return templates.TemplateResponse(request, "home.html", {"user": user, **_prices()})
 
 
 @router.get("/login", response_class=HTMLResponse)
@@ -49,7 +54,7 @@ def register_page(request: Request, user: User | None = Depends(get_optional_use
     return templates.TemplateResponse(
         request,
         "register.html",
-        {"user": None, "google": get_settings().google_enabled, "price": get_settings().price_per_term},
+        {"user": None, "google": get_settings().google_enabled, **_prices()},
     )
 
 

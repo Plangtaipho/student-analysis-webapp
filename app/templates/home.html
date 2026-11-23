@@ -18,13 +18,13 @@
 <section class="lp-hero">
   <div class="wrap lp-hero-grid">
     <div class="lp-hero-copy">
-      <h1><span class="nobr">งานวิเคราะห์ผู้เรียน</span><wbr><span class="nobr">รายบุคคล</span><br> <span class="nobr">ส่งฝ่ายวิชาการได้</span><wbr><br> <span class="nobr">ในเย็นเดียว</span></h1>
+      <h1><span class="nobr">งานวิเคราะห์ผู้เรียน</span><wbr><span class="nobr">รายบุคคล</span><br> <span class="nobr">ส่งฝ่ายวิชาการได้</span><wbr><br> <span class="nobr">ใน 1 ชั่วโมง</span></h1>
       <p class="lead">ส่งลิงก์ให้นักเรียนกรอกแบบบันทึกเองบนมือถือ ครูกดประเมิน 16 ข้อต่อคน แล้วดาวน์โหลดรายงานฉบับเต็ม ทั้งบันทึกข้อความ ตารางสรุปร้อยละ และกลุ่มผู้เรียน ตรงตามแบบที่โรงเรียนใช้</p>
       <div class="lp-ctas">
-        <a class="btn btn-mark btn-lg" href="/register">สมัครแล้วลองห้องแรกฟรี</a>
+        <a class="btn btn-mark btn-lg" href="/register">สมัครแล้วทดลองใช้ฟรี</a>
         <a class="btn btn-ghost btn-lg" href="#report">ดูว่าในรายงานมีอะไร</a>
       </div>
-      <p class="lp-note">ห้องแรกใช้ฟรี จากนั้น {{ price }} บาทต่อภาคเรียน ใช้ได้ทุกห้องที่สอน</p>
+      <p class="lp-note">ทดลองใช้ฟรี 1 วิชา นักเรียน {{ trial_limit }} คน จากนั้น{% if price_full > price %} <s>{{ price_full }}</s>{% endif %} <b>{{ price }}</b> บาทต่อภาคเรียน ใช้ได้ทุกห้องที่สอน</p>
     </div>
 
     <div class="lp-visual" aria-hidden="true">
@@ -134,16 +134,17 @@
   <div class="wrap lp-price">
     <div>
       <h2>จ่ายครั้งเดียวต่อภาคเรียน</h2>
-      <p>ห้องแรกทดลองใช้ฟรีจนออกรายงานได้จริง ถ้าใช้ต่อ ชำระผ่านพร้อมเพย์แล้วแนบสลิป</p>
+      <p>ทดลองใช้ฟรี 1 วิชา กับนักเรียน {{ trial_limit }} คน จนออกรายงานได้จริง ถ้าใช้ต่อ สแกนจ่ายพร้อมเพย์แล้วแนบสลิป ใช้งานได้ทันที</p>
     </div>
     <div class="lp-price-box">
-      <div class="lp-amount"><b>{{ price }}</b> บาท / ภาคเรียน</div>
+      {% if price_full > price %}<div class="promo-tag">โปรพิเศษ ลดจาก <s>{{ price_full }}</s> บาท</div>{% endif %}
+      <div class="lp-amount">{% if price_full > price %}<s class="price-was">{{ price_full }}</s> {% endif %}<b>{{ price }}</b> บาท / ภาคเรียน</div>
       <ul>
         <li>สร้างห้องได้ทุกวิชาและทุกชั้นที่สอน</li>
         <li>นักเรียนกรอกได้ไม่จำกัดจำนวน</li>
         <li>ดาวน์โหลดรายงาน PDF กี่ครั้งก็ได้</li>
       </ul>
-      <a class="btn btn-primary btn-lg btn-block" href="/register">สมัครแล้วลองห้องแรกฟรี</a>
+      <a class="btn btn-primary btn-lg btn-block" href="/register">สมัครแล้วทดลองใช้ฟรี</a>
     </div>
   </div>
 </section>

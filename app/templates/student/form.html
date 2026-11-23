@@ -44,6 +44,9 @@
   {% elif not room.is_open %}
   <div class="card"><h2>ปิดรับคำตอบแล้ว</h2><p class="muted">ครูปิดรับแบบฟอร์มของห้องนี้แล้ว หากยังไม่ได้ส่งหรือต้องการแก้ไข กรุณาติดต่อครูผู้สอน</p></div>
   {% else %}
+  {% if room.is_full %}
+  <div class="alert alert-warn">ห้องนี้รับนักเรียนครบจำนวนแล้ว ส่งแบบฟอร์มใหม่ไม่ได้ กรุณาแจ้งครูผู้สอน ถ้าเคยส่งแล้วยังแก้ไขคำตอบเดิมได้</div>
+  {% endif %}
 
   <div id="edit-entry" class="card edit-entry">
     <span class="muted small">เคยส่งแล้ว อยากแก้คำตอบ?</span>

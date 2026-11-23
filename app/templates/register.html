@@ -8,11 +8,11 @@
     <img class="auth-mark" src="/static/img/kruflow-mark-on-dark.svg" alt="" width="44" height="44">
     <h1>เริ่มวิเคราะห์ผู้เรียน<br>ได้ในไม่กี่นาที</h1>
     <ul class="auth-points">
-      <li><b>ห้องแรกใช้ฟรี</b> ไม่ต้องผูกบัตร</li>
+      <li><b>ทดลองใช้ฟรี</b> 1 วิชา นักเรียน {{ trial_limit }} คน</li>
       <li><b>นักเรียนกรอกผ่านมือถือ</b> สแกน QR แล้วตอบได้เลย</li>
       <li><b>ได้รายงาน PDF</b> พร้อมบันทึกข้อความส่งฝ่ายวิชาการ</li>
     </ul>
-    <p class="auth-price">ห้องถัดไป {{ price }} บาทต่อภาคเรียน ใช้ได้ทุกห้อง</p>
+    <p class="auth-price">{% if price_full > price %}<span class="promo-tag">โปรพิเศษ</span> <s>{{ price_full }}</s> {% endif %}<b>{{ price }} บาท</b>ต่อภาคเรียน ใช้ได้ทุกห้องทุกวิชา</p>
   </aside>
 
   <div class="auth-main">

@@ -1,6 +1,6 @@
 """Public API used by students through the classroom link /f/<token>. No login."""
 from fastapi import APIRouter, Depends, HTTPException, Request, status
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -15,7 +15,7 @@ from app.security import (
     submit_limiter,
     verify_password,
 )
-from app.services.billing import room_is_active
+from app.services.billing import room_is_active, student_limit
 
 router = APIRouter(prefix="/api/f", tags=["student"])
 
@@ -25,6 +25,14 @@ def get_room_by_token(token: str, db: Session) -> Classroom:
     if room is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "ไม่พบแบบฟอร์มนี้ กรุณาตรวจสอบลิงก์จากครู")
     return room
+
+
+def _is_full(room: Classroom, db: Session) -> bool:
+    limit = student_limit(db, room)
+    if limit is None:
+        return False
+    count = db.scalar(select(func.count()).select_from(Submission).where(Submission.classroom_id == room.id))
+    return count >= limit
 
 
 def room_info(room: Classroom, db: Session) -> dict:
@@ -39,6 +47,7 @@ def room_info(room: Classroom, db: Session) -> dict:
         "school_name": t.school_name,
         "is_open": room.is_open,
         "is_active": room_is_active(db, room),
+        "is_full": _is_full(room, db),
         "has_roster": bool(room.roster),
     }
 
@@ -100,6 +109,14 @@ def submit(token: str, body: SubmissionIn, request: Request, db: Session = Depen
                 status.HTTP_409_CONFLICT,
                 "เลขที่นี้ส่งแบบฟอร์มแล้ว ถ้าต้องการแก้ไข ให้กด 'แก้ไขคำตอบเดิม' แล้วใส่รหัสแก้ไข หรือแจ้งครู",
             )
+        limit = student_limit(db, room)
+        if limit is not None:
+            count = db.scalar(select(func.count()).select_from(Submission).where(Submission.classroom_id == room.id))
+            if count >= limit:
+                raise HTTPException(
+                    status.HTTP_403_FORBIDDEN,
+                    f"ห้องนี้รับนักเรียนครบ {limit} คนแล้ว (ห้องทดลองใช้ฟรี) กรุณาแจ้งครูผู้สอน",
+                )
         ip = client_ip(request)
         if submit_limiter.is_blocked(ip):
             raise HTTPException(status.HTTP_429_TOO_MANY_REQUESTS, "ส่งบ่อยเกินไป กรุณาลองใหม่ภายหลัง")

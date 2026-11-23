@@ -7,6 +7,13 @@
   function render() {
     $("price-inline").textContent = data.price;
     $("price-big").textContent = data.price;
+    $("trial-limit").textContent = data.trial_student_limit;
+    if (data.price_full > data.price) {
+      $("price-was").textContent = data.price_full;
+      $("price-was").classList.remove("hidden");
+      $("promo").textContent = `โปรพิเศษ ลดจาก ${data.price_full} บาท`;
+      $("promo").classList.remove("hidden");
+    }
     $("pp-name").textContent = data.promptpay_name ? `ชื่อบัญชี: ${data.promptpay_name}` : "";
     if (data.promptpay_ready) {
       $("qr").src = "/api/billing/qr.svg";
@@ -50,7 +57,7 @@
     btn.disabled = true;
     try {
       await API.post("/api/billing/slip", fd);
-      API.toast("ส่งสลิปแล้ว ห้องของภาคเรียนนี้ใช้งานได้ทันที");
+      API.toast("ชำระเรียบร้อย ห้องของภาคเรียนนี้ใช้งานได้แล้ว");
       $("slip").value = "";
       await load();
     } catch (e) {
