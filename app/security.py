@@ -85,6 +85,8 @@ class RateLimiter:
 
 
 login_limiter = RateLimiter(max_failures=5, window_seconds=15 * 60)
+# Per account, whatever the IP: stops password guessing spread over many addresses.
+account_login_limiter = RateLimiter(max_failures=20, window_seconds=15 * 60)
 # Wrong edit codes, per classroom + student number (6 digits = 1,000,000 guesses).
 edit_code_limiter = RateLimiter(max_failures=5, window_seconds=60 * 60)
 # New submissions / registrations per IP, to slow down spam.

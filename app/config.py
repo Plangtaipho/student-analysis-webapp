@@ -1,4 +1,5 @@
 """Application settings, read from environment variables (or a local .env file)."""
+import os
 from functools import lru_cache
 
 from pydantic import field_validator
@@ -71,7 +72,9 @@ class Settings(BaseSettings):
 
     @property
     def is_production(self) -> bool:
-        return self.env.lower() == "production"
+        # Running on Railway is always production, even if ENV was set to something else there:
+        # secure cookies, HSTS and hidden API docs must not depend on one variable being right.
+        return self.env.lower() == "production" or bool(os.environ.get("RAILWAY_ENVIRONMENT_NAME") or os.environ.get("RAILWAY_ENVIRONMENT"))
 
 
 @lru_cache

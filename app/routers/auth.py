@@ -15,6 +15,7 @@ from app.services import google_oauth
 from app.security import (
     DUMMY_HASH,
     hash_password,
+    account_login_limiter,
     login_limiter,
     new_csrf_token,
     register_limiter,
@@ -62,14 +63,16 @@ def register(body: RegisterIn, request: Request, db: Session = Depends(get_db)):
 def login(body: LoginIn, request: Request, db: Session = Depends(get_db)):
     email = body.email.strip().lower()
     key = f"{email}|{client_ip(request)}"
-    if login_limiter.is_blocked(key):
+    if login_limiter.is_blocked(key) or account_login_limiter.is_blocked(email):
         raise HTTPException(status.HTTP_429_TOO_MANY_REQUESTS, "ลองผิดหลายครั้งเกินไป กรุณารอ 15 นาทีแล้วลองใหม่")
     user = db.scalar(select(User).where(func.lower(User.email) == email))
     ok = verify_password(body.password, user.password_hash if user else DUMMY_HASH)
     if not user or not ok or not user.is_active:
         login_limiter.record_failure(key)
+        account_login_limiter.record_failure(email)
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "อีเมลหรือรหัสผ่านไม่ถูกต้อง")
     login_limiter.reset(key)
+    account_login_limiter.reset(email)
     csrf = _start_session(request, user)
     return {"user": UserOut.model_validate(user), "csrf": csrf}
 

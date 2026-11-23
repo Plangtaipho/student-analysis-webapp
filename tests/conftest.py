@@ -16,7 +16,7 @@ from app.deps import current_academic_term  # noqa: E402
 from app.database import Base, SessionLocal, engine  # noqa: E402
 from app.main import app  # noqa: E402
 from app.models import AssessmentItem  # noqa: E402
-from app.security import edit_code_limiter, login_limiter, register_limiter, submit_limiter  # noqa: E402
+from app.security import account_login_limiter, edit_code_limiter, login_limiter, register_limiter, submit_limiter  # noqa: E402
 from app.services.form_definition import assessment_item_rows  # noqa: E402
 
 PASSWORD = "password123"
@@ -29,7 +29,7 @@ def fresh_db():
     with SessionLocal() as db:
         db.add_all(AssessmentItem(**row) for row in assessment_item_rows())
         db.commit()
-    for limiter in (login_limiter, edit_code_limiter, submit_limiter, register_limiter):
+    for limiter in (login_limiter, account_login_limiter, edit_code_limiter, submit_limiter, register_limiter):
         limiter.clear()
     yield
 

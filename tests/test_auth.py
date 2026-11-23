@@ -125,3 +125,31 @@ def test_area_office_short_forms_are_spelled_out():
         "school_name": "โรงเรียนบี", "area_office": "สพม.เลย หนองบัวลำภู", "accept_terms": True,
     })
     assert r.json()["user"]["area_office"] == full
+
+
+def test_spoofed_forwarded_for_does_not_reset_login_limit(teacher):
+    c = TestClient(app)
+    for i in range(5):
+        c.post("/api/auth/login", json={"email": "kru@example.com", "password": "wrong-pass"},
+               headers={"X-Forwarded-For": f"10.0.0.{i}, 203.0.113.7"})
+    # A new fake first address does not help: the last (proxy-added) address is what counts.
+    r = c.post("/api/auth/login", json={"email": "kru@example.com", "password": PASSWORD},
+               headers={"X-Forwarded-For": "10.9.9.9, 203.0.113.7"})
+    assert r.status_code == 429
+
+
+def test_account_limit_across_many_ips(teacher):
+    c = TestClient(app)
+    for i in range(20):
+        c.post("/api/auth/login", json={"email": "kru@example.com", "password": "wrong-pass"},
+               headers={"X-Forwarded-For": f"198.51.100.{i}"})
+    r = c.post("/api/auth/login", json={"email": "kru@example.com", "password": PASSWORD},
+               headers={"X-Forwarded-For": "198.51.100.250"})
+    assert r.status_code == 429
+
+
+def test_railway_counts_as_production(monkeypatch):
+    from app.config import Settings
+
+    monkeypatch.setenv("RAILWAY_ENVIRONMENT_NAME", "production")
+    assert Settings(env="development").is_production

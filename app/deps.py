@@ -32,10 +32,11 @@ def current_academic_term(d: date | None = None) -> tuple[int, int]:
 
 
 def client_ip(request: Request) -> str:
-    # Railway puts the real client address first in X-Forwarded-For.
+    # Railway's edge proxy APPENDS the address it saw. Anything before it was sent by the
+    # client and can be faked, so only the last entry is trusted (rate limits depend on it).
     fwd = request.headers.get("x-forwarded-for", "")
     if fwd:
-        return fwd.split(",")[0].strip()
+        return fwd.split(",")[-1].strip()
     return request.client.host if request.client else "unknown"
 
 
