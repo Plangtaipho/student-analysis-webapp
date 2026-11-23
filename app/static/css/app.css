@@ -450,9 +450,18 @@ table.sum tr.domain td { background: var(--ink-soft); font-weight: 700; color: v
 @media (min-width: 900px) { .lp-price { grid-template-columns: 1fr 440px; gap: 4rem; } }
 .lp-dark h2 { color: #fff; }
 .lp-price p { color: rgba(255,255,255,.75); font-size: 1.1rem; max-width: 32rem; }
-.lp-price-box { background: #fff; color: var(--text); border-radius: 10px; padding: 2rem 2.25rem; }
-.lp-amount { font-size: 1.2rem; color: var(--muted); font-weight: 500; margin-bottom: 1rem; }
-.lp-amount b { font-size: 4rem; line-height: 1.1; color: var(--ink-deep); margin-right: .4rem; }
+.lp-price-box { position: relative; overflow: hidden; background: #fff; color: var(--text); border-radius: 14px; padding: 2rem 2.25rem; box-shadow: 0 20px 50px rgba(0, 0, 0, .25); }
+.lp-price-box.has-promo { border: 3px solid var(--accent); }
+.promo-ribbon { position: absolute; top: 22px; right: -46px; width: 180px; transform: rotate(45deg); background: var(--accent); color: #fff; text-align: center; font-weight: 700; font-size: .85rem; padding: .3rem 0; box-shadow: 0 2px 6px rgba(0,0,0,.15); }
+.promo-was { color: var(--muted); font-size: 1rem; display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; padding-right: 3.5rem; }
+.promo-was s { text-decoration-color: var(--stamp); text-decoration-thickness: 2px; }
+.save-chip { background: var(--good-soft); color: var(--good); font-weight: 700; font-size: .85rem; border-radius: 999px; padding: .05rem .6rem; }
+.lp-amount { display: flex; align-items: flex-start; gap: .35rem; margin: .25rem 0 1rem; color: var(--muted); }
+.lp-amount .baht { font-size: 2rem; font-weight: 700; color: var(--accent-text); margin-top: .9rem; }
+.lp-amount b { font-size: 5.5rem; line-height: 1; color: var(--accent-text); letter-spacing: -.02em; }
+.lp-amount .per { font-size: 1rem; line-height: 1.35; margin: 1.6rem 0 0 .35rem; }
+.trial-strip { border: 1.5px dashed var(--good); background: var(--good-soft); color: var(--good); border-radius: 10px; padding: .6rem .85rem; font-size: .95rem; margin-bottom: 1.25rem; }
+.trial-strip strong { margin-right: .25rem; }
 .lp-price-box ul { list-style: none; padding: 0; margin: 0 0 1.5rem; display: grid; gap: .7rem; }
 .lp-price-box li { display: flex; gap: .75rem; align-items: center; }
 .lp-price-box li::before { content: "✓"; width: 22px; height: 22px; border-radius: 50%; background: var(--good); color: #fff; display: grid; place-items: center; font-size: .7rem; font-weight: 700; flex: none; }
@@ -556,6 +565,12 @@ html { scroll-behavior: smooth; }
 /* Promotion price */
 .promo-tag { display: inline-block; background: var(--accent); color: #fff; font-weight: 700; font-size: .82rem; border-radius: 999px; padding: .1rem .65rem; margin-bottom: .35rem; }
 .promo-tag s { opacity: .85; }
-.price-was { font-weight: 400; opacity: .6; margin-right: .25rem; font-size: .7em; }
-.auth-price .promo-tag { margin: 0 .25rem 0 0; }
-.auth-price b { color: #fff; }
+.hero-promo { display: inline-block; background: var(--accent); color: #fff; border-radius: 999px; padding: .1rem .75rem; margin-right: .35rem; font-weight: 600; }
+.hero-promo s { opacity: .75; }
+.hero-promo b { color: #fff; }
+.auth-price { margin-top: .5rem; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.15); border-radius: 12px; padding: .9rem 1rem; }
+.auth-amount { color: #aebbd0; }
+.auth-amount s { font-size: 1.05rem; text-decoration-color: #ff9a8f; }
+.auth-amount b { font-size: 2.3rem; line-height: 1.1; color: #fff; }
+.auth-price-sub { font-size: .85rem; color: #aebbd0; }
+.pay-amount s { color: var(--muted); font-size: 1.1rem; text-decoration-color: var(--stamp); margin-right: .2rem; }

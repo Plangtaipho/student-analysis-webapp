@@ -11,7 +11,9 @@
     if (data.price_full > data.price) {
       $("price-was").textContent = data.price_full;
       $("price-was").classList.remove("hidden");
-      $("promo").textContent = `โปรพิเศษ ลดจาก ${data.price_full} บาท`;
+      $("promo").textContent = `โปรพิเศษ ลด ${data.price_full - data.price} บาท`;
+      $("price-was-big").textContent = data.price_full;
+      $("price-was-big").classList.remove("hidden");
       $("promo").classList.remove("hidden");
     }
     $("pp-name").textContent = data.promptpay_name ? `ชื่อบัญชี: ${data.promptpay_name}` : "";

@@ -24,7 +24,7 @@
         <a class="btn btn-mark btn-lg" href="/register">สมัครแล้วทดลองใช้ฟรี</a>
         <a class="btn btn-ghost btn-lg" href="#report">ดูว่าในรายงานมีอะไร</a>
       </div>
-      <p class="lp-note">ทดลองใช้ฟรี 1 วิชา นักเรียน {{ trial_limit }} คน จากนั้น{% if price_full > price %} <s>{{ price_full }}</s>{% endif %} <b>{{ price }}</b> บาทต่อภาคเรียน ใช้ได้ทุกห้องที่สอน</p>
+      <p class="lp-note">{% if price_full > price %}<span class="hero-promo">โปรพิเศษ <s>{{ price_full }}</s> <b>{{ price }} บาท</b>/ภาคเรียน</span> {% endif %}ทดลองใช้ฟรี 1 วิชา นักเรียน {{ trial_limit }} คน{% if not price_full > price %} จากนั้น {{ price }} บาทต่อภาคเรียน{% endif %}</p>
     </div>
 
     <div class="lp-visual" aria-hidden="true">
@@ -136,9 +136,13 @@
       <h2>จ่ายครั้งเดียวต่อภาคเรียน</h2>
       <p>ทดลองใช้ฟรี 1 วิชา กับนักเรียน {{ trial_limit }} คน จนออกรายงานได้จริง ถ้าใช้ต่อ สแกนจ่ายพร้อมเพย์แล้วแนบสลิป ใช้งานได้ทันที</p>
     </div>
-    <div class="lp-price-box">
-      {% if price_full > price %}<div class="promo-tag">โปรพิเศษ ลดจาก <s>{{ price_full }}</s> บาท</div>{% endif %}
-      <div class="lp-amount">{% if price_full > price %}<s class="price-was">{{ price_full }}</s> {% endif %}<b>{{ price }}</b> บาท / ภาคเรียน</div>
+    <div class="lp-price-box{% if price_full > price %} has-promo{% endif %}">
+      {% if price_full > price %}
+      <div class="promo-ribbon" aria-hidden="true">โปรพิเศษ</div>
+      <div class="promo-was">ราคาปกติ <s>{{ price_full }} บาท</s> <span class="save-chip">ประหยัด {{ price_full - price }} บาท</span></div>
+      {% endif %}
+      <div class="lp-amount"><span class="baht">฿</span><b>{{ price }}</b><span class="per">ต่อภาคเรียน<br>ทุกห้อง ทุกวิชา</span></div>
+      <div class="trial-strip"><strong>เริ่มต้นฟรี</strong> ทดลอง 1 วิชา กับนักเรียน {{ trial_limit }} คน ออกรายงานได้จริง ไม่ต้องจ่ายก่อน</div>
       <ul>
         <li>สร้างห้องได้ทุกวิชาและทุกชั้นที่สอน</li>
         <li>นักเรียนกรอกได้ไม่จำกัดจำนวน</li>

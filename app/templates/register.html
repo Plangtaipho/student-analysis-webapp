@@ -12,7 +12,11 @@
       <li><b>นักเรียนกรอกผ่านมือถือ</b> สแกน QR แล้วตอบได้เลย</li>
       <li><b>ได้รายงาน PDF</b> พร้อมบันทึกข้อความส่งฝ่ายวิชาการ</li>
     </ul>
-    <p class="auth-price">{% if price_full > price %}<span class="promo-tag">โปรพิเศษ</span> <s>{{ price_full }}</s> {% endif %}<b>{{ price }} บาท</b>ต่อภาคเรียน ใช้ได้ทุกห้องทุกวิชา</p>
+    <div class="auth-price">
+      {% if price_full > price %}<span class="promo-tag">โปรพิเศษ ลด {{ price_full - price }} บาท</span>{% endif %}
+      <div class="auth-amount">{% if price_full > price %}<s>฿{{ price_full }}</s> {% endif %}<b>฿{{ price }}</b> <span>/ ภาคเรียน</span></div>
+      <div class="auth-price-sub">ใช้ได้ทุกห้อง ทุกวิชา นักเรียนไม่จำกัด</div>
+    </div>
   </aside>
 
   <div class="auth-main">
