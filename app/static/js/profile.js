@@ -3,7 +3,9 @@
   const pf = document.getElementById("profile-form");
   const pw = document.getElementById("password-form");
   const me = (await API.loadMe()).user;
-  for (const k of ["full_name", "position", "department", "learning_area", "school_name", "school_location"]) pf[k].value = me[k] || "";
+  for (const k of ["position", "department", "learning_area", "school_name", "school_location", "area_office"]) pf[k].value = me[k] || "";
+  NamePrefix.set("full_name", me.full_name);
+  pf.area_office.dispatchEvent(new Event("change"));
   document.getElementById("email").textContent = me.email;
   if (!me.has_password) {
     // Google-only account: setting a first password needs no current one.

@@ -1,4 +1,4 @@
-{% from "_fields.html" import field_input %}
+{% from "_fields.html" import field_input, name_input %}
 <!doctype html>
 <html lang="th">
 <head>
@@ -54,7 +54,7 @@
       <p class="muted small">กรอกให้ตรงกับความเป็นจริงมากที่สุด ข้อมูลนี้ครูผู้สอนเท่านั้นที่เห็น{% if room.has_roster %} ชื่อในรายงานจะใช้ตามรายชื่อที่ครูใส่ไว้{% endif %}</p>
       <div class="fields">
         <div class="field third"><label for="f-no">เลขที่ <span class="req">*</span></label><input id="f-no" name="student_no" type="number" inputmode="numeric" min="1" max="200" required></div>
-        <div class="field span-6"><label for="f-name">ชื่อ – สกุล <span class="req">*</span></label><input id="f-name" name="full_name" required minlength="2" maxlength="120" placeholder="เด็กชาย / นาย / นางสาว ..." autocomplete="name"></div>
+        {{ name_input("f-name", "full_name", "ชื่อ – สกุล *", ['เด็กชาย', 'เด็กหญิง', 'นาย', 'นางสาว'], "ชื่อ สกุล", cls="span-6") }}
         <div class="field half"><label for="f-nick">ชื่อเล่น</label><input id="f-nick" name="nickname" maxlength="40"></div>
       </div>
     </section>
@@ -126,6 +126,7 @@
 </main>
 <p class="powered"><img src="/static/img/kruflow-mark.svg" alt="" width="20" height="17"> ระบบโดย KruFlow</p>
 <script src="/static/js/api.js"></script>
+<script src="/static/js/name_prefix.js"></script>
 <script src="/static/js/student_form.js"></script>
 </body>
 </html>

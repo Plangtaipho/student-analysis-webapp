@@ -1,5 +1,16 @@
 // Teacher home: list of classrooms + "new classroom" form.
 (async function () {
+  // "มัธยมศึกษาปีที่ 6/1" from the three boxes (level, year, room).
+  function gradeLabel(f) {
+    const room = (f.get("grade_room") || "").trim();
+    return `${f.get("grade_level")} ${f.get("grade_year")}${room ? "/" + room : ""}`;
+  }
+  const gForm = document.getElementById("new-room-form");
+  if (gForm) gForm.addEventListener("change", () => {
+    const f = new FormData(gForm);
+    document.getElementById("grade-preview").textContent = f.get("grade_level") && f.get("grade_year") ? "จะแสดงในรายงานว่า " + gradeLabel(f) : "ห้องไม่บังคับ";
+  });
+
   const list = document.getElementById("rooms");
   const empty = document.getElementById("rooms-empty");
   const form = document.getElementById("new-room-form");
@@ -46,7 +57,7 @@
       const room = await API.post("/api/classrooms", {
         subject_name: f.get("subject_name"),
         subject_code: f.get("subject_code"),
-        grade_label: f.get("grade_label"),
+        grade_label: gradeLabel(f),
         academic_year: Number(f.get("academic_year")),
         semester: Number(f.get("semester")),
       });

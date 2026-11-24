@@ -15,7 +15,7 @@ from starlette.middleware.sessions import SessionMiddleware
 from app.config import get_settings
 from app.database import SessionLocal
 from app.models import Role, User
-from app.routers import auth, billing, classrooms, evaluations, pages, reports, student
+from app.routers import auth, billing, classrooms, edu, evaluations, pages, reports, student
 from app.security import MAX_PASSWORD_BYTES, hash_password
 from app.services.retention import purge_loop
 
@@ -138,6 +138,7 @@ app.include_router(auth.router)
 app.include_router(billing.router)
 app.include_router(billing.admin_router)
 app.include_router(classrooms.router)
+app.include_router(edu.router)
 app.include_router(evaluations.router)
 app.include_router(reports.router)
 app.include_router(student.router)

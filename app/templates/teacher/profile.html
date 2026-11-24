@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_fields.html" import name_input, area_school_inputs %}
 {% block title %}ข้อมูลครู{% endblock %}
 {% block container_class %}form-container{% endblock %}
 {% block content %}
@@ -7,11 +8,11 @@
 </div>
 <form id="profile-form" class="card">
   <div class="fields">
-    <div class="field half"><label for="full_name">ชื่อ-สกุล</label><input id="full_name" name="full_name" required maxlength="120" placeholder="นางพรธิดา โพธิ์สิงห์"></div>
+    {{ name_input("full_name", "full_name", "ชื่อ-สกุล", ['นาย', 'นาง', 'นางสาว'], "ชื่อ สกุล", cls="half") }}
     <div class="field half"><label for="position">ตำแหน่ง</label><select id="position" name="position" required><option value="">— เลือก —</option><option>ครู</option><option>พนักงานราชการ</option><option>อัตราจ้าง</option></select></div>
     <div class="field half"><label for="department">กลุ่มงาน <span class="hint">ใช้เป็น "ส่วนราชการ" ในบันทึกข้อความ</span></label><select id="department" name="department" required><option value="">เลือกกลุ่มงาน</option>{% for g in WORK_GROUPS %}<option>{{ g }}</option>{% endfor %}</select></div>
     <div class="field half"><label for="learning_area">กลุ่มสาระการเรียนรู้</label><select id="learning_area" name="learning_area" required><option value="">เลือกกลุ่มสาระ</option>{% for a in LEARNING_AREAS %}<option value="{{ a }}">{{ a | replace("กลุ่มสาระการเรียนรู้", "") }}</option>{% endfor %}</select></div>
-    <div class="field"><label for="school_name">โรงเรียน</label><input id="school_name" name="school_name" required maxlength="160"></div>
+    {{ area_school_inputs() }}
     <div class="field"><label for="school_location">อำเภอ จังหวัดของโรงเรียน <span class="hint">ต่อท้ายส่วนราชการในบันทึกข้อความ</span></label><input id="school_location" name="school_location" maxlength="160" placeholder="อำเภอเมือง จังหวัดหนองบัวลำภู"></div>
   </div>
   <div id="profile-error" class="alert alert-error hidden" role="alert"></div>
@@ -29,4 +30,4 @@
   <button class="btn mt-4" type="submit">เปลี่ยนรหัสผ่าน</button>
 </form>
 {% endblock %}
-{% block scripts %}<script src="/static/js/profile.js"></script>{% endblock %}
+{% block scripts %}<script src="/static/js/name_prefix.js"></script><script src="/static/js/edu_areas.js"></script><script src="/static/js/profile.js"></script>{% endblock %}

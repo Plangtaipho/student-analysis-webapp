@@ -14,7 +14,21 @@
   <div class="fields">
     <div class="field half"><label for="subject_name">ชื่อวิชา</label><input id="subject_name" name="subject_name" required maxlength="120" placeholder="คณิตศาสตร์พื้นฐาน"></div>
     <div class="field half"><label for="subject_code">รหัสวิชา <span class="tag">ไม่บังคับ</span></label><input id="subject_code" name="subject_code" maxlength="20" placeholder="ค33101"></div>
-    <div class="field half"><label for="grade_label">ชั้น / ห้อง</label><input id="grade_label" name="grade_label" required maxlength="40" placeholder="มัธยมศึกษาปีที่ 6/1"></div>
+    <div class="field half"><span class="label" id="grade-label">ชั้น / ห้อง</span>
+      <div class="grade-group" role="group" aria-labelledby="grade-label">
+        <select id="grade_level" name="grade_level" required aria-label="ระดับชั้น">
+          <option value="">ระดับ</option>
+          <option value="ประถมศึกษาปีที่">ป. (ประถม)</option>
+          <option value="มัธยมศึกษาปีที่">ม. (มัธยม)</option>
+        </select>
+        <select id="grade_year" name="grade_year" required aria-label="ปีที่">
+          <option value="">ปีที่</option>
+          {% for n in range(1, 7) %}<option>{{ n }}</option>{% endfor %}
+        </select>
+        <span class="grade-slash">/</span>
+        <input id="grade_room" name="grade_room" inputmode="numeric" maxlength="4" pattern="[0-9]{1,4}" placeholder="ห้อง" aria-label="ห้อง (ไม่บังคับ)">
+      </div>
+      <span class="hint" id="grade-preview">ห้องไม่บังคับ</span></div>
     <div class="field third"><label for="academic_year">ปีการศึกษา</label><input id="academic_year" name="academic_year" type="number" min="2560" max="2700" required></div>
     <div class="field third span-3"><label for="semester">ภาคเรียน</label>
       <select id="semester" name="semester"><option value="1">1</option><option value="2">2</option></select></div>

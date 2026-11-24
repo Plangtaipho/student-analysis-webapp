@@ -57,6 +57,7 @@
       department: f.get("department"),
       learning_area: f.get("learning_area"),
       school_name: f.get("school_name"),
+      area_office: f.get("area_office"),
       accept_terms: f.get("accept_terms") === "on",
     };
     if (googleMode) return body;

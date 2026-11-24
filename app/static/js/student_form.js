@@ -89,7 +89,7 @@
 
   function fill(d) {
     form.student_no.value = d.student_no ?? "";
-    form.full_name.value = d.full_name ?? "";
+    NamePrefix.set("f-name", d.full_name ?? "");
     form.nickname.value = d.nickname ?? "";
     form.querySelectorAll("[data-personal]").forEach((el) => { el.value = (d.personal_info || {})[el.name] ?? ""; });
     form.querySelectorAll("[data-question]").forEach((el) => { el.value = (d.open_answers || {})[el.name] ?? ""; });

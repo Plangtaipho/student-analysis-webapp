@@ -18,3 +18,32 @@
   {% endif %}
 </div>
 {%- endmacro %}
+
+{# Name with a title picked from a menu; the joined name goes in the hidden input `id` (see name_prefix.js). #}
+{% macro name_input(id, name, label, titles, placeholder="", hint="", cls="", attrs="") -%}
+<div class="field {{ cls }}">
+  <label for="{{ id }}-rest">{{ label }}</label>
+  <div class="name-group" data-name-group>
+    <select data-prefix aria-label="คำนำหน้าชื่อ" required>
+      <option value="">คำนำหน้า</option>
+      {% for t in titles %}<option value="{{ t }}">{{ t }}</option>{% endfor %}
+      <option value="-">อื่นๆ</option>
+    </select>
+    <input id="{{ id }}-rest" data-name-rest required maxlength="110" placeholder="{{ placeholder }}" autocomplete="name" {{ attrs }}>
+    <input type="hidden" id="{{ id }}" name="{{ name }}">
+  </div>
+  {% if hint %}<span class="hint">{{ hint }}</span>{% endif %}
+</div>
+{%- endmacro %}
+
+{# Education service area (datalist of the 245 areas) and school (suggestions of that area), see edu_areas.js. #}
+{% macro area_school_inputs() -%}
+<div class="field"><label for="area_office">สำนักงานเขตพื้นที่การศึกษา</label>
+  <input id="area_office" name="area_office" list="area-list" required minlength="3" maxlength="200" autocomplete="off" placeholder="พิมพ์ชื่อจังหวัดเพื่อค้นหา เช่น หนองบัวลำภู">
+  <datalist id="area-list"></datalist>
+  <span class="hint">เลือกจากรายการ สพป. 183 เขต และ สพม. 62 เขต</span></div>
+<div class="field"><label for="school_name">โรงเรียน</label>
+  <input id="school_name" name="school_name" list="school-list" required minlength="2" maxlength="160" autocomplete="off" placeholder="พิมพ์ชื่อโรงเรียนเพื่อค้นหา">
+  <datalist id="school-list"></datalist>
+  <span class="hint">เลือกเขตพื้นที่ก่อน แล้วรายชื่อโรงเรียนในเขตจะขึ้นให้เลือก ถ้าไม่มีในรายการ พิมพ์เองได้</span></div>
+{%- endmacro %}

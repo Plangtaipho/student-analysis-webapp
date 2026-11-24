@@ -589,3 +589,12 @@ html { scroll-behavior: smooth; }
 .auth-amount b { font-size: 2.3rem; line-height: 1.1; color: #fff; }
 .auth-price-sub { font-size: .85rem; color: #aebbd0; }
 .pay-amount s { color: var(--muted); font-size: 1.1rem; text-decoration-color: var(--stamp); margin-right: .2rem; }
+
+/* Name with a title menu, and class level / year / room */
+.name-group { display: flex; gap: .5rem; }
+.name-group select { flex: 0 0 auto; width: auto; min-width: 7.5rem; }
+.name-group input[data-name-rest] { flex: 1 1 auto; min-width: 0; }
+.grade-group { display: flex; gap: .5rem; align-items: center; }
+.grade-group select { width: auto; flex: 1 1 auto; }
+.grade-group input { width: 5.5rem; flex: 0 0 auto; }
+.grade-slash { color: var(--muted); font-weight: 700; }

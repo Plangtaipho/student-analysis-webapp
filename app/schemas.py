@@ -87,8 +87,8 @@ class RegisterIn(Password):
     department: WorkGroup
     learning_area: LearningArea
     school_name: str = Field(min_length=2, max_length=160)
-    # No longer asked for (2026-11-24). Kept so older clients and earlier values still work.
-    area_office: str | None = Field(default=None, max_length=200)
+    # Asked again at sign-up (2026-11-24), picked from the list of 245 areas. Not printed on documents.
+    area_office: str = Field(min_length=3, max_length=200)
 
     @field_validator("area_office")
     @classmethod
@@ -117,8 +117,8 @@ class GoogleRegisterIn(BaseModel):
     department: WorkGroup
     learning_area: LearningArea
     school_name: str = Field(min_length=2, max_length=160)
-    # No longer asked for (2026-11-24). Kept so older clients and earlier values still work.
-    area_office: str | None = Field(default=None, max_length=200)
+    # Asked again at sign-up (2026-11-24), picked from the list of 245 areas. Not printed on documents.
+    area_office: str = Field(min_length=3, max_length=200)
 
     @field_validator("area_office")
     @classmethod
@@ -151,7 +151,7 @@ class ProfileIn(BaseModel):
     learning_area: LearningArea
     school_name: str = Field(min_length=2, max_length=160)
     school_location: str = Field(default="", max_length=160)
-    # No longer asked for (2026-11-24). Kept so older clients and earlier values still work.
+    # None = keep the saved value.
     area_office: str | None = Field(default=None, max_length=200)
 
     @field_validator("area_office")

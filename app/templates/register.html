@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_fields.html" import name_input, area_school_inputs %}
 {% block title %}สมัครใช้งาน{% endblock %}
 {% block container_class %}auth-container{% endblock %}
 {% block content %}
@@ -44,7 +45,7 @@
       <section class="auth-step">
         <h3><span class="step-no pw-only">2</span>ข้อมูลที่จะพิมพ์ในรายงาน</h3>
         <div class="fields">
-          <div class="field"><label for="full_name">ชื่อ-สกุล</label><input id="full_name" name="full_name" required minlength="2" maxlength="120" placeholder="เช่น นางสาวใจดี ตั้งใจสอน" autocomplete="name"><span class="hint">ใส่คำนำหน้าตามที่จะลงชื่อในรายงาน</span></div>
+          {{ name_input("full_name", "full_name", "ชื่อ-สกุล", ['นาย', 'นาง', 'นางสาว'], "เช่น ใจดี ตั้งใจสอน", "ชื่อนี้จะลงในรายงานและบันทึกข้อความ") }}
           <div class="field" role="radiogroup" aria-labelledby="position-label">
             <span class="label" id="position-label">ตำแหน่ง</span>
             <div class="pills">
@@ -56,7 +57,7 @@
             <span class="hint">ใช้เป็น "ส่วนราชการ" ในบันทึกข้อความ</span></div>
           <div class="field half"><label for="learning_area">กลุ่มสาระการเรียนรู้</label>
             <select id="learning_area" name="learning_area" required><option value="">เลือกกลุ่มสาระ</option>{% for a in LEARNING_AREAS %}<option value="{{ a }}">{{ a | replace("กลุ่มสาระการเรียนรู้", "") }}</option>{% endfor %}</select></div>
-          <div class="field"><label for="school_name">โรงเรียน</label><input id="school_name" name="school_name" required minlength="2" maxlength="160" placeholder="เช่น โรงเรียนหนองบัวพิทยาคาร"></div>
+          {{ area_school_inputs() }}
         </div>
       </section>
 
@@ -67,4 +68,4 @@
   </div>
 </div>
 {% endblock %}
-{% block scripts %}<script src="/static/js/auth.js"></script>{% endblock %}
+{% block scripts %}<script src="/static/js/name_prefix.js"></script><script src="/static/js/edu_areas.js"></script><script src="/static/js/auth.js"></script>{% endblock %}

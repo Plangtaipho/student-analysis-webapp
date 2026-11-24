@@ -35,6 +35,7 @@ def test_register_requires_terms_and_valid_input():
     bad_dept = base | {"accept_terms": True, "department": "กลุ่มสาระการเรียนรู้คณิตศาสตร์"}
     assert c.post("/api/auth/register", json=bad_dept).status_code == 422
     assert c.post("/api/auth/register", json=base | {"accept_terms": True, "learning_area": ""}).status_code == 422
+    assert c.post("/api/auth/register", json=base | {"accept_terms": True, "area_office": ""}).status_code == 422
     r = c.post("/api/auth/register", json=base | {"accept_terms": True})
     assert r.status_code == 201 and r.json()["user"]["department"] == "กลุ่มบริหารวิชาการ"
     assert r.json()["user"]["learning_area"] == "กิจกรรมพัฒนาผู้เรียน"
