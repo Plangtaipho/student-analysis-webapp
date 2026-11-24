@@ -46,7 +46,7 @@
   <h1 style="margin-top:4pt">แบบสรุปผลการวิเคราะห์ผู้เรียน</h1>
   <div class="head-left">
     <div>{{ grade_text }} จำนวนนักเรียน {{ summary.evaluated }} คน</div>
-    <div>{{ school }}{% if teacher.area_office %}<span class="gap"></span>{{ teacher.area_office }}{% endif %}</div>
+    <div>{{ school }}</div>
   </div>
   <table class="sum">
     <tr><th rowspan="2" style="width:40%">รายการวิเคราะห์ผู้เรียนเป็นรายบุคคล</th><th colspan="2">ดี</th><th colspan="2">ปานกลาง</th><th colspan="2">ปรับปรุง</th><th rowspan="2" style="width:8%">หมาย<br>เหตุ</th></tr>
@@ -69,7 +69,7 @@
   <h1>เพื่อการพัฒนาแผนการจัดการเรียนรู้ที่เน้นผู้เรียนเป็นสำคัญ</h1>
   <div class="head-left" style="padding-left:1cm">
     <div>ชั้น&nbsp; {{ room.grade_label }}<span class="gap"></span>จำนวนนักเรียน {{ summary.evaluated }} คน</div>
-    <div>{{ school }}{% if teacher.area_office %}<span class="gap"></span>{{ teacher.area_office }}{% endif %}&nbsp; ปีการศึกษา {{ room.academic_year }}</div>
+    <div>{{ school }}&nbsp; ปีการศึกษา {{ room.academic_year }}</div>
   </div>
   <table class="groups">
     <tr>{% for g in summary.groups %}<th>กลุ่มผู้เรียนที่<br>{{ g.label | replace("กลุ่มผู้เรียนที่", "") }}</th>{% endfor %}</tr>

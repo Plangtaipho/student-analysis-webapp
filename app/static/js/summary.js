@@ -9,7 +9,7 @@
     me = (await API.loadMe()).user;
     const school = me.school_name.startsWith("โรงเรียน") ? me.school_name : "โรงเรียน" + me.school_name;
     $("memo-dept").textContent = me.department
-      ? [me.department, school, me.school_location, me.area_office].filter(Boolean).join(" ")
+      ? [me.department, school, me.school_location].filter(Boolean).join(" ")
       : "ยังไม่ได้กรอกกลุ่มงาน (แก้ได้ที่หน้าข้อมูลครู)";
     $("memo-date").textContent = new Date().toLocaleDateString("th-TH-u-nu-thai", { day: "numeric", month: "long", year: "numeric" }) + " (วันที่ดาวน์โหลด)";
     $("to").placeholder = `ผู้อำนวยการ${school}`;

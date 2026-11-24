@@ -163,3 +163,19 @@ def test_full_report_works_without_area_office(teacher, student):
         db.commit()
     r = teacher.get(f"/api/classrooms/{room['id']}/pdf/full", params={"doc_no": "1/2569"})
     assert r.status_code == 200 and r.content[:4] == b"%PDF"
+
+
+def test_full_report_leaves_out_area_office(teacher, student, monkeypatch):
+    """Even teachers who filled in the area office at sign-up get it left out of the memo (decision 2026-11-24)."""
+    from app.routers import reports
+
+    seen = {}
+    monkeypatch.setattr(reports, "render_pdf", lambda name, **ctx: seen.update(ctx) or b"%PDF-fake")
+    room, ids = setup_room(teacher, student, 1)
+    teacher.put(ev_url(room, ids[0]), {"scores": all_scores("good")})
+    with SessionLocal() as db:
+        assert db.get(User, teacher.user["id"]).area_office  # set by the fixture
+    r = teacher.get(f"/api/classrooms/{room['id']}/pdf/full", params={"doc_no": "1/2569"})
+    assert r.status_code == 200
+    assert "เขตพื้นที่" not in seen["memo"]["dept"]
+    assert seen["memo"]["dept"].startswith("กลุ่มบริหารวิชาการ")
