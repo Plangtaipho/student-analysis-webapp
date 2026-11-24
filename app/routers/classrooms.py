@@ -22,6 +22,7 @@ from app.schemas import (
     ClassroomPatch,
     RosterEntryOut,
     RosterIn,
+    SubmissionEditIn,
 )
 from app.security import hash_edit_code, new_edit_code, new_public_token
 from app.services.billing import room_is_active, student_limit
@@ -169,6 +170,22 @@ def replace_roster(
     return [RosterEntryOut(student_no=no, full_name=name) for no, name in rows]
 
 
+@router.delete("/{classroom_id}/roster/{student_no}", status_code=status.HTTP_204_NO_CONTENT)
+def remove_roster_entry(
+    classroom_id: int, student_no: int, user: User = Depends(get_current_user), db: Session = Depends(get_db)
+):
+    """Take one student off the class list (moved away, or listed by mistake) so the class counts as complete."""
+    room = get_owned_classroom(classroom_id, user, db)
+    entry = db.scalar(
+        select(RosterEntry).where(RosterEntry.classroom_id == room.id, RosterEntry.student_no == student_no)
+    )
+    if entry is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "ไม่พบเลขที่นี้ในรายชื่อ")
+    db.delete(entry)
+    db.commit()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
 # --- Submissions ---------------------------------------------------------------------
 
 
@@ -216,7 +233,37 @@ def get_submission(
         "learning_prefs": [{"key": k, "label": LEARNING_METHOD_LABELS.get(k, k)} for k in s.learning_prefs],
         "submitted_at": s.submitted_at.isoformat() + "Z",
         "updated_at": s.updated_at.isoformat() + "Z",
+        "by_teacher": s.created_by_teacher,
+        "roster": {r.student_no: r.full_name for r in s.classroom.roster},
     }
+
+
+@router.put("/{classroom_id}/submissions/{submission_id}")
+def edit_submission(
+    classroom_id: int,
+    submission_id: int,
+    body: SubmissionEditIn,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """The teacher fixes a record a student filled in wrongly, e.g. under a classmate's number or name."""
+    s = get_owned_submission(classroom_id, submission_id, user, db)
+    if body.student_no != s.student_no:
+        taken = db.scalar(
+            select(Submission).where(Submission.classroom_id == s.classroom_id, Submission.student_no == body.student_no)
+        )
+        if taken is not None:
+            raise HTTPException(
+                status.HTTP_409_CONFLICT,
+                f"เลขที่ {body.student_no} มีคำตอบอยู่แล้ว ({taken.full_name}) ให้ลบหรือแก้เลขที่ของคำตอบนั้นก่อน",
+            )
+    s.student_no, s.full_name, s.nickname = body.student_no, body.full_name, body.nickname
+    if body.personal_info is not None:
+        s.personal_info = body.personal_info
+    if body.open_answers is not None:
+        s.open_answers = body.open_answers
+    db.commit()
+    return get_submission(classroom_id, submission_id, user, db)
 
 
 @router.delete("/{classroom_id}/submissions/{submission_id}", status_code=status.HTTP_204_NO_CONTENT)

@@ -292,6 +292,17 @@ def clean_personal_info(raw: dict) -> dict:
     return out
 
 
+def clean_open_answers(v: dict[str, str]) -> dict[str, str]:
+    out = {}
+    for key in OPEN_QUESTION_KEYS:
+        text = _clean(v.get(key, "") or "")
+        if len(text) > 300:
+            raise ValueError("คำตอบแต่ละข้อยาวได้ไม่เกิน 300 ตัวอักษร")
+        if text:
+            out[key] = text
+    return out
+
+
 class SubmissionIn(BaseModel):
     student_no: int = Field(ge=1, le=200)
     full_name: str = Field(min_length=2, max_length=120)
@@ -323,14 +334,7 @@ class SubmissionIn(BaseModel):
     @field_validator("open_answers")
     @classmethod
     def _answers(cls, v: dict[str, str]) -> dict[str, str]:
-        out = {}
-        for key in OPEN_QUESTION_KEYS:
-            text = _clean(v.get(key, "") or "")
-            if len(text) > 300:
-                raise ValueError("คำตอบแต่ละข้อยาวได้ไม่เกิน 300 ตัวอักษร")
-            if text:
-                out[key] = text
-        return out
+        return clean_open_answers(v)
 
     @field_validator("learning_prefs")
     @classmethod
@@ -340,6 +344,32 @@ class SubmissionIn(BaseModel):
         if len(v) < MIN_RANKED_METHODS:
             raise ValueError(f"กรุณาเลือกวิธีการเรียนที่ชอบอย่างน้อย {MIN_RANKED_METHODS} อันดับ")
         return v
+
+
+class SubmissionEditIn(BaseModel):
+    """The teacher corrects a student's record (wrong number or name, or wrong answers).
+    personal_info / open_answers left out (None) are kept as they are."""
+
+    student_no: int = Field(ge=1, le=200)
+    full_name: str = Field(min_length=2, max_length=120)
+    nickname: str = Field(default="", max_length=40)
+    personal_info: dict | None = None
+    open_answers: dict[str, str] | None = None
+
+    @field_validator("full_name", "nickname")
+    @classmethod
+    def _strip(cls, v: str) -> str:
+        return _clean(v)
+
+    @field_validator("personal_info")
+    @classmethod
+    def _personal(cls, v: dict | None) -> dict | None:
+        return None if v is None else clean_personal_info(v)
+
+    @field_validator("open_answers")
+    @classmethod
+    def _answers(cls, v: dict[str, str] | None) -> dict[str, str] | None:
+        return None if v is None else clean_open_answers(v)
 
 
 class LookupIn(BaseModel):

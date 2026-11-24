@@ -61,10 +61,12 @@
         ? `${evalBtn}
            ${r.by_teacher ? "" : `<a class="btn btn-sm" href="/app/classrooms/${id}/submissions/${r.id}">ดูคำตอบ</a>`}
            <details class="row-menu"><summary class="btn btn-sm" aria-label="ตัวเลือกเพิ่มเติมของเลขที่ ${r.student_no}">อื่นๆ</summary><div class="menu-pop">
+             <a class="btn btn-sm" href="/app/classrooms/${id}/submissions/${r.id}?edit=1">แก้ไขเลขที่ ชื่อ หรือคำตอบ</a>
              ${r.by_teacher ? "" : `<button class="btn btn-sm" data-code="${r.id}" data-no="${r.student_no}">ออกรหัสแก้ไขใหม่</button>`}
              <button class="btn btn-sm btn-danger" data-del="${r.id}" data-no="${r.student_no}">ลบคำตอบนี้</button>
            </div></details>`
-        : `<button class="btn btn-sm" data-manual="${r.student_no}" data-name="${API.esc(r.full_name)}">ครูประเมินเอง</button>`;
+        : `<button class="btn btn-sm" data-manual="${r.student_no}" data-name="${API.esc(r.full_name)}">ครูประเมินเอง</button>
+           <button class="btn btn-sm" data-unlist="${r.student_no}" data-name="${API.esc(r.full_name)}" title="นักเรียนย้ายออก หรือไม่มีตัวตนในห้องนี้">ย้ายออก/ไม่มีตัวตน</button>`;
       const byTeacher = r.by_teacher ? ' <span class="badge badge-missing">ครูเพิ่มเอง</span>' : "";
       return `<tr>
         <td class="num">${r.student_no}</td>
@@ -121,6 +123,17 @@
       try {
         const r = await API.post(`${base}/submissions/manual`, { student_no: Number(manual.dataset.manual), full_name: manual.dataset.name });
         location.href = `/app/classrooms/${id}/submissions/${r.id}/evaluate`;
+      } catch (e) { API.toast(e.message); }
+      return;
+    }
+    const unlist = ev.target.closest("[data-unlist]");
+    if (unlist) {
+      const no = unlist.dataset.unlist;
+      if (!confirm(`เอาเลขที่ ${no} ${unlist.dataset.name} ออกจากรายชื่อห้อง?\nใช้กับนักเรียนที่ย้ายออกหรือไม่มีตัวตน ห้องจะนับว่าส่งครบโดยไม่รวมคนนี้ และจะไม่อยู่ในรายงาน`)) return;
+      try {
+        await API.del(`${base}/roster/${no}`);
+        API.toast(`เอาเลขที่ ${no} ออกจากรายชื่อแล้ว`);
+        await Promise.all([loadRoom(), loadSubmissions(), loadRoster()]);
       } catch (e) { API.toast(e.message); }
       return;
     }

@@ -1,0 +1,20 @@
+{# Input for one personal-info field; shared by the student form and the teacher's edit form. #}
+{% macro field_input(f) -%}
+<div class="field {{ f.width }}">
+  <label for="f-{{ f.key }}">{{ f.label }}</label>
+  {% if f.kind == "select" %}
+  <select id="f-{{ f.key }}" name="{{ f.key }}" data-personal>
+    <option value="">— เลือก —</option>
+    {% for o in f.options %}<option value="{{ o }}">{{ o }}</option>{% endfor %}
+  </select>
+  {% elif f.kind == "number" %}
+  <input id="f-{{ f.key }}" name="{{ f.key }}" type="number" inputmode="decimal" step="any"
+         {% if f.min_value is not none %}min="{{ f.min_value }}"{% endif %} {% if f.max_value is not none %}max="{{ f.max_value }}"{% endif %} data-personal>
+  {% elif f.kind == "date" %}
+  <input id="f-{{ f.key }}" name="{{ f.key }}" type="date" min="1990-01-01" max="2030-12-31" data-personal>
+  {% else %}
+  <input id="f-{{ f.key }}" name="{{ f.key }}" maxlength="{{ f.max_len }}"
+         {% if f.key in ("postcode", "phone", "house_no", "moo") %}inputmode="numeric"{% endif %} data-personal>
+  {% endif %}
+</div>
+{%- endmacro %}

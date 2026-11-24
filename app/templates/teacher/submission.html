@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_fields.html" import field_input %}
 {% block title %}คำตอบของนักเรียน{% endblock %}
 {% block body_attrs %}data-classroom-id="{{ classroom_id }}" data-submission-id="{{ submission_id }}"{% endblock %}
 {% block container_class %}form-container{% endblock %}
@@ -6,8 +7,46 @@
 <a class="back" href="/app/classrooms/{{ classroom_id }}">← กลับไปหน้าห้องเรียน</a>
 <div class="page-head">
   <div><h1 id="s-title">กำลังโหลด…</h1><div class="sub small" id="s-time"></div></div>
-  <div class="tools"><a class="btn" id="pdf-one" target="_blank" rel="noopener">PDF รายบุคคล</a><a class="btn btn-primary" id="eval-link">ประเมิน</a></div>
+  <div class="tools">
+    <button class="btn" type="button" id="edit-btn">แก้ไขข้อมูล</button>
+    <a class="btn" id="pdf-one" target="_blank" rel="noopener">PDF รายบุคคล</a>
+    <a class="btn btn-primary" id="eval-link">ประเมิน</a>
+  </div>
 </div>
+
+<form id="edit-form" class="hidden" novalidate>
+  <div class="alert alert-info">แก้ไขข้อมูลที่นักเรียนกรอกผิดได้ เช่น ใส่เลขที่หรือชื่อของเพื่อน ถ้ามีรายชื่อห้อง พิมพ์เลขที่แล้วระบบเติมชื่อตามรายชื่อให้ ผลประเมินของครูยังอยู่เหมือนเดิม</div>
+  <section class="card">
+    <h2>ข้อมูลนักเรียน</h2>
+    <div class="fields">
+      <div class="field third"><label for="e-no">เลขที่ <span class="req">*</span></label><input id="e-no" type="number" inputmode="numeric" min="1" max="200" required></div>
+      <div class="field span-6"><label for="e-name">ชื่อ – สกุล <span class="req">*</span></label><input id="e-name" required minlength="2" maxlength="120"></div>
+      <div class="field half"><label for="e-nick">ชื่อเล่น</label><input id="e-nick" maxlength="40"></div>
+    </div>
+  </section>
+  <div id="edit-answers">
+    {% for section in sections %}
+    <section class="card">
+      <h2>{{ section.title }}</h2>
+      <div class="fields">{% for f in section.fields %}{{ field_input(f) }}{% endfor %}</div>
+    </section>
+    {% endfor %}
+    <section class="card">
+      <h2>1. แบบสอบถามนักเรียน</h2>
+      {% for q in questions %}
+      <div class="field"><label for="e-{{ q.key }}">{{ q.label }}</label><textarea id="e-{{ q.key }}" data-q-in="{{ q.key }}" maxlength="300" rows="2"></textarea></div>
+      {% endfor %}
+    </section>
+  </div>
+  <div id="edit-error" class="alert alert-error hidden" role="alert"></div>
+  <div class="row edit-actions">
+    <button class="btn btn-primary" type="submit">บันทึกการแก้ไข</button>
+    <button class="btn" type="button" id="edit-cancel">ยกเลิก</button>
+    <button class="btn btn-danger" type="button" id="delete-btn">ลบคำตอบนี้</button>
+  </div>
+</form>
+
+<div id="view">
 {% for section in sections %}
 <section class="card">
   <h2>{{ section.title }}</h2>
@@ -28,5 +67,6 @@
   <h2>2. วิธีการเรียนที่ต้องการ (เรียงจากชอบมากที่สุด)</h2>
   <ol class="prefs" id="prefs"></ol>
 </section>
+</div>
 {% endblock %}
 {% block scripts %}<script src="/static/js/submission.js"></script>{% endblock %}
