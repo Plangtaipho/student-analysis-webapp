@@ -155,11 +155,11 @@ def test_full_report_needs_department(teacher, student):
     assert r.status_code == 409 and "กลุ่มงาน" in r.text
 
 
-def test_full_report_needs_area_office(teacher, student):
+def test_full_report_works_without_area_office(teacher, student):
     room, ids = setup_room(teacher, student, 1)
     teacher.put(ev_url(room, ids[0]), {"scores": all_scores("good")})
     with SessionLocal() as db:
         db.get(User, teacher.user["id"]).area_office = ""
         db.commit()
     r = teacher.get(f"/api/classrooms/{room['id']}/pdf/full", params={"doc_no": "1/2569"})
-    assert r.status_code == 409 and "เขตพื้นที่" in r.text
+    assert r.status_code == 200 and r.content[:4] == b"%PDF"

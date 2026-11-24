@@ -99,10 +99,9 @@ def full_report_pdf(
         raise HTTPException(status.HTTP_409_CONFLICT, "ยังไม่มีนักเรียนที่ประเมินแล้ว กรุณาประเมินอย่างน้อย 1 คนก่อนออกรายงาน")
     if not doc_no.strip():
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "กรุณากรอกเลขที่หนังสือ (ที่) ก่อนออกรายงาน")
-    if not user.department.strip() or not user.area_office.strip():
+    if not user.department.strip():
         raise HTTPException(
-            status.HTTP_409_CONFLICT,
-            "กรุณากรอกกลุ่มงานและสำนักงานเขตพื้นที่การศึกษาในหน้าข้อมูลครูก่อน เพื่อใช้เป็นส่วนราชการในบันทึกข้อความ",
+            status.HTTP_409_CONFLICT, "กรุณากรอกกลุ่มงานในหน้าข้อมูลครูก่อน เพื่อใช้เป็นส่วนราชการในบันทึกข้อความ"
         )
     school = school_text(user.school_name)
     d = today()  # the memo is dated the day it is exported

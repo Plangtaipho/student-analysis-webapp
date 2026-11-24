@@ -50,7 +50,7 @@ def register(body: RegisterIn, request: Request, db: Session = Depends(get_db)):
         department=body.department,
         learning_area=body.learning_area,
         school_name=body.school_name,
-        area_office=body.area_office,
+        area_office=body.area_office or "",
     )
     db.add(user)
     db.commit()
@@ -100,7 +100,8 @@ def update_profile(body: ProfileIn, user: User = Depends(get_current_user), db: 
     user.learning_area = body.learning_area
     user.school_location = body.school_location
     user.school_name = body.school_name
-    user.area_office = body.area_office
+    if body.area_office is not None:
+        user.area_office = body.area_office
     db.commit()
     return {"user": UserOut.model_validate(user)}
 
@@ -217,7 +218,7 @@ def google_register(body: GoogleRegisterIn, request: Request, db: Session = Depe
         department=body.department,
         learning_area=body.learning_area,
         school_name=body.school_name,
-        area_office=body.area_office,
+        area_office=body.area_office or "",
     )
     db.add(user)
     db.commit()

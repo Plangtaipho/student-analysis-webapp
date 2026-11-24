@@ -87,12 +87,13 @@ class RegisterIn(Password):
     department: WorkGroup
     learning_area: LearningArea
     school_name: str = Field(min_length=2, max_length=160)
-    area_office: str = Field(min_length=3, max_length=200)
+    # No longer asked for (2026-11-24). Kept so older clients and earlier values still work.
+    area_office: str | None = Field(default=None, max_length=200)
 
     @field_validator("area_office")
     @classmethod
-    def _full_area_office(cls, v: str) -> str:
-        return expand_area_office(v)
+    def _full_area_office(cls, v: str | None) -> str | None:
+        return expand_area_office(v) if v else v
     accept_terms: bool
 
     @field_validator("full_name", "school_name")
@@ -116,12 +117,13 @@ class GoogleRegisterIn(BaseModel):
     department: WorkGroup
     learning_area: LearningArea
     school_name: str = Field(min_length=2, max_length=160)
-    area_office: str = Field(min_length=3, max_length=200)
+    # No longer asked for (2026-11-24). Kept so older clients and earlier values still work.
+    area_office: str | None = Field(default=None, max_length=200)
 
     @field_validator("area_office")
     @classmethod
-    def _full_area_office(cls, v: str) -> str:
-        return expand_area_office(v)
+    def _full_area_office(cls, v: str | None) -> str | None:
+        return expand_area_office(v) if v else v
     accept_terms: bool
 
     @field_validator("full_name", "school_name")
@@ -149,12 +151,13 @@ class ProfileIn(BaseModel):
     learning_area: LearningArea
     school_name: str = Field(min_length=2, max_length=160)
     school_location: str = Field(default="", max_length=160)
-    area_office: str = Field(min_length=3, max_length=200)
+    # No longer asked for (2026-11-24). Kept so older clients and earlier values still work.
+    area_office: str | None = Field(default=None, max_length=200)
 
     @field_validator("area_office")
     @classmethod
-    def _full_area_office(cls, v: str) -> str:
-        return expand_area_office(v)
+    def _full_area_office(cls, v: str | None) -> str | None:
+        return expand_area_office(v) if v else v
 
     @field_validator("full_name", "school_name", "school_location")
     @classmethod

@@ -57,7 +57,6 @@
           <div class="field half"><label for="learning_area">กลุ่มสาระการเรียนรู้</label>
             <select id="learning_area" name="learning_area" required><option value="">เลือกกลุ่มสาระ</option>{% for a in LEARNING_AREAS %}<option value="{{ a }}">{{ a | replace("กลุ่มสาระการเรียนรู้", "") }}</option>{% endfor %}</select></div>
           <div class="field"><label for="school_name">โรงเรียน</label><input id="school_name" name="school_name" required minlength="2" maxlength="160" placeholder="เช่น โรงเรียนหนองบัวพิทยาคาร"></div>
-          <div class="field"><label for="area_office">สำนักงานเขตพื้นที่การศึกษา</label><input id="area_office" name="area_office" required minlength="3" maxlength="200" placeholder="เช่น สำนักงานเขตพื้นที่การศึกษามัธยมศึกษาเลย หนองบัวลำภู"><span class="hint">ใช้ชื่อเต็มในบันทึกข้อความ ถ้าพิมพ์ สพม. หรือ สพป. ระบบจะเปลี่ยนเป็นชื่อเต็มให้</span></div>
         </div>
       </section>
 
