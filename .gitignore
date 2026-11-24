@@ -7,3 +7,4 @@ __pycache__/
 uploads/
 node_modules/
 e2e/out/
+e2e/demo_video/out/

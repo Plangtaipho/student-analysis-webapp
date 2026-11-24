@@ -5,7 +5,7 @@
   <a href="/app">ห้องเรียนของฉัน</a>
 {% else %}
   <span class="nav-anchors">
-    <a href="#how">วิธีใช้</a>
+    <a href="#how">ดูคลิป</a>
     <a href="#report">ในรายงานมีอะไร</a>
     <a href="#price">ราคา</a>
     <a href="#faq">คำถามที่พบบ่อย</a>
@@ -22,7 +22,7 @@
       <p class="lead">ส่งลิงก์ให้นักเรียนกรอกแบบบันทึกเองบนมือถือ ครูกดประเมิน 16 ข้อต่อคน แล้วดาวน์โหลดรายงานฉบับเต็ม ทั้งบันทึกข้อความ ตารางสรุปร้อยละ และกลุ่มผู้เรียน ตรงตามแบบที่โรงเรียนใช้</p>
       <div class="lp-ctas">
         <a class="btn btn-mark btn-lg" href="/register">สมัครแล้วทดลองใช้ฟรี</a>
-        <a class="btn btn-ghost btn-lg" href="#report">ดูว่าในรายงานมีอะไร</a>
+        <a class="btn btn-ghost btn-lg" href="#how">ดูคลิปการใช้งาน</a>
       </div>
       <p class="lp-note">{% if price_full > price %}<span class="hero-promo">โปรพิเศษ <s>{{ price_full }}</s> <b>{{ price }} บาท</b>/ภาคเรียน</span> {% endif %}ทดลองใช้ฟรี 1 วิชา นักเรียน {{ trial_limit }} คน{% if not price_full > price %} จากนั้น {{ price }} บาทต่อภาคเรียน{% endif %}</p>
     </div>
@@ -65,6 +65,15 @@
   </div>
 </section>
 
+<section class="lp-stats" aria-label="ตัวเลขสำคัญ">
+  <div class="wrap lp-stats-grid">
+    <div class="lp-stat lp-stat-main"><span class="was">จากเดิม 2-3 วัน</span><b>เหลือ 1 ชั่วโมง</b><small>เวลาทำรายงานวิเคราะห์ผู้เรียนทั้งห้อง</small></div>
+    <div class="lp-stat"><b>10 นาที</b><small>นักเรียนกรอกเองบนมือถือ</small></div>
+    <div class="lp-stat"><b>16 ข้อ</b><small>ระบบนับและคิดร้อยละให้ทุกข้อ</small></div>
+    <div class="lp-stat"><b>4 ส่วน</b><small>รวมในไฟล์ PDF เดียว พร้อมเซ็นส่ง</small></div>
+  </div>
+</section>
+
 <section class="lp-section">
   <div class="wrap">
     <div class="lp-head">
@@ -96,7 +105,16 @@
 
 <section class="lp-section lp-white" id="how">
   <div class="wrap">
-    <div class="lp-head"><h2>ใช้ 4 ขั้นตอน ตั้งแต่ส่งลิงก์จนได้ไฟล์ส่งงาน</h2></div>
+    <div class="lp-head">
+      <h2>ดูการใช้งานจริง ตั้งแต่สแกน QR จนได้ไฟล์ส่งงาน</h2>
+      <p>คลิป 45 วินาที ช่วงนักเรียนกรอกตัดให้สั้นลง ของจริงนักเรียนใช้เวลาประมาณ 10 นาที</p>
+    </div>
+    <div class="lp-video">
+      <video controls muted playsinline preload="none" width="1280" height="720" poster="/static/sample/kruflow-demo-poster.jpg">
+        <source src="/static/sample/kruflow-demo.mp4" type="video/mp4">
+        <a href="/static/sample/kruflow-demo.mp4">เปิดคลิปสาธิต</a>
+      </video>
+    </div>
     <ol class="lp-steps">
       <li><h3>สร้างห้องรายวิชา</h3><p>กรอกชื่อวิชาและชั้น ได้ลิงก์กับ QR Code ส่งเข้ากลุ่มไลน์ห้องได้ทันที</p></li>
       <li><h3>นักเรียนกรอกเอง</h3><p>ไม่ต้องสมัคร กรอกบนมือถือประมาณ 10 นาที ได้รหัสไว้แก้คำตอบภายหลัง</p></li>
@@ -108,12 +126,15 @@
 
 <section class="lp-section" id="report">
   <div class="wrap lp-report">
-    <div class="lp-pages" aria-hidden="true">
-      <div class="lp-page p1"><b>แบบบันทึกรายบุคคล</b><i></i><i></i><i></i><i></i><i></i><i></i></div>
-      <div class="lp-page p2"><b>กลุ่มผู้เรียน 4 กลุ่ม</b><i></i><i></i><i></i><i></i><i></i><i></i></div>
-      <div class="lp-page p3"><b>แบบสรุปผล</b><i></i><i></i><i></i><i></i><i></i><i></i></div>
-      <div class="lp-page p4"><b>บันทึกข้อความ</b><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-      <div class="lp-stamp lp-stamp-sm">ไฟล์เดียวครบ</div>
+    <div class="lp-sample">
+      <div class="lp-shots">
+        <a href="/static/sample/kruflow-sample-report.pdf" target="_blank" rel="noopener"><img src="/static/sample/page-1.jpg" alt="ตัวอย่างหน้าบันทึกข้อความ" width="744" height="1052" loading="lazy"><span>บันทึกข้อความ</span></a>
+        <a href="/static/sample/kruflow-sample-report.pdf" target="_blank" rel="noopener"><img src="/static/sample/page-2.jpg" alt="ตัวอย่างแบบสรุปผลการวิเคราะห์ผู้เรียน" width="744" height="1052" loading="lazy"><span>แบบสรุปผล</span></a>
+        <a href="/static/sample/kruflow-sample-report.pdf" target="_blank" rel="noopener"><img src="/static/sample/page-3.jpg" alt="ตัวอย่างการวิเคราะห์กลุ่มผู้เรียน" width="1052" height="744" loading="lazy"><span>กลุ่มผู้เรียน 4 กลุ่ม</span></a>
+        <a href="/static/sample/kruflow-sample-report.pdf" target="_blank" rel="noopener"><img src="/static/sample/page-4.jpg" alt="ตัวอย่างแบบบันทึกรายบุคคล" width="744" height="1052" loading="lazy"><span>แบบบันทึกรายบุคคล</span></a>
+      </div>
+      <a class="btn btn-primary btn-lg btn-block" href="/static/sample/kruflow-sample-report.pdf" download="ตัวอย่างรายงานวิเคราะห์ผู้เรียน-KruFlow.pdf">ดาวน์โหลดตัวอย่างรายงาน (PDF)</a>
+      <p class="lp-sample-note">ตัวอย่างจากระบบจริง ชื่อครู โรงเรียน และนักเรียนเป็นชื่อสมมติ</p>
     </div>
     <div>
       <div class="lp-head">
@@ -165,10 +186,24 @@
   </div>
 </section>
 
+<section class="lp-section lp-contact" id="contact">
+  <div class="wrap lp-contact-box">
+    <div>
+      <h2>ยังลังเล หรือมีคำถามเพิ่มเติม?</h2>
+      <p>ทักมาคุยกับเราได้ที่เพจ Facebook ถามเรื่องการใช้งาน แบบฟอร์มของโรงเรียน หรือการชำระเงินได้ทุกเรื่อง</p>
+    </div>
+    {% if facebook_url %}
+    <a class="btn btn-fb btn-lg" href="{{ facebook_url }}" target="_blank" rel="noopener">ทักเพจ {{ facebook_name }}</a>
+    {% else %}
+    <p class="lp-fb-name">ค้นหาเพจ <b>{{ facebook_name }}</b> บน Facebook</p>
+    {% endif %}
+  </div>
+</section>
+
 <footer class="lp-footer">
   <div class="wrap">
     <span class="foot-brand"><img src="/static/img/kruflow-mark-on-dark.svg" alt="" width="28" height="24"> KruFlow วิเคราะห์ผู้เรียนรายบุคคลสำหรับครูไทย</span>
-    <a href="/privacy">นโยบายความเป็นส่วนตัว</a>
+    <span class="foot-links">{% if facebook_url %}<a href="{{ facebook_url }}" target="_blank" rel="noopener">เพจ Facebook</a>{% endif %}<a href="/privacy">นโยบายความเป็นส่วนตัว</a></span>
   </div>
 </footer>
 {% endblock %}

@@ -153,3 +153,18 @@ def test_railway_counts_as_production(monkeypatch):
 
     monkeypatch.setenv("RAILWAY_ENVIRONMENT_NAME", "production")
     assert Settings(env="development").is_production
+
+
+def test_home_shows_sample_report_demo_clip_and_contact(monkeypatch):
+    from app.config import get_settings
+
+    c = TestClient(app)
+    html = c.get("/").text
+    for path in ("/static/sample/kruflow-sample-report.pdf", "/static/sample/kruflow-demo.mp4", "/static/sample/page-1.jpg"):
+        assert path in html
+        assert c.get(path).status_code == 200
+    assert "เหลือ 1 ชั่วโมง" in html
+    assert "ค้นหาเพจ" in html  # no Facebook URL set: name only
+    monkeypatch.setattr(get_settings(), "facebook_url", "https://www.facebook.com/kruflow.example")
+    html = c.get("/").text
+    assert 'href="https://www.facebook.com/kruflow.example"' in html

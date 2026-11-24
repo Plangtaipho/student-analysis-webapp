@@ -44,6 +44,10 @@ class Settings(BaseSettings):
     # Account name shown to teachers before they transfer, e.g. "นางสาว... (KruFlow)".
     promptpay_name: str = ""
 
+    # Facebook page linked on the home page for questions. Empty URL = the page name is shown without a link.
+    facebook_url: str = ""
+    facebook_page_name: str = "KruFlow ศูนย์รวมระบบงานโรงเรียน"
+
     # "Sign in with Google". Both empty = the Google button is hidden.
     # Create an OAuth client (type: Web application) at console.cloud.google.com.
     google_client_id: str = ""
@@ -52,7 +56,7 @@ class Settings(BaseSettings):
     # Delete classrooms 45 days after their semester ends (see app/services/retention.py).
     retention_enabled: bool = True
 
-    @field_validator("public_base_url", "env", "promptpay_id", "promptpay_name", "initial_admin_email", mode="before")
+    @field_validator("public_base_url", "env", "promptpay_id", "promptpay_name", "initial_admin_email", "facebook_url", mode="before")
     @classmethod
     def _trim(cls, v):
         return v.strip() if isinstance(v, str) else v

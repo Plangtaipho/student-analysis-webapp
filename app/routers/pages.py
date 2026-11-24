@@ -37,7 +37,9 @@ def _teacher_page(request: Request, user: User | None, name: str, **ctx):
 
 @router.get("/", response_class=HTMLResponse)
 def home(request: Request, user: User | None = Depends(get_optional_user)):
-    return templates.TemplateResponse(request, "home.html", {"user": user, **_prices()})
+    s = get_settings()
+    contact = {"facebook_url": s.facebook_url, "facebook_name": s.facebook_page_name}
+    return templates.TemplateResponse(request, "home.html", {"user": user, **_prices(), **contact})
 
 
 @router.get("/login", response_class=HTMLResponse)
