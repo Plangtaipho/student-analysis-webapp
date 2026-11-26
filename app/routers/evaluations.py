@@ -123,7 +123,7 @@ def create_manual_submission(
         )
     )
     if exists:
-        what = label(home_class, body.student_no) if room.mixed_classes else "เลขที่นี้"
+        what = label(home_class, body.student_no) + " " if room.mixed_classes else "เลขที่นี้"
         raise HTTPException(status.HTTP_409_CONFLICT, f"{what}มีข้อมูลอยู่แล้ว")
     limit = student_limit(db, room)
     if limit is not None and len(room.submissions) >= limit:

@@ -124,7 +124,7 @@ def submit(token: str, body: SubmissionIn, request: Request, db: Session = Depen
         sub = _check_code(room, existing, home_class, body.student_no, body.edit_code, request)
     else:
         if existing is not None:
-            who = label(home_class, body.student_no) if room.mixed_classes else "เลขที่นี้"
+            who = label(home_class, body.student_no) + " " if room.mixed_classes else "เลขที่นี้"
             raise HTTPException(
                 status.HTTP_409_CONFLICT,
                 f"{who}ส่งแบบฟอร์มแล้ว ถ้าต้องการแก้ไข ให้กด 'แก้ไขคำตอบเดิม' แล้วใส่รหัสแก้ไข หรือแจ้งครู",
