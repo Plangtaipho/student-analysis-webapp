@@ -42,10 +42,11 @@
   <p class="muted small">ไฟล์เดียวมีครบ: บันทึกข้อความ แบบสรุปผล กลุ่มผู้เรียน และแบบบันทึกรายบุคคลของนักเรียนที่ประเมินแล้ว</p>
   <dl class="memo-preview">
     <div><dt>ส่วนราชการ</dt><dd><span id="memo-dept"></span> <a href="/app/profile" class="small">แก้ไข</a></dd></div>
-    <div><dt>วันที่</dt><dd id="memo-date"></dd></div>
   </dl>
   <div class="fields">
-    <div class="field half"><label for="doc_no">ที่ (เลขที่หนังสือ) <span class="req">*</span></label><input id="doc_no" name="doc_no" required maxlength="60" placeholder="เช่น ๔๑๗/๒๕๖๙"></div>
+    <div class="field half"><label for="doc_no">ที่ (เลขที่หนังสือ) <span class="req">*</span></label><input id="doc_no" name="doc_no" required maxlength="60" placeholder="เช่น 417/2569"></div>
+    <div class="field half"><label for="date">วันที่ <span class="req">*</span></label><input id="date" name="date" required maxlength="60" placeholder="เช่น 26 พฤศจิกายน 2569"></div>
+    <p class="muted small field">พิมพ์ตัวเลขแบบปกติได้เลย ระบบแปลงเป็นเลขไทยในบันทึกข้อความให้เอง</p>
     <div class="field"><label for="to">เรียน</label><input id="to" name="to" maxlength="200" placeholder="ผู้อำนวยการโรงเรียน..."></div>
     <div class="field" id="sign-field">
       <label class="check hidden" id="sign-yes"><input type="checkbox" id="sign" checked><span>ใส่ลายเซ็นของฉันตรง "ลงชื่อ" <img id="sign-thumb" class="sig-thumb" alt="ลายเซ็นของฉัน"></span></label>

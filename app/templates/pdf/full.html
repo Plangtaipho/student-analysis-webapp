@@ -21,6 +21,17 @@
   .sum td.n { text-align: center; width: 7.5%; }
   .groups th { font-size: 15pt; width: 25%; padding: 2pt 4pt; line-height: 1.1; }
   .groups td { font-size: 14pt; width: 25%; padding: 1pt 4pt; white-space: nowrap; overflow: hidden; height: 13pt; }
+  .intro { font-size: 16pt; }
+  .intro .intro-title { font-size: 20pt; font-weight: bold; text-align: center; margin: 0 0 14pt; line-height: 1.3; }
+  .intro .para { text-indent: 2.5cm; text-align: justify; margin: 0 0 4pt; }
+  .intro .intro-h { font-size: 16pt; font-weight: bold; margin: 10pt 0 4pt; }
+  .intro .item { padding-left: 1.25cm; text-indent: 0; text-align: justify; margin: 0 0 3pt; }
+  .intro .sub { padding-left: 2.25cm; margin: 0 0 2pt; }
+  .intro .list { padding-left: 2.5cm; margin: 0 0 2pt; }
+  .intro .lead { margin: 8pt 0 4pt; }
+  .intro ul.dash { list-style: none; padding-left: 2.5cm; margin: 2pt 0 4pt; }
+  .intro ul.dash li::before { content: "- "; }
+  .intro .intro-sign { margin: 36pt 0 0 55%; text-align: center; }
   .head-left { margin: 4pt 0 12pt; }
   .head-left div { margin: 0; }
   .gap { display: inline-block; width: 1.2cm; }
@@ -42,6 +53,9 @@
   <p class="indent" style="margin-top:12pt">จึงเรียนมาเพื่อโปรดทราบ</p>
   <div class="sign">ลงชื่อ{% if signature %}<span class="memo-sig"><img src="{{ signature }}" alt=""></span>{% endif %}<br><span class="name">({{ teacher.full_name | thai }})</span><br><span class="pos">ตำแหน่ง {{ teacher.position | thai }}</span></div>
 </section>
+
+{# ---------- 1.1 คำนำ แนวคิด คำชี้แจง ---------- #}
+{% include "_intro.html" %}
 
 {# ---------- 2. แบบสรุปผล ---------- #}
 <section class="page">

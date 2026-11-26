@@ -118,7 +118,7 @@ def test_signature_in_full_report(teacher, student):
     room, ids = setup_room(teacher, student, 1)
     teacher.put(ev_url(room, ids[0]), {"scores": all_scores("good")})
     url = f"/api/classrooms/{room['id']}/pdf/full"
-    params = {"doc_no": "417/2569"}
+    params = {"doc_no": "417/2569", "date": "26 พฤศจิกายน 2569"}
     _put_sig(teacher, _photo())
     signed = teacher.get(url, params=params)
     unsigned = teacher.get(url, params={**params, "sign": "false"})
