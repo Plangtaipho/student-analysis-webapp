@@ -34,7 +34,7 @@
       }).join("")}`).join("");
     $("groups").innerHTML = s.groups.map((g) => `
       <div><h3>${API.esc(g.label)}</h3><div class="group-count">${g.students.length} คน</div>
-      ${g.students.length ? `<ol>${g.students.map((st) => `<li>${API.esc(st.full_name)} <span class="muted small">(เลขที่ ${st.student_no})</span></li>`).join("")}</ol>` : '<p class="muted small">-</p>'}
+      ${g.students.length ? `<ol>${g.students.map((st) => `<li>${API.esc(st.full_name)} <span class="muted small">(${st.home_class ? API.esc(st.home_class) + " " : ""}เลขที่ ${st.student_no})</span></li>`).join("")}</ol>` : '<p class="muted small">-</p>'}
       </div>`).join("");
   } catch (e) { API.toast(e.message); }
 

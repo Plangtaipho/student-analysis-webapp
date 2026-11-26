@@ -5,6 +5,7 @@ It lives only in `auto_group()`, so changing it later touches one function.
 """
 from app.models import Classroom, LearnerGroup, Rating, Submission
 from app.services.form_definition import ASSESSMENT_DOMAINS
+from app.services.home_class import ordered
 
 RATING_POINTS = {Rating.good: 3, Rating.fair: 2, Rating.improve: 1}
 
@@ -49,7 +50,7 @@ def pct(n: int, total: int) -> float:
 
 
 def classroom_summary(room: Classroom) -> dict:
-    evaluated = [s for s in room.submissions if s.evaluation is not None]
+    evaluated = [s for s in ordered(room.submissions) if s.evaluation is not None]
     total = len(evaluated)
     counts = {code: {r: 0 for r in Rating} for code in ITEM_CODES}
     for sub in evaluated:
@@ -74,7 +75,9 @@ def classroom_summary(room: Classroom) -> dict:
 
     groups: dict[str, list[dict]] = {g.value: [] for g in GROUP_ORDER}
     for sub in evaluated:
-        groups[group_of(sub).value].append({"student_no": sub.student_no, "full_name": sub.full_name})
+        groups[group_of(sub).value].append(
+            {"home_class": sub.home_class, "student_no": sub.student_no, "full_name": sub.full_name}
+        )
 
     class_size = len(room.roster) or len(room.submissions)
     return {

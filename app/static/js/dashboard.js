@@ -26,6 +26,7 @@
         <h3>${API.esc(r.subject_name)}</h3>
         <div class="muted small">${r.subject_code ? API.esc(r.subject_code) + ", " : ""}ภาคเรียนที่ ${r.semester}/${r.academic_year}</div>
         <div class="stamps">
+          ${r.mixed_classes ? '<span class="badge">ห้องคละ</span>' : ""}
           ${r.student_limit ? `<span class="badge badge-trial">ทดลองใช้ ${r.submitted_count}/${r.student_limit} คน</span>` : ""}
           ${r.is_active ? `<span class="badge ${r.is_open ? "badge-open" : "badge-closed"}">${r.is_open ? "เปิดรับ" : "ปิดรับแล้ว"}</span>` : '<span class="badge badge-danger">รอชำระเงิน</span>'}
         </div>
@@ -60,6 +61,7 @@
         grade_label: gradeLabel(f),
         academic_year: Number(f.get("academic_year")),
         semester: Number(f.get("semester")),
+        mixed_classes: f.get("mixed_classes") === "on",
       });
       location.href = `/app/classrooms/${room.id}`;
     } catch (e) {

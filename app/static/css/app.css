@@ -160,6 +160,7 @@ table.list th { font-size: .84rem; color: var(--muted); font-weight: 600; border
 table.list td.who { min-width: 13rem; }
 table.list td.who .when { display: block; font-size: .8rem; color: var(--muted); }
 table.list td.num { width: 3.25rem; text-align: center; color: var(--muted); font-variant-numeric: tabular-nums; }
+table.list td.num .hc { display: block; font-size: .8em; white-space: nowrap; }
 table.list tbody tr:hover { background: #fafbfd; }
 table.list .row { gap: .4rem; flex-wrap: nowrap; }
 @media (max-width: 720px) {

@@ -34,7 +34,7 @@
   <div class="right teacher-tag">ครูผู้สอน</div>
   <h2 style="margin-top:2pt">3. การวิเคราะห์ผู้เรียนเป็นรายบุคคล</h2>
   <table class="ln indent1"><tr><td class="l">{{ tri() }} ชื่อ – สกุล</td><td class="f">{{ s.full_name }}</td><td class="l">ชื่อเล่น</td><td class="f" style="width:18%">{{ s.nickname }}</td><td class="l">อายุ</td><td class="f c" style="width:10%">{{ p.age }}</td><td class="l">ปี</td></tr></table>
-  <table class="ln indent1"><tr><td class="l">{{ tri() }} ผลการวิเคราะห์ผู้เรียนรายบุคคลวิชา</td><td class="f nw">{{ room.subject_name }}</td><td class="l">ชั้น</td><td class="f nw">{{ room.grade_label }}</td><td class="l">ปีการศึกษา</td><td class="f nw">{{ room.semester }}/{{ room.academic_year }}</td></tr></table>
+  <table class="ln indent1"><tr><td class="l">{{ tri() }} ผลการวิเคราะห์ผู้เรียนรายบุคคลวิชา</td><td class="f nw">{{ room.subject_name }}</td><td class="l">ชั้น</td><td class="f nw">{{ s.home_class | long_class if s.home_class else room.grade_label }}</td><td class="l">ปีการศึกษา</td><td class="f nw">{{ room.semester }}/{{ room.academic_year }}</td></tr></table>
   <table class="ln indent1"><tr><td class="l">{{ tri() }} ผลการเรียนในรายวิชานี้ ในภาคเรียนที่ผ่านมา เกรด</td><td class="f" style="width:25%">{{ r.last_grade }}</td><td style="width:25%"></td></tr></table>
   <table class="eval" style="margin-top:4pt">
     <tr><th rowspan="2" style="width:40%">รายการวิเคราะห์ผู้เรียนเป็นรายบุคคล</th><th colspan="3" style="white-space:nowrap">ผลการประเมินวิเคราะห์ผู้เรียน</th><th rowspan="2" style="width:24%">สิ่งที่ควร<br>ปรับปรุง /แก้ไข</th></tr>

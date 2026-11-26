@@ -17,6 +17,7 @@ from sqlalchemy import (
     Text,
     UniqueConstraint,
 )
+from sqlalchemy import false as sa_false
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
@@ -154,14 +155,17 @@ class Classroom(Base):
     public_token: Mapped[str] = mapped_column(String(32), unique=True, index=True)
     is_open: Mapped[bool] = mapped_column(Boolean, default=True)
     is_trial: Mapped[bool] = mapped_column(Boolean, default=False)
+    # ห้องคละ: an elective with students from several classes. Students then give their
+    # home class (e.g. "ม.3/2") with their number, see app/services/home_class.py.
+    mixed_classes: Mapped[bool] = mapped_column(Boolean, default=False, server_default=sa_false())
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
 
     teacher: Mapped[User] = relationship(back_populates="classrooms")
     roster: Mapped[list["RosterEntry"]] = relationship(
-        back_populates="classroom", cascade="all, delete-orphan", order_by="RosterEntry.student_no"
+        back_populates="classroom", cascade="all, delete-orphan", order_by="[RosterEntry.home_class, RosterEntry.student_no]"
     )
     submissions: Mapped[list["Submission"]] = relationship(
-        back_populates="classroom", cascade="all, delete-orphan", order_by="Submission.student_no"
+        back_populates="classroom", cascade="all, delete-orphan", order_by="[Submission.home_class, Submission.student_no]"
     )
 
 
@@ -169,10 +173,12 @@ class RosterEntry(Base):
     """Optional class list pasted by the teacher."""
 
     __tablename__ = "roster_entries"
-    __table_args__ = (UniqueConstraint("classroom_id", "student_no", name="uq_roster_no"),)
+    __table_args__ = (UniqueConstraint("classroom_id", "home_class", "student_no", name="uq_roster_class_no"),)
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     classroom_id: Mapped[int] = mapped_column(ForeignKey("classrooms.id", ondelete="CASCADE"), index=True)
+    # "ม.3/2" in a ห้องคละ, "" in a normal room.
+    home_class: Mapped[str] = mapped_column(String(20), default="", server_default="")
     student_no: Mapped[int] = mapped_column(SmallInteger)
     full_name: Mapped[str] = mapped_column(String(120))
 
@@ -183,10 +189,14 @@ class Submission(Base):
     """One student's self-analysis in one classroom."""
 
     __tablename__ = "submissions"
-    __table_args__ = (UniqueConstraint("classroom_id", "student_no", name="uq_submission_no"),)
+    __table_args__ = (
+        UniqueConstraint("classroom_id", "home_class", "student_no", name="uq_submission_class_no"),
+    )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     classroom_id: Mapped[int] = mapped_column(ForeignKey("classrooms.id", ondelete="CASCADE"), index=True)
+    # "ม.3/2" in a ห้องคละ, "" in a normal room.
+    home_class: Mapped[str] = mapped_column(String(20), default="", server_default="")
     student_no: Mapped[int] = mapped_column(SmallInteger)
     full_name: Mapped[str] = mapped_column(String(120))
     nickname: Mapped[str] = mapped_column(String(40), default="")

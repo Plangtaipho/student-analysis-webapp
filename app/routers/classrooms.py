@@ -28,7 +28,8 @@ from app.security import hash_edit_code, new_edit_code, new_public_token
 from app.services.billing import room_is_active, student_limit
 from app.services.form_definition import LEARNING_METHOD_LABELS
 from app.services.retention import purge_on, term_end
-from app.services.roster import parse_roster
+from app.services.home_class import for_room, label, sort_key
+from app.services.roster import parse_mixed_roster, parse_roster
 
 router = APIRouter(prefix="/api/classrooms", tags=["classrooms"], dependencies=[Depends(verify_csrf)])
 
@@ -94,6 +95,7 @@ def create_classroom(
         grade_label=body.grade_label,
         academic_year=body.academic_year,
         semester=body.semester,
+        mixed_classes=body.mixed_classes,
         public_token=new_public_token(),
         # The first classroom is the free trial. Paid-term checks arrive with the payment module.
         is_trial=not has_any,
@@ -119,6 +121,17 @@ def update_classroom(
     db: Session = Depends(get_db),
 ):
     room = get_owned_classroom(classroom_id, user, db)
+    if body.mixed_classes is False and room.mixed_classes:
+        used = db.scalar(
+            select(func.count()).select_from(Submission).where(Submission.classroom_id == room.id, Submission.home_class != "")
+        ) or db.scalar(
+            select(func.count()).select_from(RosterEntry).where(RosterEntry.classroom_id == room.id, RosterEntry.home_class != "")
+        )
+        if used:
+            raise HTTPException(
+                status.HTTP_409_CONFLICT,
+                "ห้องนี้มีนักเรียนที่กรอกห้องเดิมไว้แล้ว จึงเปลี่ยนกลับเป็นห้องปกติไม่ได้ (เลขที่อาจซ้ำกัน)",
+            )
     for key, value in body.model_dump(exclude_none=True).items():
         setattr(room, key, value.strip() if isinstance(value, str) else value)
     db.commit()
@@ -151,7 +164,8 @@ def classroom_qr(
 @router.get("/{classroom_id}/roster", response_model=list[RosterEntryOut])
 def get_roster(classroom_id: int, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     room = get_owned_classroom(classroom_id, user, db)
-    return [RosterEntryOut(student_no=r.student_no, full_name=r.full_name) for r in room.roster]
+    roster = sorted(room.roster, key=lambda r: sort_key(r.home_class, r.student_no))
+    return [RosterEntryOut(home_class=r.home_class, student_no=r.student_no, full_name=r.full_name) for r in roster]
 
 
 @router.put("/{classroom_id}/roster", response_model=list[RosterEntryOut])
@@ -161,23 +175,35 @@ def replace_roster(
     """Replace the whole class list. An empty text removes it (students then type their own name)."""
     room = get_owned_classroom(classroom_id, user, db)
     try:
-        rows = parse_roster(body.text)
+        if room.mixed_classes:
+            rows = parse_mixed_roster(body.text, room.grade_label)
+        else:
+            rows = [("", no, name) for no, name in parse_roster(body.text)]
     except ValueError as e:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, str(e)) from None
     db.execute(delete(RosterEntry).where(RosterEntry.classroom_id == room.id))
-    db.add_all(RosterEntry(classroom_id=room.id, student_no=no, full_name=name) for no, name in rows)
+    db.add_all(RosterEntry(classroom_id=room.id, home_class=hc, student_no=no, full_name=name) for hc, no, name in rows)
     db.commit()
-    return [RosterEntryOut(student_no=no, full_name=name) for no, name in rows]
+    return [RosterEntryOut(home_class=hc, student_no=no, full_name=name) for hc, no, name in rows]
 
 
 @router.delete("/{classroom_id}/roster/{student_no}", status_code=status.HTTP_204_NO_CONTENT)
 def remove_roster_entry(
-    classroom_id: int, student_no: int, user: User = Depends(get_current_user), db: Session = Depends(get_db)
+    classroom_id: int,
+    student_no: int,
+    home_class: str = "",
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
 ):
-    """Take one student off the class list (moved away, or listed by mistake) so the class counts as complete."""
+    """Take one student off the class list (moved away, or listed by mistake) so the class counts as complete.
+    In a ห้องคละ, `?home_class=ม.3/2` says which student with this number."""
     room = get_owned_classroom(classroom_id, user, db)
     entry = db.scalar(
-        select(RosterEntry).where(RosterEntry.classroom_id == room.id, RosterEntry.student_no == student_no)
+        select(RosterEntry).where(
+            RosterEntry.classroom_id == room.id,
+            RosterEntry.home_class == home_class.strip(),
+            RosterEntry.student_no == student_no,
+        )
     )
     if entry is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "ไม่พบเลขที่นี้ในรายชื่อ")
@@ -193,21 +219,33 @@ def remove_roster_entry(
 def list_submissions(classroom_id: int, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """Everyone in the class: submitted, evaluated, or (when a class list exists) not yet submitted."""
     room = get_owned_classroom(classroom_id, user, db)
-    by_no: dict[int, dict] = {}
+    by_no: dict[tuple[str, int], dict] = {}
+    listed = {(r.home_class, r.student_no) for r in room.roster}
     for r in room.roster:
-        by_no[r.student_no] = {"student_no": r.student_no, "full_name": r.full_name, "status": "missing", "id": None}
+        by_no[(r.home_class, r.student_no)] = {
+            "home_class": r.home_class,
+            "student_no": r.student_no,
+            "full_name": r.full_name,
+            "status": "missing",
+            "id": None,
+        }
     for s in room.submissions:
-        by_no[s.student_no] = {
+        by_no[(s.home_class, s.student_no)] = {
             "id": s.id,
+            "home_class": s.home_class,
             "student_no": s.student_no,
             "full_name": s.full_name,
             "nickname": s.nickname,
             "submitted_at": s.submitted_at.isoformat() + "Z",
             "status": "evaluated" if s.evaluation else "submitted",
             "by_teacher": s.created_by_teacher,
-            "in_roster": not room.roster or any(r.student_no == s.student_no for r in room.roster),
+            "in_roster": not room.roster or (s.home_class, s.student_no) in listed,
         }
-    return [by_no[k] for k in sorted(by_no)]
+    return [by_no[k] for k in sorted(by_no, key=lambda k: sort_key(*k))]
+
+
+def roster_key(home_class: str, student_no: int) -> str:
+    return f"{home_class}|{student_no}" if home_class else str(student_no)
 
 
 def get_owned_submission(classroom_id: int, submission_id: int, user: User, db: Session) -> Submission:
@@ -225,6 +263,8 @@ def get_submission(
     s = get_owned_submission(classroom_id, submission_id, user, db)
     return {
         "id": s.id,
+        "mixed_classes": s.classroom.mixed_classes,
+        "home_class": s.home_class,
         "student_no": s.student_no,
         "full_name": s.full_name,
         "nickname": s.nickname,
@@ -234,7 +274,8 @@ def get_submission(
         "submitted_at": s.submitted_at.isoformat() + "Z",
         "updated_at": s.updated_at.isoformat() + "Z",
         "by_teacher": s.created_by_teacher,
-        "roster": {r.student_no: r.full_name for r in s.classroom.roster},
+        # Key "5" in a normal room, "ม.3/2|5" in a ห้องคละ (same rule in submission.js).
+        "roster": {roster_key(r.home_class, r.student_no): r.full_name for r in s.classroom.roster},
     }
 
 
@@ -248,15 +289,24 @@ def edit_submission(
 ):
     """The teacher fixes a record a student filled in wrongly, e.g. under a classmate's number or name."""
     s = get_owned_submission(classroom_id, submission_id, user, db)
-    if body.student_no != s.student_no:
+    try:
+        home_class = for_room(s.classroom, body.home_class, required=False)
+    except ValueError as e:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, str(e)) from None
+    if (home_class, body.student_no) != (s.home_class, s.student_no):
         taken = db.scalar(
-            select(Submission).where(Submission.classroom_id == s.classroom_id, Submission.student_no == body.student_no)
+            select(Submission).where(
+                Submission.classroom_id == s.classroom_id,
+                Submission.home_class == home_class,
+                Submission.student_no == body.student_no,
+            )
         )
         if taken is not None:
             raise HTTPException(
                 status.HTTP_409_CONFLICT,
-                f"เลขที่ {body.student_no} มีคำตอบอยู่แล้ว ({taken.full_name}) ให้ลบหรือแก้เลขที่ของคำตอบนั้นก่อน",
+                f"{label(home_class, body.student_no)} มีคำตอบอยู่แล้ว ({taken.full_name}) ให้ลบหรือแก้เลขที่ของคำตอบนั้นก่อน",
             )
+    s.home_class = home_class
     s.student_no, s.full_name, s.nickname = body.student_no, body.full_name, body.nickname
     if body.personal_info is not None:
         s.personal_info = body.personal_info

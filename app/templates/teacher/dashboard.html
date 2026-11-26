@@ -32,6 +32,11 @@
     <div class="field third"><label for="academic_year">ปีการศึกษา</label><input id="academic_year" name="academic_year" type="number" min="2560" max="2700" required></div>
     <div class="field third span-3"><label for="semester">ภาคเรียน</label>
       <select id="semester" name="semester"><option value="1">1</option><option value="2">2</option></select></div>
+    <div class="field">
+      <label class="check"><input type="checkbox" id="mixed_classes" name="mixed_classes">
+        <span><b>นักเรียนมาจากหลายห้อง</b> (เช่น วิชาเลือกเสรี ชุมนุม)<br>
+        <span class="muted small">นักเรียนจะกรอกห้องเดิมพร้อมเลขที่ เช่น ม.3/2 เลขที่ 5 เลขที่จึงไม่ชนกันข้ามห้อง และรายงานจะเรียงตามห้องแล้วตามเลขที่ ถ้าติ๊กข้อนี้ ช่องห้องด้านบนไม่ต้องใส่ก็ได้</span></span></label>
+    </div>
   </div>
   <div id="new-room-error" class="alert alert-error hidden" role="alert"></div>
   <div class="row mt-4"><button class="btn btn-primary" type="submit">สร้างห้อง</button></div>
