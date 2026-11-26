@@ -28,19 +28,19 @@
 {% block body %}
 {% macro tri() %}<span class="tri">▶</span>{% endmacro %}
 
-{# ---------- 1. บันทึกข้อความ ---------- #}
+{# ---------- 1. บันทึกข้อความ: every number in Thai digits, even ones the teacher typed in Arabic digits ---------- #}
 <section class="page memo">
   <div class="memo-head"><img src="static/img/garuda.png" alt=""><div class="memo-title">บันทึกข้อความ</div></div>
-  <div class="line dept"><b>ส่วนราชการ</b> {{ memo.dept }}</div>
+  <div class="line dept"><b>ส่วนราชการ</b> {{ memo.dept | thai }}</div>
   <div class="line"><span class="half"><b>ที่</b>&nbsp;&nbsp;&nbsp;&nbsp;{{ memo.doc_no }}</span><b>วันที่</b>&nbsp;&nbsp;{{ memo.date_text }}</div>
   <div class="line"><b>เรื่อง</b>&nbsp;&nbsp;รายงานการวิเคราะห์ผู้เรียนรายบุคคล ภาคเรียนที่ {{ room.semester | thai }} ประจำปีการศึกษา {{ room.academic_year | thai }}</div>
   <div class="rule"></div>
-  <div class="line"><b>เรียน</b>&nbsp;&nbsp;{{ memo.to }}</div>
-  <p class="indent">ด้วยข้าพเจ้า {{ teacher.full_name }} ตำแหน่ง {{ teacher.position }} {{ school }} ได้จัดทำรายงานการวิเคราะห์ผู้เรียนรายบุคคล
-    รายวิชา{{ room.subject_name }}{% if room.subject_code %} รหัสวิชา {{ room.subject_code | thai }}{% endif %} ของนักเรียน{{ grade_text | thai }} เพื่อใช้เป็นข้อมูลการแก้ไขปัญหาและ/หรือพัฒนาคุณภาพผู้เรียน
+  <div class="line"><b>เรียน</b>&nbsp;&nbsp;{{ memo.to | thai }}</div>
+  <p class="indent">ด้วยข้าพเจ้า {{ teacher.full_name | thai }} ตำแหน่ง {{ teacher.position | thai }} {{ school | thai }} ได้จัดทำรายงานการวิเคราะห์ผู้เรียนรายบุคคล
+    รายวิชา{{ room.subject_name | thai }}{% if room.subject_code %} รหัสวิชา {{ room.subject_code | thai }}{% endif %} ของนักเรียน{{ grade_text | thai }} เพื่อใช้เป็นข้อมูลการแก้ไขปัญหาและ/หรือพัฒนาคุณภาพผู้เรียน
     ภาคเรียนที่ {{ room.semester | thai }} ปีการศึกษา {{ room.academic_year | thai }} รายละเอียดตามเอกสารแนบ</p>
   <p class="indent" style="margin-top:12pt">จึงเรียนมาเพื่อโปรดทราบ</p>
-  <div class="sign">ลงชื่อ{% if signature %}<span class="memo-sig"><img src="{{ signature }}" alt=""></span>{% endif %}<br><span class="name">({{ teacher.full_name }})</span><br><span class="pos">ตำแหน่ง {{ teacher.position }}</span></div>
+  <div class="sign">ลงชื่อ{% if signature %}<span class="memo-sig"><img src="{{ signature }}" alt=""></span>{% endif %}<br><span class="name">({{ teacher.full_name | thai }})</span><br><span class="pos">ตำแหน่ง {{ teacher.position | thai }}</span></div>
 </section>
 
 {# ---------- 2. แบบสรุปผล ---------- #}

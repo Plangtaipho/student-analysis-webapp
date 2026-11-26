@@ -179,3 +179,38 @@ def test_full_report_leaves_out_area_office(teacher, student, monkeypatch):
     assert r.status_code == 200
     assert "เขตพื้นที่" not in seen["memo"]["dept"]
     assert seen["memo"]["dept"].startswith("กลุ่มบริหารวิชาการ")
+
+
+def test_memo_uses_thai_digits_everywhere(teacher, student, monkeypatch):
+    """Feedback 2026-11-26: every number in the memo is in Thai digits, even ones typed in Arabic digits."""
+    import re
+
+    from app.routers import reports
+    from app.services import pdf
+
+    captured = {}
+
+    def fake_render(template, **ctx):
+        captured["html"] = pdf._env.get_template(template).render(font_dir="", **ctx)
+        return b"%PDF-fake"
+
+    monkeypatch.setattr(reports, "render_pdf", fake_render)
+    room = teacher.make_room(subject_name="คณิตศาสตร์ 2", subject_code="ค23102")
+    url = f"/api/f/{token_of(room)}/submissions"
+    assert student.post(url, json=student_payload(no=1)).status_code == 201
+    sid = teacher.get(f"/api/classrooms/{room['id']}/submissions").json()[0]["id"]
+    teacher.put(ev_url(room, sid), {"scores": all_scores("good")})
+    with SessionLocal() as db:
+        u = db.get(User, teacher.user["id"])
+        u.school_name, u.school_location = "บ้านหนองบัว 2", "อำเภอเมือง จังหวัดเลย 42000"
+        db.commit()
+    r = teacher.get(
+        f"/api/classrooms/{room['id']}/pdf/full",
+        params={"doc_no": "417/2569", "to": "ผู้อำนวยการโรงเรียนบ้านหนองบัว 2"},
+    )
+    assert r.status_code == 200
+    html = captured["html"]
+    memo = html[html.index('<section class="page memo">') : html.index("</section>", html.index('<section class="page memo">'))]
+    text = re.sub(r"<[^>]+>", " ", memo)  # tag attributes (CSS, image data) are not printed
+    assert not re.search(r"[0-9]", text), re.findall(r".{0,20}[0-9].{0,20}", text)
+    assert "๔๑๗/๒๕๖๙" in text and "บ้านหนองบัว ๒" in text and "ค๒๓๑๐๒" in text
