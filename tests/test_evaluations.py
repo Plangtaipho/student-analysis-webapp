@@ -221,4 +221,4 @@ def test_memo_uses_thai_digits_everywhere(teacher, student, monkeypatch):
     # คำนำ, แนวคิด and คำชี้แจง follow the memo; คำนำ is signed without the title.
     after = html[html.index("</section>", html.index('<section class="page memo">')) :]
     assert after.index("คำนำ") < after.index("แนวคิด วัตถุประสงค์") < after.index("คำชี้แจงการวิเคราะห์ผู้เรียนรายบุคคล") < after.index("teacher-tag")
-    assert "ใจดี ตั้งใจสอน</div>" in after and "พ.ศ. ๒๕๕๑" in after
+    assert "ใจดี ตั้งใจสอน</div>" in after and "พ.ศ. 2551" in after  # intro keeps the sample's Arabic digits
