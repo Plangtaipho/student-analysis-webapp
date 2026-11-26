@@ -35,8 +35,9 @@
     <button class="btn btn-sm" id="edit-open" type="button">แก้ไขคำตอบเดิม</button>
     <form id="lookup-form" class="hidden mt-3">
       <div class="fields">
-        <div class="field half"><label for="l-no">เลขที่</label><input id="l-no" name="student_no" type="number" inputmode="numeric" min="1" max="200" required></div>
-        <div class="field half"><label for="l-code">รหัสแก้ไข 6 หลัก</label><input id="l-code" name="edit_code" inputmode="numeric" pattern="\d{6}" maxlength="6" required autocomplete="off"></div>
+        {% if room.mixed_classes %}<div class="field third"><label for="l-hc">ห้องเดิม <span class="req">*</span></label><input id="l-hc" name="home_class" maxlength="20" required placeholder="เช่น ม.3/2" pattern=".*[0-9๐-๙]{1,2}\s*/\s*[0-9๐-๙]{1,2}.*" title="กรอกห้องของตัวเอง เช่น ม.3/2" autocomplete="off"></div>{% endif %}
+        <div class="field {{ 'third' if room.mixed_classes else 'half' }}"><label for="l-no">เลขที่</label><input id="l-no" name="student_no" type="number" inputmode="numeric" min="1" max="200" required></div>
+        <div class="field {{ 'third' if room.mixed_classes else 'half' }}"><label for="l-code">รหัสแก้ไข 6 หลัก</label><input id="l-code" name="edit_code" inputmode="numeric" pattern="\d{6}" maxlength="6" required autocomplete="off"></div>
       </div>
       <div id="lookup-error" class="alert alert-error hidden" role="alert"></div>
       <button class="btn btn-primary mt-3" type="submit">เปิดคำตอบเดิม</button>
@@ -53,7 +54,8 @@
       <h2>ข้อมูลนักเรียน</h2>
       <p class="muted small">กรอกให้ตรงกับความเป็นจริงมากที่สุด ข้อมูลนี้ครูผู้สอนเท่านั้นที่เห็น{% if room.has_roster %} ชื่อในรายงานจะใช้ตามรายชื่อที่ครูใส่ไว้{% endif %}</p>
       <div class="fields">
-        <div class="field third"><label for="f-no">เลขที่ <span class="req">*</span></label><input id="f-no" name="student_no" type="number" inputmode="numeric" min="1" max="200" required></div>
+        {% if room.mixed_classes %}<div class="field third"><label for="f-hc">ห้องเดิม <span class="req">*</span></label><input id="f-hc" name="home_class" maxlength="20" required placeholder="เช่น ม.3/2" pattern=".*[0-9๐-๙]{1,2}\s*/\s*[0-9๐-๙]{1,2}.*" title="กรอกห้องของตัวเอง เช่น ม.3/2" autocomplete="off"></div>{% endif %}
+        <div class="field third"><label for="f-no">{{ "เลขที่ในห้องเดิม" if room.mixed_classes else "เลขที่" }} <span class="req">*</span></label><input id="f-no" name="student_no" type="number" inputmode="numeric" min="1" max="200" required></div>
         {{ name_input("f-name", "full_name", "ชื่อ – สกุล *", ['เด็กชาย', 'เด็กหญิง', 'นาย', 'นางสาว'], "ชื่อ สกุล", cls="span-6") }}
         <div class="field half"><label for="f-nick">ชื่อเล่น</label><input id="f-nick" name="nickname" maxlength="40"></div>
       </div>

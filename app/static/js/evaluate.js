@@ -61,7 +61,7 @@
     form.last_grade.value = ev.last_grade || "";
     form.teacher_comment.value = ev.teacher_comment || "";
     form.group_override.value = ev.group_override || "";
-    $("e-title").textContent = `เลขที่ ${ev.student_no} ${ev.full_name}${ev.nickname ? " (" + ev.nickname + ")" : ""}`;
+    $("e-title").textContent = `${ev.home_class ? ev.home_class + " " : ""}เลขที่ ${ev.student_no} ${ev.full_name}${ev.nickname ? " (" + ev.nickname + ")" : ""}`;
     $("e-status").textContent = ev.evaluated ? "ประเมินแล้ว แก้ไขได้" : "ยังไม่ได้ประเมิน";
     const nav = (el, id) => {
       el.classList.toggle("hidden", !id);

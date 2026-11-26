@@ -5,9 +5,10 @@
   const $ = (id) => document.getElementById(id);
   const form = $("edit-form");
   let s = null;
+  const who = (hc, no) => (hc ? `${hc} เลขที่ ${no}` : `เลขที่ ${no}`);
 
   function render() {
-    $("s-title").textContent = `เลขที่ ${s.student_no} ${s.full_name}${s.nickname ? " (" + s.nickname + ")" : ""}`;
+    $("s-title").textContent = `${who(s.home_class, s.student_no)} ${s.full_name}${s.nickname ? " (" + s.nickname + ")" : ""}`;
     $("s-time").textContent = (s.by_teacher ? "ครูเพิ่มเอง " : "ส่งเมื่อ ") + API.thaiDateTime(s.submitted_at);
     document.querySelectorAll("[data-p]").forEach((el) => {
       let v = s.personal_info[el.dataset.p];
@@ -21,6 +22,8 @@
   }
 
   function fillForm() {
+    $("e-hc-field").classList.toggle("hidden", !s.mixed_classes);
+    $("e-hc").value = s.home_class || "";
     $("e-no").value = s.student_no;
     $("e-name").value = s.full_name;
     $("e-nick").value = s.nickname || "";
@@ -39,10 +42,13 @@
   }
 
   // With a class list, the number decides the name (same rule as the student form).
-  $("e-no").addEventListener("input", () => {
-    const name = s.roster[$("e-no").value];
+  function fillRosterName() {
+    const hc = s.mixed_classes ? $("e-hc").value.trim() : "";
+    const name = s.roster[hc ? `${hc}|${$("e-no").value}` : $("e-no").value];
     if (name) $("e-name").value = name;
-  });
+  }
+  $("e-no").addEventListener("input", fillRosterName);
+  $("e-hc").addEventListener("input", fillRosterName);
 
   $("edit-btn").addEventListener("click", () => editing(true));
   $("edit-cancel").addEventListener("click", () => editing(false));
@@ -51,7 +57,7 @@
     ev.preventDefault();
     const err = $("edit-error");
     API.hide(err);
-    const body = { student_no: Number($("e-no").value), full_name: $("e-name").value, nickname: $("e-nick").value };
+    const body = { home_class: $("e-hc").value, student_no: Number($("e-no").value), full_name: $("e-name").value, nickname: $("e-nick").value };
     if (!body.student_no || body.student_no < 1) { API.showError(err, "กรุณากรอกเลขที่"); return; }
     if (body.full_name.trim().length < 2) { API.showError(err, "กรุณากรอกชื่อ – สกุล"); return; }
     if (!s.by_teacher) {

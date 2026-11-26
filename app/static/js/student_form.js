@@ -76,6 +76,7 @@
     const answers = {};
     form.querySelectorAll("[data-question]").forEach((el) => { if (el.value.trim()) answers[el.name] = el.value; });
     return {
+      home_class: form.home_class ? form.home_class.value : "",
       student_no: Number(form.student_no.value),
       full_name: form.full_name.value,
       nickname: form.nickname.value,
@@ -88,6 +89,7 @@
   }
 
   function fill(d) {
+    if (form.home_class) form.home_class.value = d.home_class ?? "";
     form.student_no.value = d.student_no ?? "";
     NamePrefix.set("f-name", d.full_name ?? "");
     form.nickname.value = d.nickname ?? "";
@@ -133,7 +135,7 @@
       document.getElementById("edit-entry").classList.add("hidden");
       const done = document.getElementById("done");
       done.classList.remove("hidden");
-      document.getElementById("done-name").textContent = `เลขที่ ${res.student_no} ${res.full_name}`;
+      document.getElementById("done-name").textContent = `${res.home_class ? res.home_class + " " : ""}เลขที่ ${res.student_no} ${res.full_name}`;
       document.getElementById("done-new").classList.toggle("hidden", !res.edit_code);
       document.getElementById("done-updated").classList.toggle("hidden", !res.updated);
       if (res.edit_code) document.getElementById("done-code").textContent = res.edit_code;
@@ -153,7 +155,11 @@
     API.hide(lerr);
     const code = lookup.edit_code.value.trim();
     try {
-      const d = await API.post(`${api}/lookup`, { student_no: Number(lookup.student_no.value), edit_code: code });
+      const d = await API.post(`${api}/lookup`, {
+        home_class: lookup.home_class ? lookup.home_class.value : "",
+        student_no: Number(lookup.student_no.value),
+        edit_code: code,
+      });
       editCode = code;
       clearDraft();
       fill(d);
@@ -161,6 +167,7 @@
       lookup.classList.add("hidden");
       document.getElementById("edit-banner").classList.remove("hidden");
       form.student_no.readOnly = true;
+      if (form.home_class) form.home_class.readOnly = true;
       show(0);
     } catch (e) { API.showError(lerr, e.message); }
   });

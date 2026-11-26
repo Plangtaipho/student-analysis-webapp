@@ -16,6 +16,7 @@ from app.security import (
     verify_password,
 )
 from app.services.billing import room_is_active, student_limit
+from app.services.home_class import for_room, label
 
 router = APIRouter(prefix="/api/f", tags=["student"])
 
@@ -49,6 +50,7 @@ def room_info(room: Classroom, db: Session) -> dict:
         "is_active": room_is_active(db, room),
         "is_full": _is_full(room, db),
         "has_roster": bool(room.roster),
+        "mixed_classes": room.mixed_classes,
     }
 
 
@@ -57,8 +59,25 @@ def _require_open(room: Classroom) -> None:
         raise HTTPException(status.HTTP_403_FORBIDDEN, "ครูปิดรับคำตอบของห้องนี้แล้ว หากต้องการส่งหรือแก้ไข กรุณาติดต่อครู")
 
 
-def _check_code(room: Classroom, sub: Submission | None, student_no: int, code: str, request: Request) -> Submission:
-    key = f"{room.id}|{student_no}"
+def _home_class(room: Classroom, raw: str) -> str:
+    try:
+        return for_room(room, raw)
+    except ValueError as e:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, str(e)) from None
+
+
+def _find(db: Session, model, room: Classroom, home_class: str, student_no: int):
+    return db.scalar(
+        select(model).where(
+            model.classroom_id == room.id, model.home_class == home_class, model.student_no == student_no
+        )
+    )
+
+
+def _check_code(
+    room: Classroom, sub: Submission | None, home_class: str, student_no: int, code: str, request: Request
+) -> Submission:
+    key = f"{room.id}|{home_class}|{student_no}"
     ip_key = f"ip|{client_ip(request)}"
     if edit_code_limiter.is_blocked(key) or edit_code_limiter.is_blocked(ip_key):
         raise HTTPException(
@@ -68,7 +87,8 @@ def _check_code(room: Classroom, sub: Submission | None, student_no: int, code: 
     if not sub or not ok:
         edit_code_limiter.record_failure(key)
         edit_code_limiter.record_failure(ip_key)
-        raise HTTPException(status.HTTP_403_FORBIDDEN, "เลขที่หรือรหัสแก้ไขไม่ถูกต้อง")
+        what = "ห้อง เลขที่ หรือรหัสแก้ไข" if room.mixed_classes else "เลขที่หรือรหัสแก้ไข"
+        raise HTTPException(status.HTTP_403_FORBIDDEN, f"{what}ไม่ถูกต้อง")
     edit_code_limiter.reset(key)
     return sub
 
@@ -86,28 +106,28 @@ def submit(token: str, body: SubmissionIn, request: Request, db: Session = Depen
     if not room_is_active(db, room):
         raise HTTPException(status.HTTP_403_FORBIDDEN, "ห้องนี้ยังไม่เปิดใช้งาน กรุณาแจ้งครูผู้สอน")
 
+    home_class = _home_class(room, body.home_class)
     roster_name = None
     if room.roster:
-        entry = db.scalar(
-            select(RosterEntry).where(RosterEntry.classroom_id == room.id, RosterEntry.student_no == body.student_no)
-        )
+        entry = _find(db, RosterEntry, room, home_class, body.student_no)
         if entry is None:
-            raise HTTPException(
-                status.HTTP_422_UNPROCESSABLE_CONTENT, "ไม่พบเลขที่นี้ในรายชื่อของห้อง กรุณาตรวจสอบเลขที่ หรือแจ้งครู"
-            )
+            if room.mixed_classes:
+                msg = f"ไม่พบ {label(home_class, body.student_no)} ในรายชื่อของครู กรุณาตรวจสอบห้องและเลขที่ หรือแจ้งครู"
+            else:
+                msg = "ไม่พบเลขที่นี้ในรายชื่อของห้อง กรุณาตรวจสอบเลขที่ หรือแจ้งครู"
+            raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, msg)
         roster_name = entry.full_name
 
-    existing = db.scalar(
-        select(Submission).where(Submission.classroom_id == room.id, Submission.student_no == body.student_no)
-    )
+    existing = _find(db, Submission, room, home_class, body.student_no)
     new_code: str | None = None
     if body.edit_code:
-        sub = _check_code(room, existing, body.student_no, body.edit_code, request)
+        sub = _check_code(room, existing, home_class, body.student_no, body.edit_code, request)
     else:
         if existing is not None:
+            who = label(home_class, body.student_no) if room.mixed_classes else "เลขที่นี้"
             raise HTTPException(
                 status.HTTP_409_CONFLICT,
-                "เลขที่นี้ส่งแบบฟอร์มแล้ว ถ้าต้องการแก้ไข ให้กด 'แก้ไขคำตอบเดิม' แล้วใส่รหัสแก้ไข หรือแจ้งครู",
+                f"{who}ส่งแบบฟอร์มแล้ว ถ้าต้องการแก้ไข ให้กด 'แก้ไขคำตอบเดิม' แล้วใส่รหัสแก้ไข หรือแจ้งครู",
             )
         limit = student_limit(db, room)
         if limit is not None:
@@ -122,7 +142,12 @@ def submit(token: str, body: SubmissionIn, request: Request, db: Session = Depen
             raise HTTPException(status.HTTP_429_TOO_MANY_REQUESTS, "ส่งบ่อยเกินไป กรุณาลองใหม่ภายหลัง")
         submit_limiter.record_failure(ip)
         new_code = new_edit_code()
-        sub = Submission(classroom_id=room.id, student_no=body.student_no, edit_code_hash=hash_edit_code(new_code))
+        sub = Submission(
+            classroom_id=room.id,
+            home_class=home_class,
+            student_no=body.student_no,
+            edit_code_hash=hash_edit_code(new_code),
+        )
         db.add(sub)
 
     sub.full_name = roster_name or body.full_name
@@ -132,7 +157,7 @@ def submit(token: str, body: SubmissionIn, request: Request, db: Session = Depen
     sub.learning_prefs = body.learning_prefs
     sub.consent_at = utcnow()
     db.commit()
-    return {"student_no": sub.student_no, "full_name": sub.full_name, "edit_code": new_code, "updated": new_code is None}
+    return {"home_class": sub.home_class, "student_no": sub.student_no, "full_name": sub.full_name, "edit_code": new_code, "updated": new_code is None}
 
 
 @router.post("/{token}/lookup")
@@ -140,11 +165,11 @@ def lookup(token: str, body: LookupIn, request: Request, db: Session = Depends(g
     """Load a student's earlier answers so they can edit them, after checking the edit code."""
     room = get_room_by_token(token, db)
     _require_open(room)
-    existing = db.scalar(
-        select(Submission).where(Submission.classroom_id == room.id, Submission.student_no == body.student_no)
-    )
-    sub = _check_code(room, existing, body.student_no, body.edit_code, request)
+    home_class = _home_class(room, body.home_class)
+    existing = _find(db, Submission, room, home_class, body.student_no)
+    sub = _check_code(room, existing, home_class, body.student_no, body.edit_code, request)
     return {
+        "home_class": sub.home_class,
         "student_no": sub.student_no,
         "full_name": sub.full_name,
         "nickname": sub.nickname,

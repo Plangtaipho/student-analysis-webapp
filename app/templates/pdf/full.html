@@ -91,7 +91,7 @@
   <table class="groups">
     <tr>{% for g in summary.groups %}<th>กลุ่มผู้เรียนที่<br>{{ g.label | replace("กลุ่มผู้เรียนที่", "") }}</th>{% endfor %}</tr>
     {% for i in range(group_rows) %}
-    <tr>{% for g in summary.groups %}<td>{{ i + 1 }}. {{ g.students[i].full_name if i < g.students | length else "" }}</td>{% endfor %}</tr>
+    <tr>{% for g in summary.groups %}<td>{{ i + 1 }}. {% if i < g.students | length %}{{ g.students[i].full_name }}{% if g.students[i].home_class %} ({{ g.students[i].home_class }}){% endif %}{% endif %}</td>{% endfor %}</tr>
     {% endfor %}
   </table>
 </section>

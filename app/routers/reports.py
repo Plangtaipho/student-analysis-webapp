@@ -15,6 +15,7 @@ from app.services.form_definition import (
     OPEN_QUESTIONS,
 )
 from app.services.pdf import render_pdf, thai_number
+from app.services.home_class import ordered
 from app.services.signature import data_uri
 from app.services.records import individual_record
 from app.services.summary import classroom_summary
@@ -73,7 +74,8 @@ def individual_pdf(
     room = sub.classroom
     _require_active(db, room)
     data = _render_individual(room, user, [sub], signature_for(user, sign))
-    return _pdf_response(data, f"วิเคราะห์ผู้เรียน-{room.grade_label}-เลขที่{sub.student_no}.pdf")
+    who = f"{sub.home_class.replace('/', '-')}-เลขที่{sub.student_no}" if sub.home_class else f"เลขที่{sub.student_no}"
+    return _pdf_response(data, f"วิเคราะห์ผู้เรียน-{room.grade_label}-{who}.pdf")
 
 
 @router.get("/{classroom_id}/pdf/individual")
@@ -85,7 +87,7 @@ def all_individual_pdf(
     _require_active(db, room)
     if not room.submissions:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "ยังไม่มีนักเรียนส่งแบบฟอร์ม")
-    data = _render_individual(room, user, room.submissions, signature_for(user, sign))
+    data = _render_individual(room, user, ordered(room.submissions), signature_for(user, sign))
     return _pdf_response(data, f"วิเคราะห์ผู้เรียนรายบุคคล-{room.subject_name}-{room.grade_label}.pdf")
 
 
@@ -147,7 +149,7 @@ def full_report_pdf(
         "date_text": thai_number(" ".join(date.split())),
         "to": to.strip() or f"ผู้อำนวยการ{school}",
     }
-    evaluated = [s for s in room.submissions if s.evaluation is not None]
+    evaluated = [s for s in ordered(room.submissions) if s.evaluation is not None]
     data = render_pdf(
         "full.html",
         signature=signature_for(user, sign),

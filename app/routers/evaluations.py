@@ -10,6 +10,7 @@ from app.routers.classrooms import get_owned_submission
 from app.schemas import EvaluationIn, ManualSubmissionIn
 from app.services.billing import student_limit, trial_full_message
 from app.services.form_definition import ASSESSMENT_DOMAINS
+from app.services.home_class import for_room, label, ordered
 from app.services.summary import ITEM_CODES, auto_group, classroom_summary, group_of
 
 router = APIRouter(prefix="/api/classrooms", tags=["evaluations"], dependencies=[Depends(verify_csrf)])
@@ -18,11 +19,13 @@ router = APIRouter(prefix="/api/classrooms", tags=["evaluations"], dependencies=
 def _evaluation_out(sub: Submission) -> dict:
     ev = sub.evaluation
     room = sub.classroom
-    order = [s.id for s in room.submissions]
-    pending = [s.id for s in room.submissions if s.evaluation is None and s.id != sub.id]
+    subs = ordered(room.submissions)
+    order = [s.id for s in subs]
+    pending = [s.id for s in subs if s.evaluation is None and s.id != sub.id]
     later = [i for i in pending if order.index(i) > order.index(sub.id)]
     return {
         "submission_id": sub.id,
+        "home_class": sub.home_class,
         "student_no": sub.student_no,
         "full_name": sub.full_name,
         "nickname": sub.nickname,
@@ -108,17 +111,29 @@ def create_manual_submission(
 ):
     """For a student without a phone: an empty record the teacher can assess."""
     room = get_owned_classroom(classroom_id, user, db)
+    try:
+        home_class = for_room(room, body.home_class)
+    except ValueError as e:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, str(e)) from None
     exists = db.scalar(
-        select(Submission).where(Submission.classroom_id == room.id, Submission.student_no == body.student_no)
+        select(Submission).where(
+            Submission.classroom_id == room.id,
+            Submission.home_class == home_class,
+            Submission.student_no == body.student_no,
+        )
     )
     if exists:
-        raise HTTPException(status.HTTP_409_CONFLICT, "เลขที่นี้มีข้อมูลอยู่แล้ว")
+        what = label(home_class, body.student_no) if room.mixed_classes else "เลขที่นี้"
+        raise HTTPException(status.HTTP_409_CONFLICT, f"{what}มีข้อมูลอยู่แล้ว")
     limit = student_limit(db, room)
     if limit is not None and len(room.submissions) >= limit:
         raise HTTPException(status.HTTP_402_PAYMENT_REQUIRED, trial_full_message(limit))
-    roster_name = next((r.full_name for r in room.roster if r.student_no == body.student_no), None)
+    roster_name = next(
+        (r.full_name for r in room.roster if (r.home_class, r.student_no) == (home_class, body.student_no)), None
+    )
     sub = Submission(
         classroom_id=room.id,
+        home_class=home_class,
         student_no=body.student_no,
         full_name=roster_name or body.full_name,
         created_by_teacher=True,

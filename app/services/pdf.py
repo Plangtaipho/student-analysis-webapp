@@ -7,6 +7,8 @@ from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
+from app.services.home_class import long_form
+
 APP_DIR = Path(__file__).resolve().parent.parent
 FONT_DIR = APP_DIR / "static" / "fonts"
 
@@ -21,6 +23,7 @@ def thai_number(n) -> str:
 
 
 _env.filters["thai"] = thai_number
+_env.filters["long_class"] = long_form
 
 
 def render_pdf(template: str, **context) -> bytes:

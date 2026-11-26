@@ -215,6 +215,8 @@ class ClassroomIn(BaseModel):
     grade_label: str = Field(min_length=1, max_length=40)
     academic_year: int = Field(ge=2560, le=2700)
     semester: int = Field(ge=1, le=2)
+    # ห้องคละ: students come from several classes and give their home class with their number.
+    mixed_classes: bool = False
 
     @field_validator("subject_name", "subject_code", "grade_label")
     @classmethod
@@ -227,6 +229,7 @@ class ClassroomPatch(BaseModel):
     subject_name: str | None = Field(default=None, min_length=1, max_length=120)
     subject_code: str | None = Field(default=None, max_length=20)
     grade_label: str | None = Field(default=None, min_length=1, max_length=40)
+    mixed_classes: bool | None = None
 
 
 class ClassroomOut(BaseModel):
@@ -239,6 +242,7 @@ class ClassroomOut(BaseModel):
     semester: int
     is_open: bool
     is_trial: bool
+    mixed_classes: bool = False
     student_link: str = ""
     submitted_count: int = 0
     roster_count: int = 0
@@ -257,6 +261,7 @@ class RosterIn(BaseModel):
 
 
 class RosterEntryOut(BaseModel):
+    home_class: str = ""
     student_no: int
     full_name: str
 
@@ -315,6 +320,7 @@ def clean_open_answers(v: dict[str, str]) -> dict[str, str]:
 
 class SubmissionIn(BaseModel):
     student_no: int = Field(ge=1, le=200)
+    home_class: str = Field(default="", max_length=60)
     full_name: str = Field(min_length=2, max_length=120)
     nickname: str = Field(default="", max_length=40)
     personal_info: dict = Field(default_factory=dict)
@@ -361,6 +367,7 @@ class SubmissionEditIn(BaseModel):
     personal_info / open_answers left out (None) are kept as they are."""
 
     student_no: int = Field(ge=1, le=200)
+    home_class: str = Field(default="", max_length=60)
     full_name: str = Field(min_length=2, max_length=120)
     nickname: str = Field(default="", max_length=40)
     personal_info: dict | None = None
@@ -384,12 +391,14 @@ class SubmissionEditIn(BaseModel):
 
 class LookupIn(BaseModel):
     student_no: int = Field(ge=1, le=200)
+    home_class: str = Field(default="", max_length=60)
     edit_code: str = Field(min_length=6, max_length=6, pattern=r"^\d{6}$")
 
 
 class SubmissionSummary(BaseModel):
     id: int
     student_no: int
+    home_class: str = ""
     full_name: str
     nickname: str
     submitted_at: str
@@ -431,6 +440,7 @@ class ManualSubmissionIn(BaseModel):
     """A record the teacher creates for a student who cannot fill in the form."""
 
     student_no: int = Field(ge=1, le=200)
+    home_class: str = Field(default="", max_length=60)
     full_name: str = Field(min_length=2, max_length=120)
 
     @field_validator("full_name")
