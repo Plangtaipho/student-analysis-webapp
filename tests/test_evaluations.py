@@ -139,10 +139,13 @@ def test_full_report_pdf(teacher, student):
     url = f"/api/classrooms/{room['id']}/pdf/full"
     assert teacher.get(url).status_code == 409  # nobody assessed yet
     teacher.put(ev_url(room, ids[0]), {"scores": all_scores("good"), "teacher_comment": "ดีมาก"})
-    r = teacher.get(url, params={"doc_no": "417/2569", "to": "ผู้อำนวยการโรงเรียนทดสอบ"})
+    r = teacher.get(url, params={"doc_no": "417/2569", "date": "26 พฤศจิกายน 2569", "to": "ผู้อำนวยการโรงเรียนทดสอบ"})
     assert r.status_code == 200 and r.content.startswith(b"%PDF")
     assert teacher.get(url).status_code == 422  # doc number is required
     assert teacher.get(url, params={"doc_no": "  "}).status_code == 422
+    # The memo date is typed by the teacher (2026-11-26) and is required too.
+    r = teacher.get(url, params={"doc_no": "417/2569"})
+    assert r.status_code == 422 and "วันที่" in r.json()["detail"]
 
 
 def test_full_report_needs_department(teacher, student):
@@ -151,7 +154,7 @@ def test_full_report_needs_department(teacher, student):
     with SessionLocal() as db:
         db.get(User, teacher.user["id"]).department = ""
         db.commit()
-    r = teacher.get(f"/api/classrooms/{room['id']}/pdf/full", params={"doc_no": "1/2569"})
+    r = teacher.get(f"/api/classrooms/{room['id']}/pdf/full", params={"doc_no": "1/2569", "date": "26 พฤศจิกายน 2569"})
     assert r.status_code == 409 and "กลุ่มงาน" in r.text
 
 
@@ -161,7 +164,7 @@ def test_full_report_works_without_area_office(teacher, student):
     with SessionLocal() as db:
         db.get(User, teacher.user["id"]).area_office = ""
         db.commit()
-    r = teacher.get(f"/api/classrooms/{room['id']}/pdf/full", params={"doc_no": "1/2569"})
+    r = teacher.get(f"/api/classrooms/{room['id']}/pdf/full", params={"doc_no": "1/2569", "date": "26 พฤศจิกายน 2569"})
     assert r.status_code == 200 and r.content[:4] == b"%PDF"
 
 
@@ -175,7 +178,7 @@ def test_full_report_leaves_out_area_office(teacher, student, monkeypatch):
     teacher.put(ev_url(room, ids[0]), {"scores": all_scores("good")})
     with SessionLocal() as db:
         assert db.get(User, teacher.user["id"]).area_office  # set by the fixture
-    r = teacher.get(f"/api/classrooms/{room['id']}/pdf/full", params={"doc_no": "1/2569"})
+    r = teacher.get(f"/api/classrooms/{room['id']}/pdf/full", params={"doc_no": "1/2569", "date": "26 พฤศจิกายน 2569"})
     assert r.status_code == 200
     assert "เขตพื้นที่" not in seen["memo"]["dept"]
     assert seen["memo"]["dept"].startswith("กลุ่มบริหารวิชาการ")
@@ -206,7 +209,7 @@ def test_memo_uses_thai_digits_everywhere(teacher, student, monkeypatch):
         db.commit()
     r = teacher.get(
         f"/api/classrooms/{room['id']}/pdf/full",
-        params={"doc_no": "417/2569", "to": "ผู้อำนวยการโรงเรียนบ้านหนองบัว 2"},
+        params={"doc_no": "417/2569", "date": "26 พฤศจิกายน 2569", "to": "ผู้อำนวยการโรงเรียนบ้านหนองบัว 2"},
     )
     assert r.status_code == 200
     html = captured["html"]
@@ -214,3 +217,8 @@ def test_memo_uses_thai_digits_everywhere(teacher, student, monkeypatch):
     text = re.sub(r"<[^>]+>", " ", memo)  # tag attributes (CSS, image data) are not printed
     assert not re.search(r"[0-9]", text), re.findall(r".{0,20}[0-9].{0,20}", text)
     assert "๔๑๗/๒๕๖๙" in text and "บ้านหนองบัว ๒" in text and "ค๒๓๑๐๒" in text
+    assert "๒๖ พฤศจิกายน ๒๕๖๙" in text  # typed date, Arabic digits converted
+    # คำนำ, แนวคิด and คำชี้แจง follow the memo; คำนำ is signed without the title.
+    after = html[html.index("</section>", html.index('<section class="page memo">')) :]
+    assert after.index("คำนำ") < after.index("แนวคิด วัตถุประสงค์") < after.index("คำชี้แจงการวิเคราะห์ผู้เรียนรายบุคคล") < after.index("teacher-tag")
+    assert "ใจดี ตั้งใจสอน</div>" in after and "พ.ศ. ๒๕๕๑" in after

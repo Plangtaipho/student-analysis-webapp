@@ -11,7 +11,6 @@
     $("memo-dept").textContent = me.department
       ? [me.department, school, me.school_location].filter(Boolean).join(" ")
       : "ยังไม่ได้กรอกกลุ่มงาน (แก้ได้ที่หน้าข้อมูลครู)";
-    $("memo-date").textContent = new Date().toLocaleDateString("th-TH-u-nu-thai", { day: "numeric", month: "long", year: "numeric" }) + " (วันที่ดาวน์โหลด)";
     $("to").placeholder = `ผู้อำนวยการ${school}`;
     const [room, s] = await Promise.all([API.get(`/api/classrooms/${id}`), API.get(`/api/classrooms/${id}/summary`)]);
     $("sum-sub").textContent = `${room.subject_name}  ${room.grade_label}  ภาคเรียนที่ ${room.semester}/${room.academic_year}`;
@@ -52,6 +51,7 @@
     API.hide(err);
     if (me && !me.department) { API.showError(err, "กรุณากรอกกลุ่มงานในหน้าข้อมูลครูก่อน เพื่อใช้เป็นส่วนราชการในบันทึกข้อความ"); return; }
     if (!$("doc_no").value.trim()) { API.showError(err, "กรุณากรอกเลขที่หนังสือ (ที่) ก่อนดาวน์โหลด"); $("doc_no").focus(); return; }
+    if (!$("date").value.trim()) { API.showError(err, "กรุณากรอกวันที่ของบันทึกข้อความก่อนดาวน์โหลด"); $("date").focus(); return; }
     const q = new URLSearchParams();
     for (const [k, v] of new FormData(ev.target).entries()) if (String(v).trim()) q.set(k, String(v).trim());
     if (hasSignature && !$("sign").checked) q.set("sign", "false");

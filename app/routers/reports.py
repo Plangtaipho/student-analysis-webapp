@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.deps import get_current_user, get_owned_classroom, today
+from app.deps import get_current_user, get_owned_classroom
 from app.models import User
 from app.routers.classrooms import get_owned_submission
 from app.services.billing import LOCKED_MESSAGE, room_is_active
@@ -16,7 +16,7 @@ from app.services.form_definition import (
 )
 from app.services.pdf import render_pdf, thai_number
 from app.services.signature import data_uri
-from app.services.records import THAI_MONTHS, individual_record
+from app.services.records import individual_record
 from app.services.summary import classroom_summary
 
 router = APIRouter(prefix="/api/classrooms", tags=["reports"])
@@ -94,6 +94,18 @@ def school_text(name: str) -> str:
     return name if name.startswith("โรงเรียน") or not name else f"โรงเรียน{name}"
 
 
+TITLES = ("ว่าที่ร้อยตรีหญิง", "ว่าที่ร้อยตรี", "นางสาว", "นาง", "นาย", "ดร.")
+
+
+def strip_title(name: str) -> str:
+    """"นางพรธิดา โพธิ์สิงห์" -> "พรธิดา โพธิ์สิงห์", as the คำนำ is signed in the sample."""
+    name = (name or "").strip()
+    for t in TITLES:
+        if name.startswith(t) and len(name) > len(t):
+            return name[len(t):].strip()
+    return name
+
+
 def grade_text(label: str) -> str:
     label = (label or "").strip()
     return label if label.startswith("ชั้น") else f"ชั้น{label}"
@@ -104,6 +116,7 @@ def full_report_pdf(
     classroom_id: int,
     doc_no: str = Query(default="", max_length=60),
     to: str = Query(default="", max_length=200),
+    date: str = Query(default="", max_length=60),
     sign: bool = SIGN_QUERY,
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -117,25 +130,28 @@ def full_report_pdf(
         raise HTTPException(status.HTTP_409_CONFLICT, "ยังไม่มีนักเรียนที่ประเมินแล้ว กรุณาประเมินอย่างน้อย 1 คนก่อนออกรายงาน")
     if not doc_no.strip():
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "กรุณากรอกเลขที่หนังสือ (ที่) ก่อนออกรายงาน")
+    if not date.strip():
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "กรุณากรอกวันที่ของบันทึกข้อความก่อนออกรายงาน")
     if not user.department.strip():
         raise HTTPException(
             status.HTTP_409_CONFLICT, "กรุณากรอกกลุ่มงานในหน้าข้อมูลครูก่อน เพื่อใช้เป็นส่วนราชการในบันทึกข้อความ"
         )
     school = school_text(user.school_name)
-    d = today()  # the memo is dated the day it is exported
     memo = {
         # ส่วนราชการ: กลุ่มงาน โรงเรียน (อำเภอ จังหวัด) สำนักงานเขตพื้นที่การศึกษา
         "dept": " ".join(
             x for x in (user.department.strip(), school, user.school_location.strip()) if x
         ),
         "doc_no": thai_number(doc_no.strip()),
-        "date_text": thai_number(f"{d.day} {THAI_MONTHS[d.month - 1]} {d.year + 543}"),
+        # Typed by the teacher (feedback 2026-11-26); Arabic digits become Thai digits.
+        "date_text": thai_number(" ".join(date.split())),
         "to": to.strip() or f"ผู้อำนวยการ{school}",
     }
     evaluated = [s for s in room.submissions if s.evaluation is not None]
     data = render_pdf(
         "full.html",
         signature=signature_for(user, sign),
+        preface_name=strip_title(user.full_name),
         room=room,
         teacher=user,
         school=school,

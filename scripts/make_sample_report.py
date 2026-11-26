@@ -100,7 +100,7 @@ def main() -> Path:
     Base.metadata.create_all(engine)
     c = TestClient(app, base_url="https://kruflow.example")
     room_id, _ = seed(c)
-    pdf = c.get(f"/api/classrooms/{room_id}/pdf/full", params={"doc_no": "123/2569"})
+    pdf = c.get(f"/api/classrooms/{room_id}/pdf/full", params={"doc_no": "123/2569", "date": "1 พฤศจิกายน 2569"})
     pdf.raise_for_status()
     OUT.mkdir(parents=True, exist_ok=True)
     target = OUT / "kruflow-sample-report.pdf"
