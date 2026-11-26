@@ -15,6 +15,7 @@ from app.services.form_definition import (
     OPEN_QUESTIONS,
 )
 from app.services.pdf import render_pdf, thai_number
+from app.services.signature import data_uri
 from app.services.records import THAI_MONTHS, individual_record
 from app.services.summary import classroom_summary
 
@@ -37,9 +38,20 @@ def _require_active(db: Session, room) -> None:
         raise HTTPException(status.HTTP_402_PAYMENT_REQUIRED, LOCKED_MESSAGE)
 
 
-def _render_individual(room, teacher, subs) -> bytes:
+def signature_for(user: User, sign: bool) -> str:
+    """The teacher's signature as a data URI, or "" when they have none or chose not to sign."""
+    if not sign or user.signature is None:
+        return ""
+    return data_uri(user.signature.data)
+
+
+SIGN_QUERY = Query(default=True, description="Print the teacher's uploaded signature, if any")
+
+
+def _render_individual(room, teacher, subs, signature: str = "") -> bytes:
     return render_pdf(
         "individual.html",
+        signature=signature,
         records=[individual_record(s) for s in subs],
         room=room,
         teacher=teacher,
@@ -51,23 +63,29 @@ def _render_individual(room, teacher, subs) -> bytes:
 
 @router.get("/{classroom_id}/submissions/{submission_id}/pdf")
 def individual_pdf(
-    classroom_id: int, submission_id: int, user: User = Depends(get_current_user), db: Session = Depends(get_db)
+    classroom_id: int,
+    submission_id: int,
+    sign: bool = SIGN_QUERY,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
 ):
     sub = get_owned_submission(classroom_id, submission_id, user, db)
     room = sub.classroom
     _require_active(db, room)
-    data = _render_individual(room, user, [sub])
+    data = _render_individual(room, user, [sub], signature_for(user, sign))
     return _pdf_response(data, f"วิเคราะห์ผู้เรียน-{room.grade_label}-เลขที่{sub.student_no}.pdf")
 
 
 @router.get("/{classroom_id}/pdf/individual")
-def all_individual_pdf(classroom_id: int, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def all_individual_pdf(
+    classroom_id: int, sign: bool = SIGN_QUERY, user: User = Depends(get_current_user), db: Session = Depends(get_db)
+):
     """Every student's record in one file, in class-number order."""
     room = get_owned_classroom(classroom_id, user, db)
     _require_active(db, room)
     if not room.submissions:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "ยังไม่มีนักเรียนส่งแบบฟอร์ม")
-    data = _render_individual(room, user, room.submissions)
+    data = _render_individual(room, user, room.submissions, signature_for(user, sign))
     return _pdf_response(data, f"วิเคราะห์ผู้เรียนรายบุคคล-{room.subject_name}-{room.grade_label}.pdf")
 
 
@@ -86,6 +104,7 @@ def full_report_pdf(
     classroom_id: int,
     doc_no: str = Query(default="", max_length=60),
     to: str = Query(default="", max_length=200),
+    sign: bool = SIGN_QUERY,
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
@@ -116,6 +135,7 @@ def full_report_pdf(
     evaluated = [s for s in room.submissions if s.evaluation is not None]
     data = render_pdf(
         "full.html",
+        signature=signature_for(user, sign),
         room=room,
         teacher=user,
         school=school,

@@ -74,6 +74,23 @@ class User(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
 
     classrooms: Mapped[list["Classroom"]] = relationship(back_populates="teacher", cascade="all, delete-orphan")
+    signature: Mapped["TeacherSignature | None"] = relationship(
+        back_populates="teacher", cascade="all, delete-orphan", uselist=False
+    )
+
+
+class TeacherSignature(Base):
+    """The teacher's signature (transparent PNG cleaned from a photo or scan),
+    printed on the memo and individual records. Kept in the database like slips,
+    because Railway's disk is wiped on every deploy."""
+
+    __tablename__ = "teacher_signatures"
+
+    teacher_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
+    data: Mapped[bytes] = mapped_column(LargeBinary(length=16_777_215))  # MEDIUMBLOB on MySQL
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+
+    teacher: Mapped[User] = relationship(back_populates="signature")
 
 
 class Subscription(Base):

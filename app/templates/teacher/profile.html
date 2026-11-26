@@ -18,6 +18,20 @@
   <div id="profile-error" class="alert alert-error hidden" role="alert"></div>
   <button class="btn btn-primary mt-4" type="submit">บันทึก</button>
 </form>
+<section id="signature" class="card">
+  <h2>ลายเซ็น</h2>
+  <p class="muted small">ใช้พิมพ์ตรง "ลงชื่อ" ในบันทึกข้อความและแบบบันทึกรายบุคคล เซ็นด้วยปากกาสีเข้มบนกระดาษขาว แล้วสแกนหรือถ่ายรูปให้เห็นลายเซ็นชัดๆ ระบบจะลบพื้นกระดาษออกและตัดเฉพาะลายเซ็นให้เอง ถ้าในรูปมีตัวหนังสืออื่นด้วย ให้ครอปรูปเหลือแค่ลายเซ็นก่อน</p>
+  <div class="sig-preview">
+    <div class="sig-paper"><span>ลงชื่อ</span><span class="sig-dots">..........................................<img id="sig-img" class="hidden" alt="ลายเซ็นของฉัน"></span></div>
+    <p id="sig-empty" class="muted small">ยังไม่มีลายเซ็น รายงานจะเว้นช่องไว้ให้เซ็นเอง</p>
+  </div>
+  <div class="field mt-4"><label for="sig-file">เลือกรูปลายเซ็น <span class="hint">JPG, PNG หรือ WEBP ไม่เกิน 8 MB</span></label><input id="sig-file" type="file" accept="image/jpeg,image/png,image/webp"></div>
+  <div id="sig-error" class="alert alert-error hidden" role="alert"></div>
+  <div class="row mt-4">
+    <button class="btn btn-primary" type="button" id="sig-upload">อัปโหลดลายเซ็น</button>
+    <button class="btn hidden" type="button" id="sig-delete">ลบลายเซ็น</button>
+  </div>
+</section>
 <form id="password-form" class="card">
   <h2 id="password-title">เปลี่ยนรหัสผ่าน</h2>
   <p id="google-only-note" class="muted small hidden">บัญชีนี้เข้าสู่ระบบด้วย Google ตั้งรหัสผ่านไว้ด้วยก็ได้ เผื่อเข้าด้วยอีเมลและรหัสผ่าน</p>

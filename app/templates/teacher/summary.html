@@ -47,6 +47,10 @@
   <div class="fields">
     <div class="field half"><label for="doc_no">ที่ (เลขที่หนังสือ) <span class="req">*</span></label><input id="doc_no" name="doc_no" required maxlength="60" placeholder="เช่น ๔๑๗/๒๕๖๙"></div>
     <div class="field"><label for="to">เรียน</label><input id="to" name="to" maxlength="200" placeholder="ผู้อำนวยการโรงเรียน..."></div>
+    <div class="field" id="sign-field">
+      <label class="check hidden" id="sign-yes"><input type="checkbox" id="sign" checked><span>ใส่ลายเซ็นของฉันตรง "ลงชื่อ" <img id="sign-thumb" class="sig-thumb" alt="ลายเซ็นของฉัน"></span></label>
+      <p class="muted small hidden" id="sign-none">ยังไม่มีลายเซ็นในระบบ รายงานจะเว้นช่องลงชื่อไว้ให้เซ็นเอง <a href="/app/profile#signature">อัปโหลดลายเซ็น</a></p>
+    </div>
   </div>
   <div id="memo-error" class="alert alert-error hidden" role="alert"></div>
   <div class="row mt-4">

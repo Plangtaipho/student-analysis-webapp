@@ -58,6 +58,6 @@
   <h2 style="margin-top:12pt" class="indent1">{{ tri() }}ความคิดเห็นและข้อเสนอแนะของครู</h2>
   {% if r.comment %}<div class="comment-line">{{ r.comment }}</div>{% endif %}
   {% for _ in range(2 if r.comment else 3) %}<div class="comment-line"></div>{% endfor %}
-  <div class="sign-left">ลงชื่อ.........................................................<br><span class="name">({{ teacher.full_name }})</span></div>
+  <div class="sign-left">{% if signature %}<div class="sig-box"><img src="{{ signature }}" alt=""></div>{% endif %}ลงชื่อ.........................................................<br><span class="name">({{ teacher.full_name }})</span></div>
 </section>
 {% endfor %}

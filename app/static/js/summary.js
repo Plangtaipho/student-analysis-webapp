@@ -39,6 +39,13 @@
       </div>`).join("");
   } catch (e) { API.toast(e.message); }
 
+  // Signature: offer it only when the teacher has uploaded one.
+  let hasSignature = false;
+  const thumb = $("sign-thumb");
+  thumb.addEventListener("load", () => { hasSignature = true; $("sign-yes").classList.remove("hidden"); });
+  thumb.addEventListener("error", () => $("sign-none").classList.remove("hidden"));
+  thumb.src = `/api/auth/signature?t=${Date.now()}`;
+
   $("memo-form").addEventListener("submit", (ev) => {
     ev.preventDefault();
     const err = $("memo-error");
@@ -47,6 +54,7 @@
     if (!$("doc_no").value.trim()) { API.showError(err, "กรุณากรอกเลขที่หนังสือ (ที่) ก่อนดาวน์โหลด"); $("doc_no").focus(); return; }
     const q = new URLSearchParams();
     for (const [k, v] of new FormData(ev.target).entries()) if (String(v).trim()) q.set(k, String(v).trim());
+    if (hasSignature && !$("sign").checked) q.set("sign", "false");
     window.open(`/api/classrooms/${id}/pdf/full?${q.toString()}`, "_blank", "noopener");
   });
 })();

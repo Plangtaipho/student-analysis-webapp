@@ -14,6 +14,9 @@
   .memo .sign { margin: 40pt 0 0 52%; }
   .memo .sign .name { padding-left: 1.1cm; }
   .memo .sign .pos { padding-left: 1.7cm; }
+  .memo .sign { position: relative; }
+  .memo-sig { position: absolute; left: 1.3cm; top: -0.75cm; line-height: 0; }
+  .memo-sig img { height: 1.35cm; max-width: 5cm; }
   .sum th, .sum td { font-size: 14.5pt; padding: 2pt 3pt; }
   .sum td.n { text-align: center; width: 7.5%; }
   .groups th { font-size: 15pt; width: 25%; padding: 2pt 4pt; line-height: 1.1; }
@@ -37,7 +40,7 @@
     รายวิชา{{ room.subject_name }}{% if room.subject_code %} รหัสวิชา {{ room.subject_code | thai }}{% endif %} ของนักเรียน{{ grade_text | thai }} เพื่อใช้เป็นข้อมูลการแก้ไขปัญหาและ/หรือพัฒนาคุณภาพผู้เรียน
     ภาคเรียนที่ {{ room.semester | thai }} ปีการศึกษา {{ room.academic_year | thai }} รายละเอียดตามเอกสารแนบ</p>
   <p class="indent" style="margin-top:12pt">จึงเรียนมาเพื่อโปรดทราบ</p>
-  <div class="sign">ลงชื่อ<br><span class="name">({{ teacher.full_name }})</span><br><span class="pos">ตำแหน่ง {{ teacher.position }}</span></div>
+  <div class="sign">ลงชื่อ{% if signature %}<span class="memo-sig"><img src="{{ signature }}" alt=""></span>{% endif %}<br><span class="name">({{ teacher.full_name }})</span><br><span class="pos">ตำแหน่ง {{ teacher.position }}</span></div>
 </section>
 
 {# ---------- 2. แบบสรุปผล ---------- #}

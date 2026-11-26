@@ -1,7 +1,7 @@
 """Teacher sign-up, login (password or Google), logout, profile and password."""
 import secrets
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, File, HTTPException, Request, Response, UploadFile, status
 from fastapi.responses import RedirectResponse
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
@@ -9,9 +9,10 @@ from sqlalchemy.orm import Session
 from app.config import get_settings
 from app.database import get_db
 from app.deps import client_ip, get_current_user, verify_csrf
-from app.models import User
+from app.models import TeacherSignature, User, utcnow
 from app.schemas import ChangePasswordIn, GoogleRegisterIn, LoginIn, ProfileIn, RegisterIn, UserOut
 from app.services import google_oauth
+from app.services.signature import MAX_UPLOAD_BYTES, SignatureError, clean_signature
 from app.security import (
     DUMMY_HASH,
     hash_password,
@@ -114,6 +115,49 @@ def change_password(body: ChangePasswordIn, user: User = Depends(get_current_use
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "รหัสผ่านปัจจุบันไม่ถูกต้อง")
     user.password_hash = hash_password(body.password)
     db.commit()
+    return {"ok": True}
+
+
+# --- Signature printed on the reports -----------------------------------------------
+
+
+@router.get("/signature")
+def get_signature(user: User = Depends(get_current_user)):
+    """The teacher's own cleaned signature (PNG). Nobody else can read it."""
+    if user.signature is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "ยังไม่มีลายเซ็น")
+    return Response(
+        user.signature.data,
+        media_type="image/png",
+        headers={"Content-Disposition": "inline", "Cache-Control": "private, no-store"},
+    )
+
+
+@router.put("/signature", dependencies=[Depends(verify_csrf)])
+async def upload_signature(
+    file: UploadFile = File(), user: User = Depends(get_current_user), db: Session = Depends(get_db)
+):
+    """Photo or scan of a signature on paper: the paper is made transparent and the picture cropped."""
+    raw = await file.read(MAX_UPLOAD_BYTES + 1)
+    if len(raw) > MAX_UPLOAD_BYTES:
+        raise HTTPException(status.HTTP_413_CONTENT_TOO_LARGE, "ไฟล์ใหญ่เกิน 8 MB")
+    try:
+        data = clean_signature(raw)
+    except SignatureError as e:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, str(e)) from None
+    if user.signature is None:
+        user.signature = TeacherSignature(data=data)
+    else:
+        user.signature.data, user.signature.updated_at = data, utcnow()
+    db.commit()
+    return {"ok": True}
+
+
+@router.delete("/signature", dependencies=[Depends(verify_csrf)])
+def delete_signature(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    if user.signature is not None:
+        db.delete(user.signature)
+        db.commit()
     return {"ok": True}
 
 

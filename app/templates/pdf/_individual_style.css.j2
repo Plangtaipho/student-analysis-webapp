@@ -11,6 +11,10 @@
   .comment-line { border-bottom: 1px dotted #000; min-height: 17pt; white-space: pre-wrap; }
   .sign-left { margin: 12pt 0 0 1cm; }
   .sign-left .name { padding-left: 1cm; }
+  /* Signature picture sits on the dotted line without moving the text around it. */
+  .sign-left { position: relative; }
+  .sig-box { position: absolute; left: 1.1cm; width: 4.8cm; top: -0.75cm; text-align: center; line-height: 0; }
+  .sig-box img { height: 1.25cm; max-width: 4.8cm; }
   table.ln.indent1 td:first-child { padding-left: 1.3cm; }
   table.ln.q td:first-child { padding-left: 0.8cm; }
   td.nw { white-space: nowrap; font-size: 15pt; }
