@@ -8,7 +8,8 @@ from sqlalchemy.orm import Session
 
 from app.config import get_settings
 from app.database import get_db
-from app.deps import client_ip, get_current_user, verify_csrf
+from app.deps import client_ip, get_current_user, today, verify_csrf
+from app.services.billing import NAME_LOCKED_MESSAGE, name_lock, name_lock_out
 from app.models import TeacherSignature, User, utcnow
 from app.schemas import ChangePasswordIn, GoogleRegisterIn, LoginIn, ProfileIn, RegisterIn, UserOut
 from app.services import google_oauth
@@ -85,16 +86,24 @@ def logout(request: Request):
 
 
 @router.get("/me")
-def me(request: Request, user: User = Depends(get_current_user)):
+def me(request: Request, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     if "csrf" not in request.session:
         request.session["csrf"] = new_csrf_token()
-    return {"user": UserOut.model_validate(user), "csrf": request.session["csrf"]}
+    return {
+        "user": UserOut.model_validate(user),
+        "csrf": request.session["csrf"],
+        "name_lock": name_lock_out(name_lock(db, user.id, today())),
+    }
 
 
 @router.put("/profile", dependencies=[Depends(verify_csrf)])
 def update_profile(body: ProfileIn, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """School and teacher details printed on the reports."""
     user = db.merge(user)
+    if body.full_name != user.full_name.strip() or body.school_name != user.school_name.strip():
+        lock = name_lock(db, user.id, today())
+        if lock is not None:
+            raise HTTPException(status.HTTP_409_CONFLICT, NAME_LOCKED_MESSAGE.format(term=lock["term"]))
     user.full_name = body.full_name
     user.position = body.position
     user.department = body.department

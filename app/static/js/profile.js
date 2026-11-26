@@ -2,11 +2,23 @@
 (async function () {
   const pf = document.getElementById("profile-form");
   const pw = document.getElementById("password-form");
-  const me = (await API.loadMe()).user;
+  const meRes = await API.loadMe();
+  const me = meRes.user;
   for (const k of ["position", "department", "learning_area", "school_name", "school_location", "area_office"]) pf[k].value = me[k] || "";
   NamePrefix.set("full_name", me.full_name);
   pf.area_office.dispatchEvent(new Event("change"));
   document.getElementById("email").textContent = me.email;
+  // After paying, name and school stay fixed until the term ends (one account = one teacher).
+  if (meRes.name_lock) {
+    const g = document.getElementById("full_name").closest("[data-name-group]");
+    g.querySelector("[data-prefix]").disabled = true;
+    g.querySelector("[data-name-rest]").readOnly = true;
+    pf.school_name.readOnly = true;
+    pf.area_office.readOnly = true;
+    const note = document.getElementById("name-lock-note");
+    note.textContent = `ชื่อ-สกุลและโรงเรียนล็อกไว้จนจบภาคเรียน ${meRes.name_lock.term} เพราะชำระค่าบริการแล้ว (1 บัญชีต่อครู 1 คน) ถ้าพิมพ์ผิด ทักเพจ KruFlow ให้แอดมินแก้ให้`;
+    note.classList.remove("hidden");
+  }
   if (!me.has_password) {
     // Google-only account: setting a first password needs no current one.
     const cur = document.getElementById("current-password-field");

@@ -144,6 +144,16 @@ class LoginIn(BaseModel):
     password: str = Field(max_length=128)
 
 
+class AdminNameIn(BaseModel):
+    full_name: str = Field(min_length=2, max_length=120)
+    school_name: str = Field(min_length=2, max_length=160)
+
+    @field_validator("full_name", "school_name")
+    @classmethod
+    def _strip(cls, v: str) -> str:
+        return _clean(v)
+
+
 class ProfileIn(BaseModel):
     full_name: str = Field(min_length=2, max_length=120)
     position: Position

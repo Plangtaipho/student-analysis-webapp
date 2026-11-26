@@ -7,6 +7,7 @@
   <div><h1>ข้อมูลครู</h1><div class="sub">ชื่อ ตำแหน่ง กลุ่มงาน และโรงเรียนจะพิมพ์ในหัวรายงานและบันทึกข้อความ บัญชี <span id="email"></span></div></div>
 </div>
 <form id="profile-form" class="card">
+  <div id="name-lock-note" class="alert alert-info hidden" role="note"></div>
   <div class="fields">
     {{ name_input("full_name", "full_name", "ชื่อ-สกุล", ['นาย', 'นาง', 'นางสาว'], "ชื่อ สกุล", cls="half") }}
     <div class="field half"><label for="position">ตำแหน่ง</label><select id="position" name="position" required><option value="">— เลือก —</option><option>ครู</option><option>พนักงานราชการ</option><option>อัตราจ้าง</option></select></div>

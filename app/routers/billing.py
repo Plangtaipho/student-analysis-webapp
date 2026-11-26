@@ -37,6 +37,7 @@ from app.models import (
 )
 from app.services import promptpay
 from app.services.billing import STATUS_TEXT, term_subscription
+from app.schemas import AdminNameIn
 from app.services.retention import purge_on
 
 router = APIRouter(prefix="/api/billing", tags=["billing"], dependencies=[Depends(verify_csrf)])
@@ -245,6 +246,19 @@ def admin_reject(
     sub.approved_by, sub.approved_at = None, None
     db.commit()
     return _admin_sub_out(sub)
+
+
+@admin_router.put("/teachers/{teacher_id}/name")
+def admin_fix_teacher_name(
+    teacher_id: int, body: AdminNameIn, _: User = Depends(require_admin), db: Session = Depends(get_db)
+):
+    """Correct a locked name or school (typos) for a teacher who asked the admin."""
+    t = db.get(User, teacher_id)
+    if t is None or t.role != Role.teacher:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "ไม่พบครูคนนี้")
+    t.full_name, t.school_name = body.full_name, body.school_name
+    db.commit()
+    return {"id": t.id, "full_name": t.full_name, "school_name": t.school_name}
 
 
 @admin_router.get("/teachers")

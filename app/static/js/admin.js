@@ -40,8 +40,24 @@
     $("teachers-body").innerHTML = list.map((t) => `
       <tr><td class="who">${API.esc(t.full_name)}<span class="when">${API.esc(t.email)}</span></td>
       <td>${API.esc(t.school_name)}</td><td>${t.rooms}</td><td>${t.paid_terms}</td>
-      <td class="small">${API.thaiDateTime(t.created_at)}</td></tr>`).join("");
+      <td class="small">${API.thaiDateTime(t.created_at)}</td>
+      <td><button class="btn btn-sm" type="button" data-fix-name="${t.id}" data-name="${API.esc(t.full_name)}" data-school="${API.esc(t.school_name)}">แก้ชื่อ</button></td></tr>`).join("");
   }
+
+  // Teachers' names lock once they pay; the admin fixes typos on request.
+  $("teachers-body").addEventListener("click", async (ev) => {
+    const btn = ev.target.closest("button[data-fix-name]");
+    if (!btn) return;
+    const full_name = prompt("ชื่อ-สกุล (มีคำนำหน้า)", btn.dataset.name);
+    if (full_name === null) return;
+    const school_name = prompt("โรงเรียน", btn.dataset.school);
+    if (school_name === null) return;
+    try {
+      await API.put(`/api/admin/teachers/${btn.dataset.fixName}/name`, { full_name, school_name });
+      API.toast("แก้ชื่อแล้ว");
+      await loadTeachers();
+    } catch (e) { API.toast(e.message); }
+  });
 
   $("sub-filter").addEventListener("change", loadSubs);
 
