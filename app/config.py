@@ -47,6 +47,13 @@ class Settings(BaseSettings):
     # Facebook page linked on the home page for questions. Empty URL = the page name is shown without a link.
     facebook_url: str = ""
     facebook_page_name: str = "KruFlow ศูนย์รวมระบบงานโรงเรียน"
+    # Credit and other contact channels on the home page and the teacher pages' help box.
+    # Empty values are simply not shown.
+    creator_name: str = "ทีมพัฒนา KruFlow"
+    creator_bio: str = ""
+    line_url: str = ""  # LINE Official Account link, e.g. https://lin.ee/xxxx
+    contact_email: str = ""
+    contact_phone: str = ""
 
     # "Sign in with Google". Both empty = the Google button is hidden.
     # Create an OAuth client (type: Web application) at console.cloud.google.com.
@@ -56,7 +63,8 @@ class Settings(BaseSettings):
     # Delete classrooms 45 days after their semester ends (see app/services/retention.py).
     retention_enabled: bool = True
 
-    @field_validator("public_base_url", "env", "promptpay_id", "promptpay_name", "initial_admin_email", "facebook_url", mode="before")
+    @field_validator("public_base_url", "env", "promptpay_id", "promptpay_name", "initial_admin_email", "facebook_url", "line_url",
+        "contact_email", "contact_phone", "creator_name", "creator_bio", mode="before")
     @classmethod
     def _trim(cls, v):
         return v.strip() if isinstance(v, str) else v
@@ -69,6 +77,19 @@ class Settings(BaseSettings):
         if v and not v.startswith(("http://", "https://")):
             v = "https://" + v
         return v
+
+    @property
+    def contact(self) -> dict:
+        """Who made the site and how to reach them, for the templates."""
+        return {
+            "creator_name": self.creator_name,
+            "creator_bio": self.creator_bio,
+            "facebook_url": self.facebook_url,
+            "facebook_name": self.facebook_page_name,
+            "line_url": self.line_url,
+            "email": self.contact_email,
+            "phone": self.contact_phone,
+        }
 
     @property
     def google_enabled(self) -> bool:

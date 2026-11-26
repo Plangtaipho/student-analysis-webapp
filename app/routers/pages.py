@@ -21,6 +21,8 @@ from app.services.form_definition import (
 
 templates = Jinja2Templates(directory=str(Path(__file__).resolve().parent.parent / "templates"))
 templates.env.globals.update(WORK_GROUPS=WORK_GROUPS, LEARNING_AREAS=LEARNING_AREAS, POSITIONS=POSITIONS)
+# Read per render so a changed environment variable shows after the next restart only.
+templates.env.globals["contact"] = lambda: get_settings().contact
 
 
 def _prices() -> dict:
@@ -37,9 +39,7 @@ def _teacher_page(request: Request, user: User | None, name: str, **ctx):
 
 @router.get("/", response_class=HTMLResponse)
 def home(request: Request, user: User | None = Depends(get_optional_user)):
-    s = get_settings()
-    contact = {"facebook_url": s.facebook_url, "facebook_name": s.facebook_page_name}
-    return templates.TemplateResponse(request, "home.html", {"user": user, **_prices(), **contact})
+    return templates.TemplateResponse(request, "home.html", {"user": user, **_prices()})
 
 
 @router.get("/login", response_class=HTMLResponse)

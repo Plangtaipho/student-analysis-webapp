@@ -32,6 +32,15 @@
   <main class="container {% block container_class %}{% endblock %}">
     {% block content %}{% endblock %}
   </main>
+  {% block site_footer %}
+  {% set c = contact() %}
+  <footer class="help-strip">
+    <div class="help-inner">
+      <div><b>มีคำถามหรือพบปัญหาการใช้งาน?</b> ติดต่อผู้พัฒนา {{ c.creator_name }}</div>
+      {% from "_contact.html" import contact_buttons %}{{ contact_buttons(c, "btn-sm") }}
+    </div>
+  </footer>
+  {% endblock %}
   <script src="/static/js/api.js"></script>
   {% block scripts %}{% endblock %}
 </body>

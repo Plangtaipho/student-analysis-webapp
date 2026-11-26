@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_contact.html" import contact_buttons %}
 {% block container_class %}home{% endblock %}
 {% block nav %}
 {% if user %}
@@ -9,11 +10,13 @@
     <a href="#report">ในรายงานมีอะไร</a>
     <a href="#price">ราคา</a>
     <a href="#faq">คำถามที่พบบ่อย</a>
+    <a href="#contact">ติดต่อเรา</a>
   </span>
   <a href="/login">เข้าสู่ระบบ</a>
   <a class="btn btn-primary btn-sm" href="/register">สมัครใช้งาน</a>
 {% endif %}
 {% endblock %}
+{% block site_footer %}{% endblock %}
 {% block content %}
 <section class="lp-hero">
   <div class="wrap lp-hero-grid">
@@ -175,35 +178,56 @@
 </section>
 
 <section class="lp-section" id="faq">
-  <div class="wrap">
-    <div class="lp-head"><h2>คำถามที่พบบ่อย</h2></div>
-    <div class="lp-faq">
-      <div><h3>นักเรียนต้องสมัครหรือโหลดแอปไหม</h3><p>ไม่ต้อง เปิดลิงก์หรือสแกน QR แล้วกรอกได้เลย ใช้มือถือเครื่องไหนก็ได้</p></div>
-      <div><h3>ใช้กับแบบฟอร์มของโรงเรียนได้ไหม</h3><p>หัวข้อทำตามแบบบันทึกการวิเคราะห์ผู้เรียนรายบุคคลที่โรงเรียนส่วนใหญ่ใช้ ถ้าโรงเรียนใช้แบบต่างออกไป แจ้งเราได้</p></div>
-      <div><h3>นักเรียนที่ไม่มีมือถือทำอย่างไร</h3><p>ครูเพิ่มชื่อนักเรียนและประเมินเองได้ ข้อมูลจะอยู่ในรายงานเหมือนคนอื่น</p></div>
-      <div><h3>ข้อมูลนักเรียนปลอดภัยไหม</h3><p>ครูเห็นเฉพาะห้องของตัวเอง ข้อมูลส่วนตัวไม่บังคับกรอก ครูลบห้องได้ทุกเมื่อ และระบบลบให้อัตโนมัติ 45 วันหลังจบภาคเรียน</p></div>
+  <div class="wrap lp-faq-wrap">
+    <div class="lp-head"><h2>คำถามที่พบบ่อย</h2><p>กดที่คำถามเพื่อดูคำตอบ ถ้าไม่เจอคำถามที่สงสัย <a href="#contact">ติดต่อเราได้เลย</a></p></div>
+    <div class="faq">
+      <details class="faq-item" open><summary>นักเรียนต้องสมัครหรือโหลดแอปไหม</summary><div class="faq-a">ไม่ต้อง เปิดลิงก์หรือสแกน QR แล้วกรอกได้เลย ใช้มือถือเครื่องไหนก็ได้</div></details>
+      <details class="faq-item"><summary>ใช้กับแบบฟอร์มของโรงเรียนได้ไหม</summary><div class="faq-a">หัวข้อทำตามแบบบันทึกการวิเคราะห์ผู้เรียนรายบุคคลที่โรงเรียนส่วนใหญ่ใช้ ถ้าโรงเรียนใช้แบบต่างออกไป แจ้งเราได้</div></details>
+      <details class="faq-item"><summary>ทดลองใช้ฟรีได้แค่ไหน</summary><div class="faq-a">สร้างห้องทดลองได้ 1 วิชา รับนักเรียน {{ trial_limit }} คน ใช้ได้ครบทุกขั้นตอนจนดาวน์โหลดรายงาน PDF ได้จริง ไม่ต้องจ่ายก่อน</div></details>
+      <details class="faq-item"><summary>จ่ายเงินอย่างไร ใช้ได้กี่ห้อง</summary><div class="faq-a">สแกน QR พร้อมเพย์ {{ price }} บาทที่เมนู "ชำระเงิน" แล้วแนบสลิป ใช้ได้ทันที จ่ายครั้งเดียวใช้ได้ทุกห้องทุกวิชาของภาคเรียนนั้น นักเรียนไม่จำกัดจำนวน</div></details>
+      <details class="faq-item"><summary>ครูหลายคนใช้บัญชีเดียวกันได้ไหม</summary><div class="faq-a">ไม่ได้ 1 บัญชีใช้กับครู 1 คน เพราะชื่อในบันทึกข้อความและแบบบันทึกต้องเป็นครูผู้สอนจริง หลังชำระเงิน ชื่อและโรงเรียนจะแก้ไม่ได้จนจบภาคเรียน ถ้าพิมพ์ผิด ติดต่อเราให้แก้ให้</div></details>
+      <details class="faq-item"><summary>นักเรียนที่ไม่มีมือถือทำอย่างไร</summary><div class="faq-a">ครูเพิ่มชื่อนักเรียนและประเมินเองได้ ข้อมูลจะอยู่ในรายงานเหมือนคนอื่น</div></details>
+      <details class="faq-item"><summary>นักเรียนกรอกผิด หรือย้ายออกไปแล้ว ทำอย่างไร</summary><div class="faq-a">ครูแก้เลขที่ ชื่อ และคำตอบของนักเรียนได้ หรือลบคำตอบนั้นทิ้ง ถ้านักเรียนย้ายออก กด "ย้ายออก/ไม่มีตัวตน" ระบบจะไม่นับคนนั้นในรายงาน</div></details>
+      <details class="faq-item"><summary>ใส่ลายเซ็นในรายงานได้ไหม</summary><div class="faq-a">ได้ เซ็นบนกระดาษขาวแล้วสแกนหรือถ่ายรูป อัปโหลดที่หน้า "ข้อมูลครู" ระบบลบพื้นกระดาษให้ แล้วพิมพ์ลายเซ็นตรง "ลงชื่อ" ในบันทึกข้อความและแบบบันทึกรายบุคคลให้เอง</div></details>
+      <details class="faq-item"><summary>ข้อมูลนักเรียนปลอดภัยไหม</summary><div class="faq-a">ครูเห็นเฉพาะห้องของตัวเอง ข้อมูลส่วนตัวไม่บังคับกรอก ครูลบห้องได้ทุกเมื่อ และระบบลบให้อัตโนมัติ 45 วันหลังจบภาคเรียน</div></details>
+      <details class="faq-item"><summary>ลืมรหัสผ่านทำอย่างไร</summary><div class="faq-a">ถ้าสมัครด้วย Google ให้กด "เข้าสู่ระบบด้วย Google" ได้เลย ถ้าสมัครด้วยอีเมล <a href="#contact">ติดต่อเรา</a> พร้อมอีเมลที่ใช้สมัคร</div></details>
     </div>
   </div>
 </section>
 
-<section class="lp-section lp-contact" id="contact">
-  <div class="wrap lp-contact-box">
-    <div>
-      <h2>ยังลังเล หรือมีคำถามเพิ่มเติม?</h2>
-      <p>ทักมาคุยกับเราได้ที่เพจ Facebook ถามเรื่องการใช้งาน แบบฟอร์มของโรงเรียน หรือการชำระเงินได้ทุกเรื่อง</p>
+{% set c = contact() %}
+<section class="lp-section lp-maker" id="contact">
+  <div class="wrap">
+    <div class="maker-card">
+      <div class="maker-who">
+        <span class="maker-label">ผู้พัฒนา</span>
+        <div class="maker-id">
+          <span class="maker-avatar"><img src="/static/img/kruflow-mark-on-dark.svg" alt="" width="44" height="38"></span>
+          <div>
+            <h2>{{ c.creator_name }}</h2>
+            {% if c.creator_bio %}<p class="maker-bio">{{ c.creator_bio }}</p>{% endif %}
+          </div>
+        </div>
+      </div>
+      <div class="maker-contact">
+        <h3>มีคำถาม หรือพบปัญหาการใช้งาน?</h3>
+        <p>ติดต่อผู้พัฒนาได้โดยตรง ถามเรื่องการใช้งาน แบบฟอร์มของโรงเรียน การชำระเงิน หรือแจ้งปัญหาที่เจอได้ทุกเรื่อง</p>
+        {{ contact_buttons(c) }}
+      </div>
     </div>
-    {% if facebook_url %}
-    <a class="btn btn-fb btn-lg" href="{{ facebook_url }}" target="_blank" rel="noopener">ทักเพจ {{ facebook_name }}</a>
-    {% else %}
-    <p class="lp-fb-name">ค้นหาเพจ <b>{{ facebook_name }}</b> บน Facebook</p>
-    {% endif %}
   </div>
 </section>
+
+<a class="contact-fab" href="#contact" aria-label="ติดต่อเรา">
+  <svg aria-hidden="true" viewBox="0 0 24 24" width="22" height="22"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M4 5h16v11H9l-5 4z"/><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M8 9.5h8M8 12.5h5"/></svg>
+  <span>ติดต่อเรา</span>
+</a>
 
 <footer class="lp-footer">
   <div class="wrap">
     <span class="foot-brand"><img src="/static/img/kruflow-mark-on-dark.svg" alt="" width="28" height="24"> KruFlow วิเคราะห์ผู้เรียนรายบุคคลสำหรับครูไทย</span>
-    <span class="foot-links">{% if facebook_url %}<a href="{{ facebook_url }}" target="_blank" rel="noopener">เพจ Facebook</a>{% endif %}<a href="/privacy">นโยบายความเป็นส่วนตัว</a></span>
+    <span class="foot-links"><span>พัฒนาโดย {{ c.creator_name }}</span><a href="#contact">ติดต่อเรา</a><a href="/privacy">นโยบายความเป็นส่วนตัว</a></span>
   </div>
 </footer>
 {% endblock %}
+{% block scripts %}<script src="/static/js/home.js"></script>{% endblock %}
